@@ -31,13 +31,11 @@ public class TicketingService {
         if(duplicate != null) {
             return new TicketingResponseDto("이미 예약된 공연입니다.", null);
         }
-        ticketRepository.flush();
 
         Optional<Ticket> savedSeat = ticketRepository.findByShowIdAndSeatForUpdate(request.getShowId(), request.getSeat());
         if(savedSeat.isPresent()) {
             return new TicketingResponseDto("이미 선점된 자리입니다.", null);
         }
-        ticketRepository.flush();
 
         Ticket ticket = new Ticket(
                 request.getTicketId(), request.getUserId(), request.getShowId(), request.getSeat(), new Date()
