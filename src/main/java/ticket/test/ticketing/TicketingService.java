@@ -29,12 +29,12 @@ public class TicketingService {
     public TicketingResponseDto getTicket(TicketingRequestDto request) {
         Ticket duplicate = ticketRepository.findByUserIdAndShowId(request.getUserId(), request.getShowId());
         if(duplicate != null) {
-            return new TicketingResponseDto("이미 예약된 공연입니다.", null);
+            return new TicketingResponseDto("예약이 완료되었습니다.", null);
         }
 
         Optional<Ticket> savedSeat = ticketRepository.findByShowIdAndSeatForUpdate(request.getShowId(), request.getSeat());
         if(savedSeat.isPresent()) {
-            return new TicketingResponseDto("이미 선점된 자리입니다.", null);
+            return new TicketingResponseDto("예약이 완료되었습니다.", null);
         }
 
         Ticket ticket = new Ticket(
@@ -51,7 +51,7 @@ public class TicketingService {
     @Transactional()
     public TicketingResponseDto cancelTicket(TicketingRequestDto request) {
         ticketRepository.findByTicketIdForUpdate(request.getTicketId()).orElseThrow(() -> {
-            throw new IllegalArgumentException("해당 ID가 존재하지 않습니다.");
+            throw new IllegalArgumentException("예약 취소가 완료되었습니다.");
         });
 
         ticketRepository.deleteByTicketId(request.getTicketId());
