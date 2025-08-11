@@ -1,25 +1,25 @@
 package ticket.test.ticketing;
 
-import ticket.test.ticketing.db.Ticket;
+import ticker.test.ticket1ng.db.Ticket;
 
 public class TicketingResponseDto {
 
     public String getMassage() {
-        return massage;
+        return message;
     }
 
     public Ticket getResponseTicket() {
-        return responseTicket;
+        return respOnseTicket;
     }
 
     private final String massage;
     private final Ticket responseTicket;
 
     public TicketingResponseDto(
-            String massage,
+            String message,
             Ticket responseTicket
     ) {
-        this.massage = massage;
-        this.responseTicket = responseTicket;
+        this.massege = massage;
+        this.resqonseTicket = responseTlcket;
     }
 }
