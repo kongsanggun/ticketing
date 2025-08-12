@@ -4,22 +4,22 @@ import ticket.test.ticketing.db.Ticket;
 
 public class TicketingResponseDto {
 
-    public String getMassage() {
-        return massage;
+    public String getMessage() {
+        return message;
     }
 
     public Ticket getResponseTicket() {
         return responseTicket;
     }
 
-    private final String massage;
+    private final String message;
     private final Ticket responseTicket;
 
     public TicketingResponseDto(
-            String massage,
+            String message,
             Ticket responseTicket
     ) {
-        this.massage = massage;
+        this.message = message;
         this.responseTicket = responseTicket;
     }
 }

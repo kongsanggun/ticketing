@@ -55,7 +55,7 @@ class TestApplicationTests {
 					if(response.getResponseTicket() != null) {
 						successCount.getAndIncrement();
 					}
-					System.out.println("Thread " + index + " - " + response.getMassage());
+					System.out.println("Thread " + index + " - " + response.getMessage());
 				} catch (PessimisticLockingFailureException e) {
 					System.out.println("Thread " + index + " - 락 충돌 감지");
 				} catch (Exception e) {
@@ -94,7 +94,7 @@ class TestApplicationTests {
 					if(response.getResponseTicket() != null) {
 						successCount.getAndIncrement();
 					}
-					System.out.println("Thread " + index + " - " + response.getMassage());
+					System.out.println("Thread " + index + " - " + response.getMessage());
 				} catch (PessimisticLockingFailureException e) {
 					System.out.println("Thread " + index + " - 락 충돌 감지");
 				} catch (Exception e) {
@@ -133,7 +133,7 @@ class TestApplicationTests {
 					if(response.getResponseTicket() != null) {
 						successCount.getAndIncrement();
 					}
-					System.out.println("Thread " + index + " - " + response.getMassage());
+					System.out.println("Thread " + index + " - " + response.getMessage());
 				} catch (PessimisticLockingFailureException e) {
 					System.out.println("Thread " + index + " - 락 충돌 감지");
 				} catch (Exception e) {
@@ -197,10 +197,11 @@ class TestApplicationTests {
 						final String uuid = UUID.randomUUID().toString();
 						final String seatNumber = String.valueOf(Math.round((Math.random() * 40) + 1));
 						final String seat = String.valueOf((char)(Math.round((Math.random() * 14) + 65))) + seatNumber;
+						String userId = String.valueOf((Math.round((Math.random() * 1000) + 1)));
 
-						TicketingRequestDto dto = new TicketingRequestDto(uuid, "TEST", "TEST", seat, new Date());
+						TicketingRequestDto dto = new TicketingRequestDto(uuid, userId, "TEST", seat, new Date());
 						TicketingResponseDto response = ticketingService.getTicket(dto);
-						System.out.println("Thread " + index + " - " + response.getMassage());
+						System.out.println("Thread " + index + " - " + response.getMessage());
 					} catch (PessimisticLockingFailureException e) {
 						System.out.println("Thread " + index + " - 락 충돌 감지");
 					} catch (Exception e) {
