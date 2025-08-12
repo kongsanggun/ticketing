@@ -14,14 +14,12 @@ import java.util.Optional;
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT ticketId FROM Ticket t WHERE t.showId = :showId AND t.seat = :seat")
-    Optional<Ticket> findByShowIdAndSeatForUpdate(@Param("showId") String showId, @Param("seat") String seat);
+    Optional<Ticket> findByShowIdAndSeat(@Param("showId") String showId, @Param("seat") String seat);
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT ticketId FROM Ticket t WHERE t.ticketId = :ticketId")
     Optional<Ticket> findByTicketIdForUpdate(@Param("ticketId") String ticketId);
 
-    @Lock(LockModeType.PESSIMISTIC_READ)
     Ticket findByUserIdAndShowId(String userId, String showId);
 
     Ticket findByTicketId(String ticketId);
