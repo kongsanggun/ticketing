@@ -25,7 +25,8 @@ dependencies {
 	implementation 'org.redisson:redisson-spring-boot-starter:3.18.0'
 	testImplementation("junit:junit:4.13.2")
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation 'org.projectlombok:lombok:1.18.22'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'

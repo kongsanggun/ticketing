@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -20,8 +19,6 @@ import java.util.concurrent.TimeUnit;
 @Service
 @Transactional()
 public class TicketingService {
-
-    @Autowired
     private final TicketRepository ticketRepository;
 
     private final RedissonClient redissonClient;
@@ -30,7 +27,7 @@ public class TicketingService {
     *  티켓을 예약한다.
     */
 
-    public TicketingResponseDto getTicket(TicketingRequestDto request) {
+    public TicketingResponseDto createTicket(TicketingRequestDto request) {
         TicketingResponseDto result;
         RLock lock = redissonClient.getLock("showTicket_" + request.getShowId());
         try {
@@ -100,5 +97,4 @@ public class TicketingService {
     public Ticket checkTicket(String ticketId) {
         return ticketRepository.findByTicketId(ticketId);
     }
-
 }

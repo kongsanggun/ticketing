@@ -1,5 +1,7 @@
 package ticket.test;
 
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 @SpringBootTest
+@Slf4j
 class TestApplicationTests {
 
 	@Autowired
@@ -30,15 +33,18 @@ class TestApplicationTests {
 	@Autowired
 	private TicketRepository ticketRepository;
 
+	@BeforeEach
+	void deleteAllData() {
+		// 테스트 시작 전 데이터 전부 삭제
+		ticketRepository.deleteAll();
+	}
+
 	/*
 	멀티 스레트 테스트 1 (스레드 10개 자리는 하나로 고정하고 예약한다.)
 	*/
 	@Test
 	@DisplayName("예약 - 멀티 스레드 테스트 - 1")
 	void multiThreadTest1() throws InterruptedException {
-		// 테스트 시작 전 데이터 전부 삭제
-		ticketRepository.deleteAll();
-
 		AtomicInteger successCount = new AtomicInteger(0);
 		ExecutorService executor = Executors.newFixedThreadPool(10);
 		// 작업 스레드가 끝날 때 까지 기다리는 역할이다.
@@ -49,17 +55,15 @@ class TestApplicationTests {
 			executor.execute(() -> {
 				try {
 					final String uuid = UUID.randomUUID().toString();
-					TicketingRequestDto dto = new TicketingRequestDto(uuid, "TEST", "TEST", "A1", new Date());
+					TicketingRequestDto dto = new TicketingRequestDto(uuid, "TEST", "TEST", "A1");
 
-					TicketingResponseDto response = ticketingService.getTicket(dto);
+					TicketingResponseDto response = ticketingService.createTicket(dto);
 					if(response.getResponseTicket() != null) {
 						successCount.getAndIncrement();
 					}
-					System.out.println("Thread " + index + " - " + response.getMessage());
-				} catch (PessimisticLockingFailureException e) {
-					System.out.println("Thread " + index + " - 락 충돌 감지");
+					log.info("Thread " + index + " - " + response.getMessage());
 				} catch (Exception e) {
-					System.out.println("Thread " + index + " - " + e.getMessage());
+					log.error("[error] Thread " + index + " - " + e.getMessage());
 				}
 				latch.countDown();
 			});
@@ -75,9 +79,6 @@ class TestApplicationTests {
 	@Test
 	@DisplayName("예약 - 멀티 스레드 테스트 - 2")
 	void multiThreadTest2() throws InterruptedException {
-		// 테스트 시작 전 데이터 전부 삭제
-		ticketRepository.deleteAll();
-
 		AtomicInteger successCount = new AtomicInteger(0);
 		ExecutorService executor = Executors.newFixedThreadPool(100);
 		// 작업 스레드가 끝날 때 까지 기다리는 역할이다.
@@ -88,17 +89,15 @@ class TestApplicationTests {
 			executor.execute(() -> {
 				try {
 					final String uuid = UUID.randomUUID().toString();
-					TicketingRequestDto dto = new TicketingRequestDto(uuid, "TEST", "TEST", "A1", new Date());
+					TicketingRequestDto dto = new TicketingRequestDto(uuid, "TEST", "TEST", "A1");
 
-					TicketingResponseDto response = ticketingService.getTicket(dto);
+					TicketingResponseDto response = ticketingService.createTicket(dto);
 					if(response.getResponseTicket() != null) {
 						successCount.getAndIncrement();
 					}
-					System.out.println("Thread " + index + " - " + response.getMessage());
-				} catch (PessimisticLockingFailureException e) {
-					System.out.println("Thread " + index + " - 락 충돌 감지");
+					log.info("Thread " + index + " - " + response.getMessage());
 				} catch (Exception e) {
-					System.out.println("Thread " + index + " - " + e.getMessage());
+					log.error("[error] Thread " + index + " - " + e.getMessage());
 				}
 				latch.countDown();
 			});
@@ -114,8 +113,6 @@ class TestApplicationTests {
 	@Test
 	@DisplayName("예약 - 멀티 스레드 테스트 - 3")
 	void multiThreadTest3() throws InterruptedException {
-		// 테스트 시작 전 데이터 전부 삭제
-		ticketRepository.deleteAll();
 
 		AtomicInteger successCount = new AtomicInteger(0);
 		ExecutorService executor = Executors.newFixedThreadPool(1000);
@@ -127,17 +124,15 @@ class TestApplicationTests {
 			executor.execute(() -> {
 				try {
 					final String uuid = UUID.randomUUID().toString();
-					TicketingRequestDto dto = new TicketingRequestDto(uuid, "TEST", "TEST", "A1", new Date());
+					TicketingRequestDto dto = new TicketingRequestDto(uuid, "TEST", "TEST", "A1");
 
-					TicketingResponseDto response = ticketingService.getTicket(dto);
+					TicketingResponseDto response = ticketingService.createTicket(dto);
 					if(response.getResponseTicket() != null) {
 						successCount.getAndIncrement();
 					}
-					System.out.println("Thread " + index + " - " + response.getMessage());
-				} catch (PessimisticLockingFailureException e) {
-					System.out.println("Thread " + index + " - 락 충돌 감지");
+					log.info("Thread " + index + " - " + response.getMessage());
 				} catch (Exception e) {
-					System.out.println("Thread " + index + " - " + e.getMessage());
+					log.error("[error] Thread " + index + " - " + e.getMessage());
 				}
 				latch.countDown();
 			});
@@ -154,9 +149,6 @@ class TestApplicationTests {
 	@Test
 	@DisplayName("예약 & 예약 취소- 멀티 스레드 테스트")
 	void multiThreadTest4() throws InterruptedException {
-		// 테스트 시작 전 데이터 전부 삭제
-		ticketRepository.deleteAll();
-
 		AtomicInteger successCount = new AtomicInteger(0);
 		ExecutorService executor = Executors.newFixedThreadPool(1000);
 		CountDownLatch latch = new CountDownLatch(1000);
@@ -179,15 +171,13 @@ class TestApplicationTests {
 				executor.execute(() -> {
 					try {
 						TicketingRequestDto dto = new TicketingRequestDto(
-								ticketRepository.findAll().get(0).getTicketId(), null, null, null, null
+								ticketRepository.findAll().get(0).getTicketId(), null, null, null
 						);
 						ticketingService.cancelTicket(dto);
 						successCount.getAndIncrement();
-						System.out.println("Thread " + index + " - 예약이 취소되었습니다.");
-					} catch (PessimisticLockingFailureException e) {
-						System.out.println("Thread " + index + " - 락 충돌 감지");
+						log.info("Thread " + index + " - 예약이 취소되었습니다.");
 					} catch (Exception e) {
-						System.out.println("Thread " + index + " - " + e.getMessage());
+						log.error("[error] Thread " + index + " - " + e.getMessage());
 					}
 					latch.countDown();
 				});
@@ -199,13 +189,11 @@ class TestApplicationTests {
 						final String seat = String.valueOf((char)(Math.round((Math.random() * 14) + 65))) + seatNumber;
 						String userId = String.valueOf((Math.round((Math.random() * 1000) + 1)));
 
-						TicketingRequestDto dto = new TicketingRequestDto(uuid, userId, "TEST", seat, new Date());
-						TicketingResponseDto response = ticketingService.getTicket(dto);
-						System.out.println("Thread " + index + " - " + response.getMessage());
-					} catch (PessimisticLockingFailureException e) {
-						System.out.println("Thread " + index + " - 락 충돌 감지");
+						TicketingRequestDto dto = new TicketingRequestDto(uuid, userId, "TEST", seat);
+						TicketingResponseDto response = ticketingService.createTicket(dto);
+						log.info("Thread " + index + " - " + response.getMessage());
 					} catch (Exception e) {
-						System.out.println("Thread " + index + " - " + e.getMessage());
+						log.error("[error] Thread " + index + " - " + e.getMessage());
 					}
 					latch.countDown();
 				});
