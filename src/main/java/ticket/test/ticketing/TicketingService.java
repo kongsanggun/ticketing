@@ -7,9 +7,12 @@ import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
+import ticket.test.ticketing.common.exception.CustomException;
+import ticket.test.ticketing.common.exception.ExceptionCode;
 import ticket.test.ticketing.db.Ticket;
 import ticket.test.ticketing.db.TicketRepository;
 
+import java.sql.SQLDataException;
 import java.util.Date;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -26,13 +29,11 @@ public class TicketingService {
     /*
     *  티켓을 예약한다.
     */
-
-    public TicketingResponseDto createTicket(TicketingRequestDto request) {
-        TicketingResponseDto result;
+    public TicketingRequestDto createTicket(TicketingRequestDto request) {
         RLock lock = redissonClient.getLock("showTicket_" + request.getShowId());
         try {
             if(lock.tryLock(10000, 3000, TimeUnit.MILLISECONDS)) {
-                result = saveTicket(request);
+                saveTicket(request);
             } else {
                 throw new RuntimeException("Unabled to acquire lock");
             }
@@ -43,38 +44,41 @@ public class TicketingService {
                 lock.unlock();
             }
         }
-        return result;
+        return request;
     }
 
-    private TicketingResponseDto saveTicket(TicketingRequestDto request) {
-        Ticket duplicate = ticketRepository.findByUserIdAndShowId(request.getUserId(), request.getShowId());
-        if(duplicate != null) {
-            return new TicketingResponseDto("이미 예약된 공연입니다.", null);
+    private void saveTicket(TicketingRequestDto request) {
+        try {
+            Ticket duplicate = ticketRepository.findByUserIdAndShowId(request.getUserId(), request.getShowId());
+            if(duplicate != null) {
+                throw new CustomException(ExceptionCode.CHECKED_TICKET);
+            }
+
+            Optional<Ticket> savedSeat = ticketRepository.findByShowIdAndSeat(request.getShowId(), request.getSeat());
+            if(savedSeat.isPresent()) {
+                throw new CustomException(ExceptionCode.SEAT_SELECTED);
+            }
+        } catch (CustomException e) {
+            throw new RuntimeException(e);
         }
 
-        Optional<Ticket> savedSeat = ticketRepository.findByShowIdAndSeat(request.getShowId(), request.getSeat());
-        if(savedSeat.isPresent()) {
-            return new TicketingResponseDto("이미 선점된 자리입니다.", null);
-        }
-
-        Ticket ticket = new Ticket(
-                request.getTicketId(), request.getUserId(), request.getShowId(), request.getSeat(), new Date()
-        );
+        Ticket ticket = new Ticket(request, new Date());
         ticketRepository.saveAndFlush(ticket);
-        return new TicketingResponseDto("예약이 완료되었습니다.", ticket);
     }
 
     /*
      *  티켓을 취소한다.
      */
-    @Transactional()
-    public TicketingResponseDto cancelTicket(TicketingRequestDto request) {
-        TicketingResponseDto result;
+    public void cancelTicket(TicketingRequestDto request) {
         RLock lock = redissonClient.getLock("cancelTicket_" + request.getTicketId());
         try {
             if(lock.tryLock(10000, 3000, TimeUnit.MILLISECONDS)) {
                 ticketRepository.findByTicketIdForUpdate(request.getTicketId()).orElseThrow(() -> {
-                    throw new IllegalArgumentException("해당 ID가 존재하지 않습니다.");
+                    try {
+                        throw new CustomException(ExceptionCode.NOT_DATA);
+                    } catch (CustomException e) {
+                        throw new RuntimeException(e);
+                    }
                 });
                 ticketRepository.deleteByTicketId(request.getTicketId());
             } else {
@@ -87,8 +91,6 @@ public class TicketingService {
                 lock.unlock();
             }
         }
-
-        return new TicketingResponseDto("예약 취소가 완료되었습니다.", null);
     }
 
     /*

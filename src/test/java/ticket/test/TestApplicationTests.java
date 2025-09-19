@@ -6,14 +6,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.PessimisticLockingFailureException;
 import ticket.test.ticketing.TicketingRequestDto;
-import ticket.test.ticketing.TicketingResponseDto;
 import ticket.test.ticketing.TicketingService;
 import ticket.test.ticketing.db.TicketRepository;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
@@ -57,11 +54,11 @@ class TestApplicationTests {
 					final String uuid = UUID.randomUUID().toString();
 					TicketingRequestDto dto = new TicketingRequestDto(uuid, "TEST", "TEST", "A1");
 
-					TicketingResponseDto response = ticketingService.createTicket(dto);
-					if(response.getResponseTicket() != null) {
+					TicketingRequestDto response = ticketingService.createTicket(dto);
+					if(response != null) {
 						successCount.getAndIncrement();
 					}
-					log.info("Thread " + index + " - " + response.getMessage());
+					log.info("Thread " + index + " - " + "완료");
 				} catch (Exception e) {
 					log.error("[error] Thread " + index + " - " + e.getMessage());
 				}
@@ -91,11 +88,11 @@ class TestApplicationTests {
 					final String uuid = UUID.randomUUID().toString();
 					TicketingRequestDto dto = new TicketingRequestDto(uuid, "TEST", "TEST", "A1");
 
-					TicketingResponseDto response = ticketingService.createTicket(dto);
-					if(response.getResponseTicket() != null) {
+					TicketingRequestDto response = ticketingService.createTicket(dto);
+					if(response != null) {
 						successCount.getAndIncrement();
 					}
-					log.info("Thread " + index + " - " + response.getMessage());
+					log.info("Thread " + index + " - 완료");
 				} catch (Exception e) {
 					log.error("[error] Thread " + index + " - " + e.getMessage());
 				}
@@ -126,11 +123,11 @@ class TestApplicationTests {
 					final String uuid = UUID.randomUUID().toString();
 					TicketingRequestDto dto = new TicketingRequestDto(uuid, "TEST", "TEST", "A1");
 
-					TicketingResponseDto response = ticketingService.createTicket(dto);
-					if(response.getResponseTicket() != null) {
+					TicketingRequestDto response = ticketingService.createTicket(dto);
+					if(response != null) {
 						successCount.getAndIncrement();
 					}
-					log.info("Thread " + index + " - " + response.getMessage());
+					log.info("Thread " + index + " - 완료");
 				} catch (Exception e) {
 					log.error("[error] Thread " + index + " - " + e.getMessage());
 				}
@@ -190,8 +187,8 @@ class TestApplicationTests {
 						String userId = String.valueOf((Math.round((Math.random() * 1000) + 1)));
 
 						TicketingRequestDto dto = new TicketingRequestDto(uuid, userId, "TEST", seat);
-						TicketingResponseDto response = ticketingService.createTicket(dto);
-						log.info("Thread " + index + " - " + response.getMessage());
+						TicketingRequestDto response = ticketingService.createTicket(dto);
+						log.info("Thread " + index + " -  완료");
 					} catch (Exception e) {
 						log.error("[error] Thread " + index + " - " + e.getMessage());
 					}

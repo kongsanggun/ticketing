@@ -10,13 +10,13 @@ public class TicketingController {
     private TicketingService ticketingService;
 
     @PostMapping("/ticket")
-    public TicketingResponseDto createTicket(@RequestBody final TicketingRequestDto request) throws Exception {
+    public TicketingRequestDto createTicket(@RequestBody final TicketingRequestDto request) throws Exception {
         return ticketingService.createTicket(request);
     }
 
     @DeleteMapping("/cancel")
-    public TicketingResponseDto cancelTicket(@RequestBody final TicketingRequestDto request) {
-        return ticketingService.cancelTicket(request);
+    public void cancelTicket(@RequestBody final TicketingRequestDto request) {
+        ticketingService.cancelTicket(request);
     }
 
     @GetMapping("/check/{id}")

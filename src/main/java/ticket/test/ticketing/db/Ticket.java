@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ticket.test.ticketing.TicketingRequestDto;
 
 import java.util.Date;
 
@@ -33,4 +34,12 @@ public class Ticket {
 
     @Column(name="bookTime")
     private Date bookTime;
+
+    public Ticket(TicketingRequestDto request, Date date) {
+        this.ticketId = request.getTicketId();
+        this.userId = request.getUserId();
+        this.showId = request.getShowId();
+        this.seat = request.getSeat();
+        this.bookTime = date;
+    }
 }
