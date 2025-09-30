@@ -35,11 +35,11 @@ public class Ticket {
     @Column(name="bookTime")
     private Date bookTime;
 
-    public Ticket(TicketingRequestDto request, Date date) {
+    public Ticket(TicketingRequestDto request) {
         this.ticketId = request.getTicketId();
         this.userId = request.getUserId();
         this.showId = request.getShowId();
         this.seat = request.getSeat();
-        this.bookTime = date;
+        this.bookTime =  new Date();
     }
 }

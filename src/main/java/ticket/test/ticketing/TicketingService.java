@@ -12,8 +12,6 @@ import ticket.test.ticketing.common.exception.ExceptionCode;
 import ticket.test.ticketing.db.Ticket;
 import ticket.test.ticketing.db.TicketRepository;
 
-import java.sql.SQLDataException;
-import java.util.Date;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -29,11 +27,12 @@ public class TicketingService {
     /*
     *  티켓을 예약한다.
     */
-    public TicketingRequestDto createTicket(TicketingRequestDto request) {
+    public TicketingResponseDto createTicket(TicketingRequestDto request) {
+        Ticket ticket = new Ticket(request);
         RLock lock = redissonClient.getLock("showTicket_" + request.getShowId());
         try {
             if(lock.tryLock(10000, 3000, TimeUnit.MILLISECONDS)) {
-                saveTicket(request);
+                saveTicket(ticket);
             } else {
                 throw new RuntimeException("Unabled to acquire lock");
             }
@@ -44,17 +43,17 @@ public class TicketingService {
                 lock.unlock();
             }
         }
-        return request;
+        return new TicketingResponseDto(ticket);
     }
 
-    private void saveTicket(TicketingRequestDto request) {
+    private void saveTicket(Ticket ticket) {
         try {
-            Ticket duplicate = ticketRepository.findByUserIdAndShowId(request.getUserId(), request.getShowId());
+            Ticket duplicate = ticketRepository.findByUserIdAndShowId(ticket.getUserId(), ticket.getShowId());
             if(duplicate != null) {
                 throw new CustomException(ExceptionCode.CHECKED_TICKET);
             }
 
-            Optional<Ticket> savedSeat = ticketRepository.findByShowIdAndSeat(request.getShowId(), request.getSeat());
+            Optional<Ticket> savedSeat = ticketRepository.findByShowIdAndSeat(ticket.getShowId(), ticket.getSeat());
             if(savedSeat.isPresent()) {
                 throw new CustomException(ExceptionCode.SEAT_SELECTED);
             }
@@ -62,7 +61,6 @@ public class TicketingService {
             throw new RuntimeException(e);
         }
 
-        Ticket ticket = new Ticket(request, new Date());
         ticketRepository.saveAndFlush(ticket);
     }
 

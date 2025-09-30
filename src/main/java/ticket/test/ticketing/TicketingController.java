@@ -10,7 +10,7 @@ public class TicketingController {
     private TicketingService ticketingService;
 
     @PostMapping("/ticket")
-    public TicketingRequestDto createTicket(@RequestBody final TicketingRequestDto request) throws Exception {
+    public TicketingResponseDto createTicket(@RequestBody final TicketingRequestDto request) throws Exception {
         return ticketingService.createTicket(request);
     }
 
