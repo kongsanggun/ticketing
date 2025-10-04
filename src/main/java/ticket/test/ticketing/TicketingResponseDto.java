@@ -9,7 +9,6 @@ import ticket.test.ticketing.db.Ticket;
 import java.util.Date;
 
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
 public class TicketingResponseDto {

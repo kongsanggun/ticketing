@@ -1,5 +1,6 @@
 package ticket.test.ticketing;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import ticket.test.ticketing.db.Ticket;
@@ -7,9 +8,10 @@ import ticket.test.ticketing.db.Ticket;
 @RequiredArgsConstructor
 @RestController
 public class TicketingController {
-    private TicketingService ticketingService;
+    private final TicketingService ticketingService;
 
     @PostMapping("/ticket")
+    @ResponseStatus(HttpStatus.CREATED)
     public TicketingResponseDto createTicket(@RequestBody final TicketingRequestDto request) throws Exception {
         return ticketingService.createTicket(request);
     }

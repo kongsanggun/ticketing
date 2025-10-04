@@ -72,11 +72,7 @@ public class TicketingService {
         try {
             if(lock.tryLock(10000, 3000, TimeUnit.MILLISECONDS)) {
                 ticketRepository.findByTicketIdForUpdate(request.getTicketId()).orElseThrow(() -> {
-                    try {
-                        throw new CustomException(ExceptionCode.NOT_DATA);
-                    } catch (CustomException e) {
-                        throw new RuntimeException(e);
-                    }
+                    throw new CustomException(ExceptionCode.NOT_DATA);
                 });
                 ticketRepository.deleteByTicketId(request.getTicketId());
             } else {
@@ -95,6 +91,10 @@ public class TicketingService {
      *  티켓을 조회한다.
      */
     public Ticket checkTicket(String ticketId) {
-        return ticketRepository.findByTicketId(ticketId);
+        Ticket ticket =  ticketRepository.findByTicketId(ticketId);
+        if (ticket == null) {
+            throw new CustomException(ExceptionCode.NOT_DATA);
+        }
+        return ticket;
     }
 }
