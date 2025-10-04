@@ -1,0 +1,50 @@
+services:
+  db:
+    image: mariadb
+    container_name: mariadb
+    restart: always
+    env_file: # 환경변수 파일
+      - ./.env
+    environment:
+      TZ : "Asia/Seoul"
+      MARIADB_USER: ${MARIADB_USER}
+      MARIA_DB_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${MARIADB_DATABASE}
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./db/conf.d:/etc/mysql/conf.d
+      - ./db/initdb.d:/docker-entrypoint-initdb.d
+    networks:
+      - mariadb-net
+
+  redis:
+    image: redis
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - redis-net
+
+  server:
+    build: ./   # 서버 소스코드 Dockerfile 경로
+    container_name: server
+    restart: always
+    env_file: # 환경변수 파일
+      - ./.env
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+      - redis
+    networks:
+      - mariadb-net
+      - redis-net
+
+networks:
+  mariadb-net:
+    driver: bridge
+  redis-net:
+    driver: bridge
