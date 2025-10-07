@@ -1,4 +1,4 @@
-package ticket.test.ticketing.db;
+package app.ticket.ticketing.db;
 
 import jakarta.persistence.LockModeType;
 
@@ -16,7 +16,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
     @Query("SELECT ticketId FROM Ticket t WHERE t.showId = :showId AND t.seat = :seat")
     Optional<Ticket> findByShowIdAndSeat(@Param("showId") String showId, @Param("seat") String seat);
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
+
     @Query("SELECT ticketId FROM Ticket t WHERE t.ticketId = :ticketId")
     Optional<Ticket> findByTicketIdForUpdate(@Param("ticketId") String ticketId);
 

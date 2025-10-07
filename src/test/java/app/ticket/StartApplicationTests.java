@@ -1,14 +1,15 @@
-package ticket.test;
+package app.ticket;
 
+import app.ticket.ticketing.TicketingResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import ticket.test.ticketing.TicketingRequestDto;
-import ticket.test.ticketing.TicketingService;
-import ticket.test.ticketing.db.TicketRepository;
+import app.ticket.ticketing.TicketingRequestDto;
+import app.ticket.ticketing.TicketingService;
+import app.ticket.ticketing.db.TicketRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +24,7 @@ import static org.hamcrest.Matchers.*;
 
 @SpringBootTest
 @Slf4j
-class TestApplicationTests {
+class StartApplicationTests {
 
 	@Autowired
 	private TicketingService ticketingService;
@@ -54,7 +55,7 @@ class TestApplicationTests {
 					final String uuid = UUID.randomUUID().toString();
 					TicketingRequestDto dto = new TicketingRequestDto(uuid, "TEST", "TEST", "A1");
 
-					TicketingRequestDto response = ticketingService.createTicket(dto);
+					TicketingResponseDto response = ticketingService.createTicket(dto);
 					if(response != null) {
 						successCount.getAndIncrement();
 					}
@@ -88,7 +89,7 @@ class TestApplicationTests {
 					final String uuid = UUID.randomUUID().toString();
 					TicketingRequestDto dto = new TicketingRequestDto(uuid, "TEST", "TEST", "A1");
 
-					TicketingRequestDto response = ticketingService.createTicket(dto);
+					TicketingResponseDto response = ticketingService.createTicket(dto);
 					if(response != null) {
 						successCount.getAndIncrement();
 					}
@@ -123,7 +124,7 @@ class TestApplicationTests {
 					final String uuid = UUID.randomUUID().toString();
 					TicketingRequestDto dto = new TicketingRequestDto(uuid, "TEST", "TEST", "A1");
 
-					TicketingRequestDto response = ticketingService.createTicket(dto);
+					TicketingResponseDto response = ticketingService.createTicket(dto);
 					if(response != null) {
 						successCount.getAndIncrement();
 					}
@@ -187,7 +188,7 @@ class TestApplicationTests {
 						String userId = String.valueOf((Math.round((Math.random() * 1000) + 1)));
 
 						TicketingRequestDto dto = new TicketingRequestDto(uuid, userId, "TEST", seat);
-						TicketingRequestDto response = ticketingService.createTicket(dto);
+						TicketingResponseDto response = ticketingService.createTicket(dto);
 						log.info("Thread " + index + " -  완료");
 					} catch (Exception e) {
 						log.error("[error] Thread " + index + " - " + e.getMessage());

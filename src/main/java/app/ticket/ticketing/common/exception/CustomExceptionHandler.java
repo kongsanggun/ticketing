@@ -1,4 +1,4 @@
-package ticket.test.ticketing.common.exception;
+package app.ticket.ticketing.common.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;

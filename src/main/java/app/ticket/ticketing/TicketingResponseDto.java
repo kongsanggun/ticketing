@@ -1,10 +1,9 @@
-package ticket.test.ticketing;
+package app.ticket.ticketing;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ticket.test.ticketing.db.Ticket;
+import app.ticket.ticketing.db.Ticket;
 
 import java.util.Date;
 

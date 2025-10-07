@@ -1,4 +1,4 @@
-package ticket.test.ticketing.redis;
+package app.ticket.ticketing.redis;
 
 import lombok.RequiredArgsConstructor;
 import org.redisson.Redisson;

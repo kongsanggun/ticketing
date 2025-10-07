@@ -1,11 +1,11 @@
-package ticket.test.ticketing.db;
+package app.ticket.ticketing.db;
 
+import app.ticket.ticketing.TicketingRequestDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ticket.test.ticketing.TicketingRequestDto;
 
 import java.util.Date;
 
