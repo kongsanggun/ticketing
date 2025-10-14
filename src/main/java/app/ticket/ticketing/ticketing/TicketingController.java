@@ -1,4 +1,4 @@
-package app.ticket.ticketing;
+package app.ticket.ticketing.ticketing;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -16,12 +16,12 @@ public class TicketingController {
         return ticketingService.createTicket(request);
     }
 
-    @DeleteMapping("/cancel")
+    @DeleteMapping("/ticket")
     public void cancelTicket(@RequestBody final TicketingRequestDto request) {
         ticketingService.cancelTicket(request);
     }
 
-    @GetMapping("/check/{id}")
+    @GetMapping("/ticket/{id}")
     public Ticket checkTicket(@PathVariable final String id) {
         return ticketingService.checkTicket(id);
     }

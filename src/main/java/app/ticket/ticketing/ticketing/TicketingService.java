@@ -1,4 +1,4 @@
-package app.ticket.ticketing;
+package app.ticket.ticketing.ticketing;
 
 import app.ticket.ticketing.common.exception.CustomException;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import app.ticket.ticketing.common.exception.ExceptionCode;
 import app.ticket.ticketing.db.Ticket;
-import app.ticket.ticketing.db.TicketRepository;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
