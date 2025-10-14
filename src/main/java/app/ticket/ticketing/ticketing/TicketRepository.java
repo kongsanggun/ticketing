@@ -1,5 +1,6 @@
-package app.ticket.ticketing.db;
+package app.ticket.ticketing.ticketing;
 
+import app.ticket.ticketing.db.Ticket;
 import jakarta.persistence.LockModeType;
 
 import org.springframework.data.jpa.repository.JpaRepository;

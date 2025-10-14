@@ -1,6 +1,6 @@
 package app.ticket.ticketing.db;
 
-import app.ticket.ticketing.TicketingRequestDto;
+import app.ticket.ticketing.ticketing.TicketingRequestDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

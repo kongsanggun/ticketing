@@ -1,4 +1,4 @@
-package app.ticket.ticketing;
+package app.ticket.ticketing.ticketing;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
