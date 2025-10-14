@@ -2,7 +2,7 @@
 name: "[Feat]"
 about: 프로젝트에서 기능을 추가 및 요청을 알려주는 이슈입니다.
 title: "[Feat] "
-labels: enhancement
+labels: ''
 assignees: ''
 
 ---

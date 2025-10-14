@@ -2,7 +2,7 @@
 name: "[Bug]"
 about: 프로젝트에서 발생한 버그를 알려주는 이슈입니다.
 title: "[Bug]"
-labels: bug
+labels: 'Type : Bug'
 assignees: ''
 
 ---

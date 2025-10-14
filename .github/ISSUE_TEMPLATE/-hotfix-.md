@@ -2,7 +2,7 @@
 name: "[Hotfix]"
 about: 핫픽스 이슈입니다.
 title: "[Hotfix]"
-labels: ''
+labels: 'Priority : High, Type : Bug'
 assignees: ''
 
 ---
