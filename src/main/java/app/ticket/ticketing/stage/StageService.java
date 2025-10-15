@@ -50,7 +50,8 @@ public class StageService {
      *   공연 내 시간표를 수정한다.
      */
     public StageResponseDto updateStage(StageRequestDto request) {
-        Stage stage = new Stage(request);
+        Stage stage = checkExist(request);
+        stage.setStageTime(request.getStageTime());
         stage.setUpdatedAt(new Date());
         stageRepository.saveAndFlush(stage);
         return new StageResponseDto(stage);
@@ -66,11 +67,19 @@ public class StageService {
         }
 
         // 2. 동일한 중복요청이 있는지 확인한다.
-        Stage price =  stageRepository.findByStageId(request.getStageId());
-        if (price == null) {
+        checkExist(request);
+        stageRepository.deleteByStageId(request.getStageId());
+    }
+
+    /*
+     *  존재하는 공연 내 시간표인지 확인한다.
+     *  존재 시 해당 값을 반환한다.
+     */
+    private Stage checkExist(StageRequestDto request) {
+        Stage stage =  stageRepository.findByStageId(request.getStageId());
+        if (stage == null) {
             throw new CustomException(ExceptionCode.NOT_DATA);
         }
-
-        stageRepository.deleteByStageId(request.getStageId());
+        return stage;
     }
 }
