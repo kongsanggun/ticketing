@@ -46,13 +46,12 @@ public class ConcertService {
      *  공연을 수정한다.
      */
     public ConcertResponseDto updateConcert(ConcertRequestDto request) {
-        Concert before = checkExist(request);
-        Concert concert = new Concert(request);
-
-        concert.setCreatedAt(before.getCreatedAt());
+        Concert concert = checkExist(request);
+        concert.setName(request.getName());
+        concert.setDetail(request.getDetail());
+        concert.setBookStartTime(request.getBookStartTime());
         concert.setUpdatedAt(new Date());
         concertRepository.saveAndFlush(concert);
-
         return new ConcertResponseDto(concert);
     }
 
@@ -60,15 +59,18 @@ public class ConcertService {
      *  공연을 삭제한다. (soft-delete)
      */
     public void deleteConcert(ConcertRequestDto request) {
-        checkExist(request);
-        concertRepository.deleteByConcertId(request.getConcertId());
+        Concert concert = checkExist(request);
+        concert.setDeletedAt(new Date());
+        concert.setIsDelete(true);
+        concertRepository.saveAndFlush(concert);
     }
 
     /*
      *  존재하는 공연인지 확인한다.
+     *  존재 시 해당 값을 반환한다.
      */
     private Concert checkExist(ConcertRequestDto request) {
-        Concert result = concertRepository.isExistByConcertId(request.getConcertId());
+        Concert result = concertRepository.findByConcertIdAndIsDelete(request.getConcertId(), false);
         if(result == null) {
             throw new CustomException(ExceptionCode.NOT_DATA);
         }

@@ -50,7 +50,9 @@ public class SeatClassService {
      *  공연 내 가격을 수정한다.
      */
     public SeatClassResponseDto updateSeatClass(SeatClassRequestDto request) {
-        SeatClass seatClass = new SeatClass(request);
+        SeatClass seatClass = checkExist(request);
+        seatClass.setName(request.getName());
+        seatClass.setPrice(request.getPrice());
         seatClass.setUpdatedAt(new Date());
         seatClassRepository.saveAndFlush(seatClass);
         return new SeatClassResponseDto(seatClass);
@@ -66,11 +68,19 @@ public class SeatClassService {
         }
 
         // 2. 동일한 중복요청이 있는지 확인한다.
+        checkExist(request);
+        seatClassRepository.deleteBySeatClassId(request.getSeatClassId());
+    }
+
+    /*
+     *  존재하는 공연 내 가격인지 확인한다.
+     *  존재 시 해당 값을 반환한다.
+     */
+    private SeatClass checkExist(SeatClassRequestDto request) {
         SeatClass seatClass =  seatClassRepository.findBySeatClassId(request.getSeatClassId());
         if (seatClass == null) {
             throw new CustomException(ExceptionCode.NOT_DATA);
         }
-
-        seatClassRepository.deleteBySeatClassId(request.getSeatClassId());
+        return seatClass;
     }
 }

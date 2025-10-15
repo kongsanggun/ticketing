@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import app.ticket.ticketing.common.exception.ExceptionCode;
 import app.ticket.ticketing.db.Ticket;
 
+import java.util.Date;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -76,6 +77,7 @@ public class TicketingService {
             if(savedSeat.isPresent()) {
                 throw new CustomException(ExceptionCode.SEAT_SELECTED);
             }
+            ticket.setCreatedAt(new Date());
             ticketRepository.saveAndFlush(ticket);
         });
     }
