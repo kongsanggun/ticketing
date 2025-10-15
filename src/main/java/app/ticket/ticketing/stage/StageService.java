@@ -2,17 +2,17 @@ package app.ticket.ticketing.stage;
 
 import app.ticket.ticketing.common.exception.CustomException;
 import app.ticket.ticketing.common.exception.ExceptionCode;
+import app.ticket.ticketing.concert.ConcertRequestDto;
 import app.ticket.ticketing.db.Stage;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 @RequiredArgsConstructor
 @Service
-@Transactional()
 public class StageService {
     private final StageRepository stageRepository;
 
@@ -32,8 +32,18 @@ public class StageService {
      */
     public StageResponseDto createStage(StageRequestDto request) {
         Stage stage = new Stage(request);
+        stage.setCreatedAt(new Date());
         stageRepository.saveAndFlush(stage);
         return new StageResponseDto(stage);
+    }
+
+    /*
+     *   공연 생성으로 인하여 공연 내 시간표를 추가한다.
+     */
+    public void createPriceByConcert(ConcertRequestDto request) {
+        Stage stage = new Stage(request);
+        stage.setCreatedAt(new Date());
+        stageRepository.saveAndFlush(stage);
     }
 
     /*
@@ -41,6 +51,7 @@ public class StageService {
      */
     public StageResponseDto updateStage(StageRequestDto request) {
         Stage stage = new Stage(request);
+        stage.setUpdatedAt(new Date());
         stageRepository.saveAndFlush(stage);
         return new StageResponseDto(stage);
     }
@@ -55,11 +66,11 @@ public class StageService {
         }
 
         // 2. 동일한 중복요청이 있는지 확인한다.
-        Stage price =  stageRepository.findByStageIdAndConcertId(request.getStageId(), request.getConcertId());
+        Stage price =  stageRepository.findByStageId(request.getStageId());
         if (price == null) {
             throw new CustomException(ExceptionCode.NOT_DATA);
         }
 
-        stageRepository.deleteByStageIdAndConcertId(request.getStageId(), request.getConcertId());
+        stageRepository.deleteByStageId(request.getStageId());
     }
 }

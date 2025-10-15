@@ -13,7 +13,7 @@ import java.util.Date;
 @Getter
 @Setter
 public class StageResponseDto {
-    private Long stageId;
+    private String stageId;
     private String concertId;
     private Date stageTime;
 

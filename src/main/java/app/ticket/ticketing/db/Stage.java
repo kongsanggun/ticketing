@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -14,11 +15,10 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "stage")
-public class Stage {
+public class Stage extends BaseDB {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="stageId")
-    private Long stageId;
+    private String stageId;
 
     @Column(unique = true, nullable = false, name="concertId")
     private String concertId;
@@ -27,11 +27,13 @@ public class Stage {
     private Date stageTime;
 
     public Stage(StageRequestDto request) {
+        this.stageId = request.getStageId();
         this.concertId = request.getConcertId();
         this.stageTime = request.getStageTime();
     }
 
     public Stage(ConcertRequestDto request) {
+        this.stageId = UUID.randomUUID().toString();
         this.concertId = request.getConcertId();
         this.stageTime = request.getStageTime();
     }
