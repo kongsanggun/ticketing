@@ -1,6 +1,6 @@
 package app.ticket.ticketing.db;
 
-import app.ticket.ticketing.price.PriceRequestDto;
+import app.ticket.ticketing.seatclass.SeatClassRequestDto;
 import app.ticket.ticketing.concert.ConcertRequestDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,17 +8,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "price")
-public class Price {
+@Table(name = "seat_class")
+public class SeatClass extends BaseDB {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="priceId")
-    private Long priceId;
+    @Column(name="seatClassId")
+    private String seatClassId;
 
     @Column(unique = true, nullable = false, name="concertId")
     private String concertId;
@@ -29,13 +30,15 @@ public class Price {
     @Column(nullable = false, name="price")
     private Integer price;
 
-    public Price(PriceRequestDto request) {
+    public SeatClass(SeatClassRequestDto request) {
+        this.seatClassId = request.getSeatClassId();
         this.concertId = request.getConcertId();
         this.name = request.getName();
         this.price = request.getPrice();
     }
 
-    public Price(ConcertRequestDto request) {
+    public SeatClass(ConcertRequestDto request) {
+        this.seatClassId = UUID.randomUUID().toString();
         this.concertId = request.getConcertId();
         this.name = request.getPriceName();
         this.price = request.getPrice();

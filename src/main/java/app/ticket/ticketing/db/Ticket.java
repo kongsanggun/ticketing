@@ -15,7 +15,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "ticket")
-public class Ticket {
+public class Ticket extends BaseDB {
     @Id
     @PrimaryKeyJoinColumn
     @Column(name="ticketId")
