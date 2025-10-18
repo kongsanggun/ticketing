@@ -63,5 +63,5 @@ jobs:
       - name: Build the Docker image
         run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
 
-      - name: Run docker-compose config check
-        run: docker compose config
+      - name: Run docker-compose
+        run: docker compose up -d
