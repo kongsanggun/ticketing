@@ -4,6 +4,7 @@ import app.ticket.ticketing.common.exception.CustomException;
 import app.ticket.ticketing.common.exception.ExceptionCode;
 import app.ticket.ticketing.concert.ConcertRequestDto;
 import app.ticket.ticketing.db.Stage;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
+@Transactional()
 public class StageService {
     private final StageRepository stageRepository;
 
