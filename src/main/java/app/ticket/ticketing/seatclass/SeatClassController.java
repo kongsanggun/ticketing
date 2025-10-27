@@ -18,12 +18,12 @@ public class SeatClassController {
 
     @PostMapping("/seat-class")
     @ResponseStatus(HttpStatus.CREATED)
-    public SeatClassResponseDto createSeatClass(SeatClassRequestDto request) {
+    public SeatClassResponseDto createSeatClass(@RequestBody final SeatClassRequestDto request) {
         return seatClassService.createSeatClass(request);
     }
 
     @PutMapping("/seat-class")
-    public SeatClassResponseDto updateSeatClass(SeatClassRequestDto request) {
+    public SeatClassResponseDto updateSeatClass(@RequestBody final SeatClassRequestDto request) {
         return seatClassService.updateSeatClass(request);
     }
 
