@@ -19,12 +19,12 @@ public class StageController {
 
     @PostMapping("/stage")
     @ResponseStatus(HttpStatus.CREATED)
-    public StageResponseDto createStage(StageRequestDto request) {
+    public StageResponseDto createStage(@RequestBody final StageRequestDto request) {
         return stageService.createStage(request);
     }
 
     @PutMapping("/stage")
-    public StageResponseDto updateStage(StageRequestDto request) {
+    public StageResponseDto updateStage(@RequestBody final StageRequestDto request) {
         return stageService.updateStage(request);
     }
 

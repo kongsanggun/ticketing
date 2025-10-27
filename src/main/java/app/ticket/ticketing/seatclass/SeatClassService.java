@@ -23,7 +23,7 @@ public class SeatClassService {
      */
     public List<SeatClass> readSeatClass(String concertId) {
         List<SeatClass> seatClass =  seatClassRepository.findByConcertId(concertId);
-        if (seatClass == null) {
+        if (seatClass == null || seatClass.isEmpty()) {
             throw new CustomException(ExceptionCode.NOT_DATA);
         }
         return seatClass;
@@ -65,7 +65,7 @@ public class SeatClassService {
      */
     public void deleteSeatClass(SeatClassRequestDto request) {
         // 1. 삭제 이후 남아있는 가격이 존재하지 않을 경우가 있는지 확인한다.
-        if (readSeatClass(request.getConcertId()).size() < 1) {
+        if (this.readSeatClass(request.getConcertId()).size() <= 1) {
             throw new CustomException(ExceptionCode.EMPTY_PRICE);
         }
 

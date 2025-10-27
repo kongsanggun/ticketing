@@ -23,7 +23,7 @@ public class StageService {
      */
     public List<Stage> readStages(String concertId) {
         List<Stage> stage =  stageRepository.findByConcertId(concertId);
-        if (stage == null) {
+        if (stage == null || stage.isEmpty()) {
             throw new CustomException(ExceptionCode.NOT_DATA);
         }
         return stage;
@@ -64,7 +64,7 @@ public class StageService {
      */
     public void deleteStage(StageRequestDto request) {
         // 1. 삭제 이후 남아있는 가격이 존재하지 않을 경우가 있는지 확인한다.
-        if (readStages(request.getConcertId()).size() < 1) {
+        if (readStages(request.getConcertId()).size() <= 1) {
             throw new CustomException(ExceptionCode.EMPTY_STAGE);
         }
 
