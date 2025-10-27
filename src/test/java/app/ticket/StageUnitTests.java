@@ -1,5 +1,6 @@
 package app.ticket;
 
+import app.ticket.ticketing.db.SeatClass;
 import app.ticket.ticketing.db.Stage;
 import app.ticket.ticketing.stage.StageRepository;
 import app.ticket.ticketing.stage.StageRequestDto;
@@ -7,121 +8,179 @@ import app.ticket.ticketing.stage.StageResponseDto;
 import app.ticket.ticketing.stage.StageService;
 import io.hypersistence.tsid.TSID;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.orm.jpa.JpaSystemException;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.*;
 
 @SpringBootTest
 @Slf4j
 public class StageUnitTests {
 
     /*
-        StageService 내 함수들을 Test한다.
+        Stage 객체를 Test한다.
      */
-
-    @Autowired
-    private StageService stageService;
 
     @Autowired
     private StageRepository stageRepository;
 
-    StageRequestDto setRequestData(String concertId) {
+    private List<Stage> stages;
+
+    StageRequestDto setRequestData() {
         StageRequestDto request = new StageRequestDto();
 
-        request.setConcertId(concertId);
+        request.setConcertId("test");
         request.setStageTime(new Date());
 
         return request;
     }
 
-    @DisplayName("공연 내 시간표 생성 테스트")
+    @BeforeEach()
+    void setData() {
+        this.stages = new ArrayList<>();
+        for(int i = 0; i < 5; i++) {
+            Stage newData = new Stage(setRequestData());
+            newData.setCreatedAt(new Date());
+            this.stages.add(newData);
+            stageRepository.saveAndFlush(newData);
+        }
+    }
+
+    @DisplayName("stage - 생성 테스트")
     @Test
     void createStageTest() {
         // given
-        StageRequestDto request = setRequestData("test");
+        Stage newData = new Stage(setRequestData());
+        newData.setCreatedAt(new Date());
 
         // when
-        StageResponseDto result =  stageService.createStage(request);
+        Stage result = stageRepository.saveAndFlush(newData);
 
         // then
         assertThat(result.getStageId().length(), is(13));
+        assertThat(result.getStageId(), is(newData.getStageId()));
         assertThat(result.getConcertId(), is("test"));
+
+        stageRepository.delete(newData);
     }
 
-    @DisplayName("공연 내 시간표 조회 테스트")
+    @DisplayName("stage - 잘못 된 값으로 생성된 테스트")
+    @Test
+    void createWrongStageTest() {
+        // given
+        Stage notCreatedAtData = new Stage(setRequestData());
+        Stage notIdData = new Stage();
+
+        // when
+
+        // then
+        Assertions.assertThrows(DataIntegrityViolationException.class, () -> {
+            stageRepository.saveAndFlush(notCreatedAtData);
+        });
+        Assertions.assertThrows(JpaSystemException.class, () -> {
+            stageRepository.saveAndFlush(notIdData);
+        });
+    }
+
+    @DisplayName("stage - 단건 조회 테스트")
     @Test
     void readStageTest() {
         // given
-        StageRequestDto request = setRequestData("test");
-        stageService.createStage(request);
+        List<Stage> testDatas =  this.stages;
+        Stage testData =  testDatas.get(0);
 
         // when
-        List<Stage> result =  stageService.readStages("test");
+        Stage result = stageRepository.findByStageId(testData.getStageId());
 
         // then
-        assertThat(result.size(), not(0));
-        assertThat(result.get(0).getStageId().length(), is(13));
+        assertThat(result.getStageId().length(), is(13));
+        assertThat(result.getStageId(), is(testData.getStageId()));
     }
 
-    @DisplayName("공연 내 시간표 수정 테스트")
+    @DisplayName("stage - 다건 조회 테스트")
+    @Test
+    void readStagesTest() {
+        // given
+
+        // when
+        List<Stage> result =  stageRepository.findByConcertId("test");
+
+        // then
+        assertThat(result.size(), is(5));
+        for(Stage item : result) {
+            assertThat(item.getStageId().length(), is(13));
+        }
+    }
+
+    @DisplayName("stage - 존재하지 않는 공연 조회 테스트")
+    @Test
+    void readWrongStageTest() {
+        // given
+        Stage testData = new Stage();
+
+        // when
+        List<Stage> resultList = stageRepository.findByConcertId(testData.getConcertId());
+        Stage result = stageRepository.findByStageId(testData.getStageId());
+
+        // then
+        Assertions.assertThrows(NullPointerException.class, () -> {
+            assertThat(result.getStageId().length(), is(13));
+            assertThat(result.getStageId(), is(testData.getStageId()));
+        });
+
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
+            assertThat(resultList.get(0).getStageId().length(), is(13));
+            assertThat(resultList.get(0).getStageId(), is(testData.getStageId()));
+        });
+    }
+
+    @DisplayName("stage - 수정 테스트")
     @Test
     void updateStageTest() {
         // given
-        List<Stage> readSeatClass =  stageService.readStages("test");
-        String stageId = readSeatClass.get(0).getStageId();
+        List<Stage> testDatas =  this.stages;
+        Stage testData = testDatas.get(0);
 
         // when
-        StageRequestDto request = new StageRequestDto();
-        request.setStageId(stageId);
-        request.setStageTime(new Date());
+        Date updateDate = new Date();
+        testData.setStageTime(updateDate);
+        testData.setUpdatedAt(updateDate);
 
-        StageResponseDto result =  stageService.updateStage(request);
+        Stage result =  stageRepository.saveAndFlush(testData);
 
         // then
-        assertThat(result.getStageId(), is(stageId));
+        assertThat(result.getUpdatedAt(), is(notNullValue()));
     }
 
-    @DisplayName("공연 내 시간표 삭제 테스트")
+    @DisplayName("stage - 삭제 테스트")
     @Test
     void deleteStageTest() {
         // given
-        StageRequestDto dataDto = setRequestData("test");
-        stageService.createStage(dataDto);
-        stageService.createStage(dataDto);
-
-        List<Stage> beforeDelete =  stageService.readStages("test");
-        String stageId = beforeDelete.get(0).getStageId();
+        List<Stage> testDatas =  this.stages;
+        Stage testData = testDatas.get(0);
 
         // when
-        StageRequestDto request = new StageRequestDto();
-        request.setConcertId("test");
-        request.setStageId(stageId);
-
-        stageService.deleteStage(request);
-        List<Stage> afterDelete =  stageService.readStages("test");
+        stageRepository.delete(testData);
+        Stage result = stageRepository.findByStageId(testData.getStageId());
 
         // then
-        assertThat(beforeDelete.size(), not(afterDelete.size()));
+        Assertions.assertThrows(NullPointerException.class, () -> {
+            result.getStageId();
+        });
     }
 
-    @DisplayName("존재하지 않은 공연 내 시간표 테스트")
-    @Test
-    void notStageDataTest() {
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
-            // findByConcertId 같은 경우 값이 없을 경우 size가 0으로 반환
-            stageRepository.findByConcertId("wrongId").get(0);
-        });
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            stageRepository.findByStageId("wrongId").getStageId();
-        });
+    @AfterEach()
+    void deleteData() {
+        for(Stage item : stageRepository.findByConcertId("test")) {
+            stageRepository.delete(item);
+        }
     }
 }
