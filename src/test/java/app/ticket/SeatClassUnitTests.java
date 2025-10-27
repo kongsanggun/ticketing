@@ -3,128 +3,185 @@ package app.ticket;
 import app.ticket.ticketing.db.SeatClass;
 import app.ticket.ticketing.seatclass.SeatClassRepository;
 import app.ticket.ticketing.seatclass.SeatClassRequestDto;
-import app.ticket.ticketing.seatclass.SeatClassResponseDto;
-import app.ticket.ticketing.seatclass.SeatClassService;
-import io.hypersistence.tsid.TSID;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.orm.jpa.JpaSystemException;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
 
 @SpringBootTest
 @Slf4j
 public class SeatClassUnitTests {
 
     /*
-        SeatClassService 내 함수들을 Test한다.
+        SeatClass 객체를 Test한다.
      */
-
-    @Autowired
-    private SeatClassService seatClassService;
 
     @Autowired
     private SeatClassRepository seatClassRepository;
 
-    SeatClassRequestDto setRequestData(String concertId) {
+    private List<SeatClass> seatClass;
+
+    SeatClassRequestDto setRequestData() {
         SeatClassRequestDto request = new SeatClassRequestDto();
 
-        request.setConcertId(concertId);
+        request.setConcertId("test");
         request.setName("A석");
-        request.setPrice(29800);
+        request.setPrice((int) (Math.random() * 30000));
 
         return request;
     }
 
-    @DisplayName("공연 내 가격 생성 테스트")
+    @BeforeEach()
+    void setData() {
+        this.seatClass = new ArrayList<>();
+        for(int i = 0; i < 5; i++) {
+            SeatClass newData = new SeatClass(setRequestData());
+            newData.setCreatedAt(new Date());
+            this.seatClass.add(newData);
+            seatClassRepository.saveAndFlush(newData);
+        }
+    }
+
+    @DisplayName("seatClass - 생성 테스트")
     @Test
     void createSeatClassTest() {
         // given
-        SeatClassRequestDto request = setRequestData("test");
+        SeatClass newData = new SeatClass(setRequestData());
+        newData.setCreatedAt(new Date());
 
         // when
-        SeatClassResponseDto result =  seatClassService.createSeatClass(request);
+        SeatClass result = seatClassRepository.saveAndFlush(newData);
 
         // then
         assertThat(result.getSeatClassId().length(), is(13));
+        assertThat(result.getSeatClassId(), is(newData.getSeatClassId()));
         assertThat(result.getConcertId(), is("test"));
+
+        seatClassRepository.delete(newData);
     }
 
-    @DisplayName("공연 내 가격 조회 테스트")
+    @DisplayName("seatClass - 잘못 된 값으로 생성된 테스트")
+    @Test
+    void createWrongSeatClassTest() {
+        // given
+        SeatClass notCreatedAtData = new SeatClass(setRequestData());
+        SeatClass notIdData = new SeatClass();
+
+        // when
+
+        // then
+        Assertions.assertThrows(DataIntegrityViolationException.class, () -> {
+            seatClassRepository.saveAndFlush(notCreatedAtData);
+        });
+        Assertions.assertThrows(JpaSystemException.class, () -> {
+            seatClassRepository.saveAndFlush(notIdData);
+        });
+    }
+
+    @DisplayName("seatClass - 단건 조회 테스트")
     @Test
     void readSeatClassTest() {
         // given
-        SeatClassRequestDto request = setRequestData("test");
-        seatClassService.createSeatClass(request);
+        List<SeatClass> testDatas =  this.seatClass;
+        SeatClass testData =  testDatas.get(0);
 
         // when
-        List<SeatClass> result =  seatClassService.readSeatClass("test");
+        SeatClass result = seatClassRepository.findBySeatClassId(testData.getSeatClassId());
 
         // then
-        assertThat(result.size(), not(0));
-        assertThat(result.get(0).getSeatClassId().length(), is(13));
+        assertThat(result.getSeatClassId().length(), is(13));
+        assertThat(result.getSeatClassId(), is(testData.getSeatClassId()));
     }
 
-    @DisplayName("공연 내 가격 수정 테스트")
+    @DisplayName("seatClass - 다건 조회 테스트")
+    @Test
+    void readSeatClassesTest() {
+        // given
+
+        // when
+        List<SeatClass> result =  seatClassRepository.findByConcertId("test");
+
+        // then
+        assertThat(result.size(), is(5));
+        for(SeatClass item : result) {
+            assertThat(item.getSeatClassId().length(), is(13));
+        }
+    }
+
+    @DisplayName("seatClass - 존재하지 않는 공연 조회 테스트")
+    @Test
+    void readWrongSeatClassTest() {
+        // given
+        SeatClass testData = new SeatClass();
+
+        // when
+        List<SeatClass> resultList = seatClassRepository.findByConcertId(testData.getConcertId());
+        SeatClass result = seatClassRepository.findBySeatClassId(testData.getSeatClassId());
+
+        // then
+        Assertions.assertThrows(NullPointerException.class, () -> {
+            assertThat(result.getSeatClassId().length(), is(13));
+            assertThat(result.getSeatClassId(), is(testData.getSeatClassId()));
+        });
+
+        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
+            assertThat(resultList.get(0).getSeatClassId().length(), is(13));
+            assertThat(resultList.get(0).getSeatClassId(), is(testData.getSeatClassId()));
+        });
+    }
+
+    @DisplayName("seatClass - 수정 테스트")
     @Test
     void updateSeatClassTest() {
         // given
-        List<SeatClass> readSeatClass =  seatClassService.readSeatClass("test");
-        String seatClassId = readSeatClass.get(0).getSeatClassId();
+        List<SeatClass> testDatas =  this.seatClass;
+        SeatClass testData =  testDatas.get(0);
 
         // when
-        SeatClassRequestDto request = new SeatClassRequestDto();
-        request.setSeatClassId(seatClassId);
-        request.setName("testUpdated");
-        request.setPrice(10000);
+        testData.setName("testUpdated");
+        testData.setPrice(10000);
+        testData.setUpdatedAt(new Date());
 
-        SeatClassResponseDto result =  seatClassService.updateSeatClass(request);
+        SeatClass result =  seatClassRepository.saveAndFlush(testData);
 
         // then
-        assertThat(result.getSeatClassId(), is(seatClassId));
+        assertThat(result.getSeatClassId(), is(testData.getSeatClassId()));
         assertThat(result.getPrice(), is(10000));
         assertThat(result.getName(), is("testUpdated"));
+        assertThat(result.getUpdatedAt(), is(notNullValue()));
     }
 
-    @DisplayName("공연 내 가격 삭제 테스트")
+    @DisplayName("seatClass - 삭제 테스트")
     @Test
     void deleteSeatClassTest() {
         // given
-        SeatClassRequestDto dataDto = setRequestData("test");
-        seatClassService.createSeatClass(dataDto);
-        seatClassService.createSeatClass(dataDto);
-
-        List<SeatClass> beforeDelete =  seatClassService.readSeatClass("test");
-        String seatClassId = beforeDelete.get(0).getSeatClassId();
+        List<SeatClass> testDatas =  this.seatClass;
+        SeatClass testData =  testDatas.get(0);
 
         // when
-        SeatClassRequestDto request = new SeatClassRequestDto();
-        request.setConcertId("test");
-        request.setSeatClassId(seatClassId);
-
-        seatClassService.deleteSeatClass(request);
-        List<SeatClass> afterDelete =  seatClassService.readSeatClass("test");
+        seatClassRepository.delete(testData);
+        SeatClass result = seatClassRepository.findBySeatClassId(testData.getSeatClassId());
 
         // then
-        assertThat(beforeDelete.size(), not(afterDelete.size()));
+        Assertions.assertThrows(NullPointerException.class, () -> {
+            result.getSeatClassId();
+        });
     }
 
-    @DisplayName("존재하지 않은 공연 내 가격 테스트")
-    @Test
-    void notSeatClassDataTest() {
-        Assertions.assertThrows(IndexOutOfBoundsException.class, () -> {
-            // findByConcertId 같은 경우 값이 없을 경우 size가 0으로 반환
-            seatClassRepository.findByConcertId("wrongId").get(0);
-        });
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            seatClassRepository.findBySeatClassId("wrongId").getSeatClassId();
-        });
+    @AfterEach()
+    void deleteData() {
+        for(SeatClass item : seatClassRepository.findByConcertId("test")) {
+            seatClassRepository.delete(item);
+        }
     }
 }
