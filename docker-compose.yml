@@ -42,6 +42,10 @@ services:
     restart: always
     env_file: # 환경변수 파일
       - ./.env
+    environment:
+      spring.datasource.url: ${MARIADB_URL}
+      spring.jpa.hibernate.ddl-auto: "none"
+      spring.redis.host: ${REDIS_URL}
     ports:
       - "3000:3000"
     depends_on:
