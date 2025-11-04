@@ -9,7 +9,7 @@ COPY ../../.. .
 RUN gradle clean bootJar --no-daemon
 
 # 2단계: 실행
-FROM openjdk:17-jdk-slim
+FROM eclipse-temurin:17-jdk-jammy
 WORKDIR /app
 
 # 빌드된 JAR 복사sudo systemctl status docker
