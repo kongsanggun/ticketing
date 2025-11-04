@@ -54,29 +54,4 @@ jobs:
       - name: Run Docker Compose
         run: |
           docker compose down
-          docker compose up -d
-
-      - name : Wait for app to be ready
-        run : |
-          for i in {1..30}; do
-            if curl -fs http://127.0.0.1:3000/actuator/health >/dev/null; then
-              echo "App is ready!"
-              break
-            fi
-            echo "Waiting for app... ($i)"
-            sleep 5
-          done
-
-      - name : Build with Gradle
-        run : ./gradlew clean build test
-
-      - name: Debug containers (on failure)
-        if: failure()
-        run: |
-          echo "🧩 Container Status"
-          docker ps -a
-          echo ""
-          docker compose ps
-          echo ""
-          echo "📜 Docker Logs"
-          docker compose logs server --tail=1000
+          docker compose up --build --exit-code-from server-test

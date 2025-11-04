@@ -42,16 +42,30 @@ services:
     restart: always
     env_file: # 환경변수 파일
       - ./.env
-    environment:
-      spring.datasource.url: ${MARIADB_URL}
-      spring.jpa.hibernate.ddl-auto: "none"
-      spring.redis.host: ${REDIS_URL}
     ports:
       - "3000:3000"
+    healthcheck:
+      test: [ "CMD", "curl", "-fs", "http://server:3000/actuator/health"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
     depends_on:
       db :
         condition: service_healthy
       redis :
         condition: service_healthy
-    networks:
-      - default
+
+  server-test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: server-test
+    env_file: # 환경변수 파일
+      - ./.env
+    environment:
+      spring.jpa.hibernate.ddl-auto: none
+    depends_on:
+      server:
+        condition: service_healthy
+    command: ["./gradlew", "clean", "test"]
