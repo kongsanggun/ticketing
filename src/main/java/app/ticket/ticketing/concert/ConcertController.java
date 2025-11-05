@@ -3,6 +3,7 @@ package app.ticket.ticketing.concert;
 import app.ticket.ticketing.db.Concert;
 import app.ticket.ticketing.seatclass.SeatClassService;
 import app.ticket.ticketing.stage.StageService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ public class ConcertController {
 
     @PostMapping("/concert")
     @ResponseStatus(HttpStatus.CREATED)
-    public ConcertResponseDto createConcert(@RequestBody final ConcertRequestDto request) {
+    public ConcertResponseDto createConcert(@Valid @RequestBody final ConcertRequestDto request) {
         ConcertResponseDto result =  concertService.createConcert(request);
 
         request.setConcertId(result.getConcertId());

@@ -1,5 +1,6 @@
 package app.ticket.ticketing.stage;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,5 +15,6 @@ import java.util.Date;
 public class StageRequestDto {
     private String stageId;
     private String concertId;
+    @NotNull
     private Date stageTime;
 }

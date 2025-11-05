@@ -1,6 +1,7 @@
 package app.ticket.ticketing.seatclass;
 
 import app.ticket.ticketing.db.SeatClass;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +19,7 @@ public class SeatClassController {
 
     @PostMapping("/seat-class")
     @ResponseStatus(HttpStatus.CREATED)
-    public SeatClassResponseDto createSeatClass(@RequestBody final SeatClassRequestDto request) {
+    public SeatClassResponseDto createSeatClass(@Valid @RequestBody final SeatClassRequestDto request) {
         return seatClassService.createSeatClass(request);
     }
 

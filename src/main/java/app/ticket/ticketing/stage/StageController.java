@@ -1,6 +1,7 @@
 package app.ticket.ticketing.stage;
 
 import app.ticket.ticketing.db.Stage;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ public class StageController {
 
     @PostMapping("/stage")
     @ResponseStatus(HttpStatus.CREATED)
-    public StageResponseDto createStage(@RequestBody final StageRequestDto request) {
+    public StageResponseDto createStage(@Valid @RequestBody final StageRequestDto request) {
         return stageService.createStage(request);
     }
 
