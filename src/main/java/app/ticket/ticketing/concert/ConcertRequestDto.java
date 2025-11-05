@@ -1,5 +1,6 @@
 package app.ticket.ticketing.concert;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,7 +17,9 @@ public class ConcertRequestDto {
     private String name;
     private String detail;
     private Date bookStartTime;
+    @NotNull
     private Date stageTime;
     private String priceName;
+    @NotNull
     private Integer price;
 }
