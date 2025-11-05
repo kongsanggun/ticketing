@@ -4,15 +4,13 @@ import app.ticket.ticketing.db.SeatClass;
 import app.ticket.ticketing.db.Stage;
 import app.ticket.ticketing.stage.StageRepository;
 import app.ticket.ticketing.stage.StageRequestDto;
-import app.ticket.ticketing.stage.StageResponseDto;
-import app.ticket.ticketing.stage.StageService;
-import io.hypersistence.tsid.TSID;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,6 +21,7 @@ import static org.hamcrest.Matchers.*;
 
 @SpringBootTest
 @Slf4j
+@ContextConfiguration(classes = StartApplication.class)
 public class StageUnitTests {
 
     /*
@@ -50,8 +49,8 @@ public class StageUnitTests {
             Stage newData = new Stage(setRequestData());
             newData.setCreatedAt(new Date());
             this.stages.add(newData);
-            stageRepository.saveAndFlush(newData);
         }
+        stageRepository.saveAllAndFlush(this.stages);
     }
 
     @DisplayName("stage - 생성 테스트")
