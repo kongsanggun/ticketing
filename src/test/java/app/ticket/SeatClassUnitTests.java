@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,6 +21,7 @@ import static org.hamcrest.Matchers.notNullValue;
 
 @SpringBootTest
 @Slf4j
+@ContextConfiguration(classes = StartApplication.class)
 public class SeatClassUnitTests {
 
     /*
@@ -32,10 +34,10 @@ public class SeatClassUnitTests {
     private List<SeatClass> seatClass;
 
     SeatClassRequestDto setRequestData() {
+        char seatChar = (char)(Math.round((Math.random() * 14) + 65));
         SeatClassRequestDto request = new SeatClassRequestDto();
-
         request.setConcertId("test");
-        request.setName("A석");
+        request.setName(seatChar + "석");
         request.setPrice((int) (Math.random() * 30000));
 
         return request;
@@ -48,8 +50,8 @@ public class SeatClassUnitTests {
             SeatClass newData = new SeatClass(setRequestData());
             newData.setCreatedAt(new Date());
             this.seatClass.add(newData);
-            seatClassRepository.saveAndFlush(newData);
         }
+        seatClassRepository.saveAllAndFlush(this.seatClass);
     }
 
     @DisplayName("seatClass - 생성 테스트")

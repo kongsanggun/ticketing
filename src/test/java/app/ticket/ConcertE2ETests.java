@@ -10,6 +10,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Date;
 
@@ -17,6 +18,7 @@ import static org.hamcrest.Matchers.is;
 
 @SpringBootTest
 @Slf4j
+@ContextConfiguration(classes = StartApplication.class)
 public class ConcertE2ETests {
 
     /*
@@ -116,7 +118,7 @@ public class ConcertE2ETests {
                 .when()
                     .post("/concert")
                 .then()
-                    .statusCode(500);
+                    .statusCode(400);
     }
 
     @DisplayName("[post] : /concert : 실패 2 - 중복된 값을 요청할 때")

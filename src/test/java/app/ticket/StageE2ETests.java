@@ -8,13 +8,11 @@ import app.ticket.ticketing.stage.StageResponseDto;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Date;
 
@@ -22,6 +20,7 @@ import static org.hamcrest.Matchers.is;
 
 @SpringBootTest
 @Slf4j
+@ContextConfiguration(classes = StartApplication.class)
 public class StageE2ETests {
 
     /*
@@ -112,7 +111,7 @@ public class StageE2ETests {
                 .when()
                     .post("/stage")
                 .then()
-                    .statusCode(500);
+                    .statusCode(400);
     }
 
     @DisplayName("[put] : /stage : 성공")

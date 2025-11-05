@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Date;
 import java.util.List;
@@ -18,6 +19,7 @@ import static org.hamcrest.Matchers.*;
 
 @SpringBootTest
 @Slf4j
+@ContextConfiguration(classes = StartApplication.class)
 public class ConcertUnitTests {
 
     /*

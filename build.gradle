@@ -22,6 +22,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.redisson:redisson-spring-boot-starter:3.18.0'
 	implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.7.6'
 	testImplementation("junit:junit:4.13.2")
@@ -39,4 +40,31 @@ dependencies {
 test {
 	useJUnitPlatform()
 	jvmArgs "-Xshare:off"
+
+	testLogging {
+		events "passed", "failed", "skipped"
+		showStandardStreams = true
+	}
+
+	afterSuite { desc, result ->
+		if (!desc.parent) { // 전체 테스트 요약
+			def total = result.testCount
+			def passed = result.successfulTestCount
+			def failed = result.failedTestCount
+			def skipped = result.skippedTestCount
+			def rate = total > 0 ? (passed * 100 / total) : 0
+
+			println "==============================="
+			println " Test Summary"
+			println "-------------------------------"
+			println " Total:   $total"
+			println " Passed:  $passed"
+			println " Failed:  $failed"
+			println " Skipped: $skipped"
+			println "-------------------------------"
+			println " Pass rate: ${rate}%"
+			println "==============================="
+		}
+	}
+
 }
