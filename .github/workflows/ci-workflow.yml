@@ -41,13 +41,6 @@ jobs:
           echo API_KEY="$ENV_API_KEY" >> .env
           cat .env
 
-      - name: Make application.properties
-        run: |
-          cd ./src/main/resources
-          touch ./application.properties
-          echo "${{secrets.APPLICATION_PROPERTEIS}}" >> ./application.properties
-        shell: bash
-
       - name: Build the Docker image
         run: docker build . --file Dockerfile --tag my-image:latest
 
