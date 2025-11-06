@@ -48,3 +48,21 @@ jobs:
         run: |
           docker compose down
           docker compose up --build --exit-code-from server-test
+
+      - name: Copy JaCoCo report to host
+        run: |
+          mkdir -p reports
+          docker compose cp server-test:/app/build/reports/jacoco/test/jacocoTestReport.xml ./reports/
+          docker compose cp server-test:/app/build/reports/jacoco/test/html ./reports/html
+
+      - name: Report test Coverage
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.6.1
+        with:
+          title: 📝 Test Coverage Report
+          paths: reports
+          token: ${{ secrets.GITHUB_TOKEN }}
+          min-coverage-overall: 95
+          min-coverage-changed-files: 95
+          update-comment: true
+          debug-mode: true

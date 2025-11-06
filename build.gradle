@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.5.4'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'jacoco'
 }
 
 group = 'ticket'
@@ -16,7 +17,6 @@ java {
 repositories {
 	mavenCentral()
 }
-
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -37,9 +37,16 @@ dependencies {
 	testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
+jacoco {
+	toolVersion = "0.8.12"
+}
+
 test {
 	useJUnitPlatform()
 	jvmArgs "-Xshare:off"
+
+	finalizedBy jacocoTestReport
+	ignoreFailures = true
 
 	testLogging {
 		events "passed", "failed", "skipped"
@@ -66,5 +73,24 @@ test {
 			println "==============================="
 		}
 	}
+}
 
+jacocoTestReport {
+	dependsOn test
+
+	reports {
+		csv.required = true
+		html.required = true
+		xml.required = true
+	}
+}
+
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			limit {
+				minimum = 0.30
+			}
+		}
+	}
 }
