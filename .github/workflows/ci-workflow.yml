@@ -13,6 +13,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   build:
@@ -56,11 +57,10 @@ jobs:
           docker compose cp server-test:/app/build/reports/jacoco/test/html ./reports/html
 
       - name: Report test Coverage
-        id: jacoco
         uses: madrapps/jacoco-report@v1.6.1
         with:
           title: 📝 Test Coverage Report
-          paths: reports
+          paths: reports/jacocoTestReport.xml
           token: ${{ secrets.GITHUB_TOKEN }}
           min-coverage-overall: 95
           min-coverage-changed-files: 95
