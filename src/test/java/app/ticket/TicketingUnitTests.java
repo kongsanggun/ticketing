@@ -1,8 +1,9 @@
 package app.ticket;
 
-import app.ticket.ticketing.TicketingRequestDto;
+import app.ticket.ticketing.ticketing.TicketingRequestDto;
 import app.ticket.ticketing.db.Ticket;
-import app.ticket.ticketing.db.TicketRepository;
+import app.ticket.ticketing.ticketing.TicketRepository;
+import io.hypersistence.tsid.TSID;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
 
+import java.util.Date;
 import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -25,13 +27,14 @@ public class TicketingUnitTests {
     private Ticket ticket;
 
     TicketingRequestDto setRequestData() {
-        TicketingRequestDto request = new TicketingRequestDto();
+        final String seatNumber = String.valueOf(Math.round((Math.random() * 40) + 1));
+        final String seat = String.valueOf((char)(Math.round((Math.random() * 14) + 65))) + seatNumber;
 
-        // TSID 라이브러리 dev에 머지되면 수정 예정
-        request.setTicketId(UUID.randomUUID().toString().substring(0, 13));
-        request.setUserId("test");
+        TicketingRequestDto request = new TicketingRequestDto();
+        request.setTicketId(TSID.fast().toString());
+        request.setUserId(UUID.randomUUID().toString().substring(0, 13));
         request.setShowId("test");
-        request.setSeat("T" + Math.round(Math.random() * 100));
+        request.setSeat(seat);
 
         return request;
     }
@@ -39,8 +42,7 @@ public class TicketingUnitTests {
     @BeforeEach()
     void setData() {
         this.ticket = new Ticket(setRequestData());
-        // dev에 머지되면 수정 예정
-        //this.ticket.setCreatedAt(new Date());
+        this.ticket.setCreatedAt(new Date());
 
         ticketRepository.saveAndFlush(ticket);
     }
@@ -50,15 +52,14 @@ public class TicketingUnitTests {
     void createTicketTest() {
         // given
         Ticket newData = new Ticket(setRequestData());
-        // dev에 머지되면 수정 예정
-        // newData.setCreatedAt(new Date());
+        newData.setCreatedAt(new Date());
 
         // when
         Ticket result = ticketRepository.saveAndFlush(newData);
 
         // then
         assertThat(result.getTicketId().length(), is(13));
-        assertThat(result.getUserId(), is("test"));
+        assertThat(result.getUserId(), is(newData.getUserId()));
 
         ticketRepository.delete(newData);
     }
@@ -67,17 +68,15 @@ public class TicketingUnitTests {
     @Test
     void createWrongTicketTest() {
         // given
-        // Ticket notCreatedAtData = new Ticket(setRequestData());
+        Ticket notCreatedAtData = new Ticket(setRequestData());
         Ticket notIdData = new Ticket();
 
         // when
 
         // then
-        /*
         Assertions.assertThrows(DataIntegrityViolationException.class, () -> {
-            concertRepository.saveAndFlush(notCreatedAtData);
+            ticketRepository.saveAndFlush(notCreatedAtData);
         });
-         */
         Assertions.assertThrows(JpaSystemException.class, () -> {
             ticketRepository.saveAndFlush(notIdData);
         });
