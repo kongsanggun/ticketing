@@ -1,5 +1,6 @@
-package app.ticket;
+package app.ticket.SeatClass;
 
+import app.ticket.StartApplication;
 import app.ticket.ticketing.common.exception.ExceptionCode;
 import app.ticket.ticketing.seatclass.*;
 import io.restassured.RestAssured;

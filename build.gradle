@@ -53,6 +53,16 @@ test {
 		showStandardStreams = true
 	}
 
+	jacoco {
+		excludes += [
+				'app/ticket/StartApplication.class',
+				'app/ticket/ticketing/ticketing/*',
+				'app/ticket/ticketing/db/Ticket.class',
+				'app/ticket/ticketing/common/*',
+				'app/ticket/ticketing/redis/*'
+		]
+	}
+
 	afterSuite { desc, result ->
 		if (!desc.parent) { // 전체 테스트 요약
 			def total = result.testCount
@@ -83,13 +93,24 @@ jacocoTestReport {
 		html.required = true
 		xml.required = true
 	}
+
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it,
+					exclude: ['app/ticket/StartApplication.class',
+							  'app/ticket/ticketing/ticketing/*',
+							  'app/ticket/ticketing/db/Ticket.class',
+							  'app/ticket/ticketing/common/*',
+							  'app/ticket/ticketing/redis/*'])
+		}))
+	}
 }
 
 jacocoTestCoverageVerification {
 	violationRules {
 		rule {
 			limit {
-				minimum = 0.30
+				minimum = 0.80
 			}
 		}
 	}

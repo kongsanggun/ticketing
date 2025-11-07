@@ -1,5 +1,6 @@
-package app.ticket;
+package app.ticket.Stage;
 
+import app.ticket.StartApplication;
 import app.ticket.ticketing.common.exception.ExceptionCode;
 import app.ticket.ticketing.stage.StageController;
 import app.ticket.ticketing.stage.StageRepository;

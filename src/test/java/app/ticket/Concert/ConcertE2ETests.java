@@ -1,5 +1,6 @@
-package app.ticket;
+package app.ticket.Concert;
 
+import app.ticket.StartApplication;
 import app.ticket.ticketing.concert.*;
 import app.ticket.ticketing.seatclass.SeatClassRepository;
 import app.ticket.ticketing.stage.StageRepository;
