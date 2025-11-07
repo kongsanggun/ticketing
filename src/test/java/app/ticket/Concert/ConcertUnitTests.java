@@ -1,5 +1,6 @@
-package app.ticket;
+package app.ticket.Concert;
 
+import app.ticket.StartApplication;
 import app.ticket.ticketing.concert.ConcertRepository;
 import app.ticket.ticketing.concert.ConcertRequestDto;
 import app.ticket.ticketing.db.Concert;

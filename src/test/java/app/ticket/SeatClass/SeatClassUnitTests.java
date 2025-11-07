@@ -1,5 +1,6 @@
-package app.ticket;
+package app.ticket.SeatClass;
 
+import app.ticket.StartApplication;
 import app.ticket.ticketing.db.SeatClass;
 import app.ticket.ticketing.seatclass.SeatClassRepository;
 import app.ticket.ticketing.seatclass.SeatClassRequestDto;

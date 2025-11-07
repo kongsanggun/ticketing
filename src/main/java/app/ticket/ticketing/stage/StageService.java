@@ -23,7 +23,7 @@ public class StageService {
      */
     public List<Stage> readStages(String concertId) {
         List<Stage> stage =  stageRepository.findByConcertId(concertId);
-        if (stage == null || stage.isEmpty()) {
+        if (stage.isEmpty()) {
             throw new CustomException(ExceptionCode.NOT_DATA);
         }
         return stage;

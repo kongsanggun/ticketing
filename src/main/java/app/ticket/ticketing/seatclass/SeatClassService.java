@@ -23,7 +23,7 @@ public class SeatClassService {
      */
     public List<SeatClass> readSeatClass(String concertId) {
         List<SeatClass> seatClass =  seatClassRepository.findByConcertId(concertId);
-        if (seatClass == null || seatClass.isEmpty()) {
+        if (seatClass.isEmpty()) {
             throw new CustomException(ExceptionCode.NOT_DATA);
         }
         return seatClass;

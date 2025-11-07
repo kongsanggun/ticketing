@@ -1,9 +1,8 @@
-package app.ticket;
+package app.ticket.Stage;
 
-import app.ticket.ticketing.db.SeatClass;
+import app.ticket.StartApplication;
 import app.ticket.ticketing.db.Stage;
-import app.ticket.ticketing.stage.StageRepository;
-import app.ticket.ticketing.stage.StageRequestDto;
+import app.ticket.ticketing.stage.*;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
