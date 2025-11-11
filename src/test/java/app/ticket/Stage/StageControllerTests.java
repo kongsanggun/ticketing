@@ -14,8 +14,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 
 @SpringBootTest
 @Slf4j
@@ -76,8 +75,6 @@ public class StageControllerTests {
         // then
         assertThat(result.getStageId().length(), is(13));
         assertThat(result.getConcertId(), is("test"));
-
-        stageRepository.delete(newData);
     }
 
     @DisplayName("stage - 조회 컨트롤러 테스트")
@@ -122,9 +119,7 @@ public class StageControllerTests {
         Stage result = stageRepository.findByStageId(testData.getStageId());
 
         // then
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            result.getStageId();
-        });
+        assertThat(result, is(nullValue()));
     }
 
     @AfterEach()

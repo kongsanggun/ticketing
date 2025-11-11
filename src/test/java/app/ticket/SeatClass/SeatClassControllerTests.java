@@ -2,19 +2,14 @@ package app.ticket.SeatClass;
 
 import app.ticket.StartApplication;
 import app.ticket.ticketing.db.SeatClass;
-import app.ticket.ticketing.db.Stage;
 import app.ticket.ticketing.seatclass.SeatClassController;
 import app.ticket.ticketing.seatclass.SeatClassRepository;
 import app.ticket.ticketing.seatclass.SeatClassRequestDto;
 import app.ticket.ticketing.seatclass.SeatClassResponseDto;
-import app.ticket.ticketing.stage.StageRequestDto;
-import app.ticket.ticketing.stage.StageResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.util.ArrayList;
@@ -22,8 +17,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 
 @SpringBootTest
 @Slf4j
@@ -84,8 +78,6 @@ public class SeatClassControllerTests {
         // then
         assertThat(result.getSeatClassId().length(), is(13));
         assertThat(result.getConcertId(), is("test"));
-
-        seatClassRepository.delete(newData);
     }
 
     @DisplayName("stage - 조회 컨트롤러 테스트")
@@ -133,9 +125,7 @@ public class SeatClassControllerTests {
         SeatClass result = seatClassRepository.findBySeatClassId(testData.getSeatClassId());
 
         // then
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            result.getSeatClassId();
-        });
+        assertThat(result, is(nullValue()));
     }
 
     @AfterEach()

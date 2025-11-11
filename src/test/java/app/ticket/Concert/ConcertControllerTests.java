@@ -6,22 +6,13 @@ import app.ticket.ticketing.concert.ConcertRepository;
 import app.ticket.ticketing.concert.ConcertRequestDto;
 import app.ticket.ticketing.concert.ConcertResponseDto;
 import app.ticket.ticketing.db.Concert;
-import app.ticket.ticketing.db.SeatClass;
-import app.ticket.ticketing.seatclass.SeatClassController;
-import app.ticket.ticketing.seatclass.SeatClassRepository;
-import app.ticket.ticketing.seatclass.SeatClassRequestDto;
-import app.ticket.ticketing.seatclass.SeatClassResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -115,9 +106,7 @@ public class ConcertControllerTests {
         Concert result = concertRepository.findByConcertIdAndIsDelete(testData.getConcertId(), false);
 
         // then
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            result.getConcertId();
-        });
+        assertThat(result, is(nullValue()));
     }
 
     @AfterEach()

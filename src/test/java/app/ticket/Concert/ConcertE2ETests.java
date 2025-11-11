@@ -2,6 +2,7 @@ package app.ticket.Concert;
 
 import app.ticket.StartApplication;
 import app.ticket.ticketing.concert.*;
+import app.ticket.ticketing.db.Concert;
 import app.ticket.ticketing.seatclass.SeatClassRepository;
 import app.ticket.ticketing.stage.StageRepository;
 import io.restassured.RestAssured;
@@ -14,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Date;
+import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 
@@ -203,5 +205,13 @@ public class ConcertE2ETests {
                     .statusCode(400)
                 .and()
                     .body("message",is("해당 값이 존재하지 않습니다."));
+    }
+
+    @AfterEach()
+    void deleteData() {
+        List<Concert> deleteList = concertRepository.findByName("test");
+        for(Concert item : deleteList) {
+            concertRepository.delete(item);
+        }
     }
 }

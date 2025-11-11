@@ -2,6 +2,7 @@ package app.ticket.Stage;
 
 import app.ticket.StartApplication;
 import app.ticket.ticketing.common.exception.CustomException;
+import app.ticket.ticketing.common.exception.ExceptionCode;
 import app.ticket.ticketing.db.Stage;
 import app.ticket.ticketing.stage.*;
 import io.hypersistence.tsid.TSID;
@@ -15,9 +16,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 
 @SpringBootTest
 @Slf4j
@@ -76,9 +77,9 @@ public class StageServiceTests {
             assertThat(item.getStageId().length(), is(13));
         }
 
-        Assertions.assertThrows(CustomException.class, () -> {
-            stageService.readStages("wrongTest");
-        });
+        assertThatThrownBy(() -> stageService.readStages("wrongTest"))
+                .isInstanceOf(CustomException.class)
+                .hasFieldOrPropertyWithValue("errorMessage", ExceptionCode.NOT_DATA.getMessage());
     }
 
     @DisplayName("stage - 수정 서비스 테스트")
@@ -110,16 +111,18 @@ public class StageServiceTests {
         Stage result = stageRepository.findByStageId(testData.getStageId());
 
         // then
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            result.getStageId();
-        });
-        Assertions.assertThrows(CustomException.class, () -> {
-            stageService.deleteStage(setRequestData(testDatas.get(0)));
-        });
-        Assertions.assertThrows(CustomException.class, () -> {
+        assertThat(result, is(nullValue()));
+
+        assertThatThrownBy(() -> stageService.deleteStage(setRequestData(testDatas.get(0))))
+                .isInstanceOf(CustomException.class)
+                .hasFieldOrPropertyWithValue("errorMessage", ExceptionCode.NOT_DATA.getMessage());
+
+        assertThatThrownBy(() -> {
             stageService.deleteStage(setRequestData(testDatas.get(1)));
             stageService.deleteStage(setRequestData(testDatas.get(2)));
-        });
+        })
+                .isInstanceOf(CustomException.class)
+                .hasFieldOrPropertyWithValue("errorMessage", ExceptionCode.EMPTY_STAGE.getMessage());
     }
 
     @AfterEach()
