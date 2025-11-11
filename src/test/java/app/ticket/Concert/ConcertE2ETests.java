@@ -209,9 +209,6 @@ public class ConcertE2ETests {
 
     @AfterEach()
     void deleteData() {
-        List<Concert> deleteList = concertRepository.findByName("test");
-        for(Concert item : deleteList) {
-            concertRepository.delete(item);
-        }
+        concertRepository.deleteAll();
     }
 }

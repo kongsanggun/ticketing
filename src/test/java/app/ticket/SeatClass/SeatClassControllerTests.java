@@ -130,8 +130,6 @@ public class SeatClassControllerTests {
 
     @AfterEach()
     void deleteData() {
-        for(SeatClass item : seatClassRepository.findByConcertId("test")) {
-            seatClassRepository.delete(item);
-        }
+        seatClassRepository.deleteAll();
     }
 }

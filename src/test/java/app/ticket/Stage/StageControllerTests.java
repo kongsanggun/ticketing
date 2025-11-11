@@ -124,8 +124,6 @@ public class StageControllerTests {
 
     @AfterEach()
     void deleteData() {
-        for(Stage item : stageRepository.findByConcertId("test")) {
-            stageRepository.delete(item);
-        }
+        stageRepository.deleteAll();
     }
 }
