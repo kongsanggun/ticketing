@@ -2,6 +2,7 @@ package app.ticket.SeatClass;
 
 import app.ticket.StartApplication;
 import app.ticket.ticketing.common.exception.CustomException;
+import app.ticket.ticketing.common.exception.ExceptionCode;
 import app.ticket.ticketing.db.SeatClass;
 import app.ticket.ticketing.seatclass.SeatClassRepository;
 import app.ticket.ticketing.seatclass.SeatClassRequestDto;
@@ -18,8 +19,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 
 @SpringBootTest
 @Slf4j
@@ -82,9 +85,10 @@ public class SeatClassServiceTests {
             assertThat(item.getSeatClassId().length(), is(13));
         }
 
-        Assertions.assertThrows(CustomException.class, () -> {
-            seatClassService.readSeatClass("wrongTest");
-        });
+        // then
+        assertThatThrownBy(() -> seatClassService.readSeatClass("wrongTest"))
+                .isInstanceOf(CustomException.class)
+                .hasFieldOrPropertyWithValue("errorMessage", ExceptionCode.NOT_DATA.getMessage());
     }
 
     @DisplayName("seatClass - 수정 서비스 테스트")
@@ -119,16 +123,18 @@ public class SeatClassServiceTests {
         SeatClass result = seatClassRepository.findBySeatClassId(testData.getSeatClassId());
 
         // then
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            result.getSeatClassId();
-        });
-        Assertions.assertThrows(CustomException.class, () -> {
-            seatClassService.deleteSeatClass(setRequestData(testDatas.get(0)));
-        });
-        Assertions.assertThrows(CustomException.class, () -> {
+        assertThat(result, is(nullValue()));
+
+        assertThatThrownBy(() -> seatClassService.deleteSeatClass(setRequestData(testDatas.get(0))))
+                .isInstanceOf(CustomException.class)
+                .hasFieldOrPropertyWithValue("errorMessage", ExceptionCode.NOT_DATA.getMessage());
+
+        assertThatThrownBy(() -> {
             seatClassService.deleteSeatClass(setRequestData(testDatas.get(1)));
             seatClassService.deleteSeatClass(setRequestData(testDatas.get(2)));
-        });
+        })
+                .isInstanceOf(CustomException.class)
+                .hasFieldOrPropertyWithValue("errorMessage", ExceptionCode.EMPTY_PRICE.getMessage());
     }
 
     @AfterEach()

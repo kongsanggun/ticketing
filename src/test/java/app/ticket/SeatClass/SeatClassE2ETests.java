@@ -2,6 +2,7 @@ package app.ticket.SeatClass;
 
 import app.ticket.StartApplication;
 import app.ticket.ticketing.common.exception.ExceptionCode;
+import app.ticket.ticketing.db.SeatClass;
 import app.ticket.ticketing.seatclass.*;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -12,7 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.util.Date;
+import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 

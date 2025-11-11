@@ -2,6 +2,7 @@ package app.ticket.Stage;
 
 import app.ticket.StartApplication;
 import app.ticket.ticketing.common.exception.ExceptionCode;
+import app.ticket.ticketing.db.Stage;
 import app.ticket.ticketing.stage.StageController;
 import app.ticket.ticketing.stage.StageRepository;
 import app.ticket.ticketing.stage.StageRequestDto;
@@ -16,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Date;
+import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 

@@ -2,28 +2,23 @@ package app.ticket.Concert;
 
 import app.ticket.StartApplication;
 import app.ticket.ticketing.common.exception.CustomException;
+import app.ticket.ticketing.common.exception.ExceptionCode;
 import app.ticket.ticketing.concert.ConcertRepository;
 import app.ticket.ticketing.concert.ConcertRequestDto;
 import app.ticket.ticketing.concert.ConcertResponseDto;
 import app.ticket.ticketing.concert.ConcertService;
 import app.ticket.ticketing.db.Concert;
-import app.ticket.ticketing.db.SeatClass;
-import app.ticket.ticketing.seatclass.SeatClassController;
-import app.ticket.ticketing.seatclass.SeatClassRepository;
-import app.ticket.ticketing.seatclass.SeatClassRequestDto;
-import app.ticket.ticketing.seatclass.SeatClassResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
@@ -82,16 +77,14 @@ public class ConcertServiceTests {
 
         // when
         ConcertResponseDto result = concertService.createConcert(setRequestData(newData));
+        newData.setConcertId(result.getConcertId());
 
         // then
         assertThat(result.getConcertId().length(), is(13));
         assertThat(result.getName(), is("test"));
-        Assertions.assertThrows(CustomException.class, () -> {
-            newData.setConcertId(result.getConcertId());
-            concertService.createConcert(setRequestData(newData));
-        });
-
-        concertRepository.delete(newData);
+        assertThatThrownBy(() -> concertService.createConcert(setRequestData(newData)))
+                .isInstanceOf(CustomException.class)
+                .hasFieldOrPropertyWithValue("errorMessage", ExceptionCode.ADDED_SHOW.getMessage());
     }
 
     @DisplayName("concert - 조회 서비스 테스트")
@@ -102,9 +95,9 @@ public class ConcertServiceTests {
 
         // then
         assertThat(result.getConcertId().length(), is(13));
-        Assertions.assertThrows(CustomException.class, () -> {
-            concertService.readConcert("wrongTest");
-        });
+        assertThatThrownBy(() -> concertService.readConcert("wrongTest"))
+                .isInstanceOf(CustomException.class)
+                .hasFieldOrPropertyWithValue("errorMessage", ExceptionCode.NOT_DATA.getMessage());
     }
 
     @DisplayName("concert - 수정 서비스 테스트")
@@ -135,16 +128,17 @@ public class ConcertServiceTests {
         Concert result = concertRepository.findByConcertIdAndIsDelete(testData.getConcertId(), false);
 
         // then
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            result.getConcertId();
-        });
-        Assertions.assertThrows(CustomException.class, () -> {
-            concertService.deleteConcert(data);
-        });
+        assertThat(result, is(nullValue()));
+        assertThatThrownBy(() -> concertService.deleteConcert(data))
+                .isInstanceOf(CustomException.class)
+                .hasFieldOrPropertyWithValue("errorMessage", ExceptionCode.NOT_DATA.getMessage());
     }
 
     @AfterEach()
     void deleteData() {
-        concertRepository.delete(this.concert);
+        List<Concert> deleteList = concertRepository.findByName("test");
+        for(Concert item : deleteList) {
+            concertRepository.delete(item);
+        }
     }
 }
