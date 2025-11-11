@@ -34,15 +34,16 @@ public class TicketingService {
     private void getLock(String name, ILogic logic) {
         RLock lock = redissonClient.getLock(name);
         try {
-            if(lock.tryLock(10000, 3000, TimeUnit.MILLISECONDS)) {
+            if(lock.tryLock(10, 5, TimeUnit.SECONDS)) {
                 logic.execute();
             } else {
-                throw new RuntimeException("Unabled to acquire lock");
+                throw new CustomException(ExceptionCode.LOCK_TIME_OUT);
             }
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            Thread.currentThread().interrupt();
+            throw new CustomException(ExceptionCode.INTERRUPTED);
         } finally {
-            if(lock.isLocked() && lock.isHeldByCurrentThread()) {
+            if(lock != null && lock.isLocked()) {
                 lock.unlock();
             }
         }
@@ -53,26 +54,20 @@ public class TicketingService {
     */
     public TicketingResponseDto createTicket(TicketingRequestDto request) {
         Ticket ticket = new Ticket(request);
-
-        // 1. 동일한 중복요청이 있는지 확인한다.
-        checkDuplicateRequest(ticket);
-
-        // 2. 티켓을 예약한다.
         saveTicket(ticket);
         return new TicketingResponseDto(ticket);
     }
 
     private void checkDuplicateRequest(Ticket ticket) {
-        getLock("showTicket_" + ticket.getUserId(), () -> {
-            Ticket duplicate = ticketRepository.findByUserIdAndShowId(ticket.getUserId(), ticket.getShowId());
-            if(duplicate != null) {
-                throw new CustomException(ExceptionCode.CHECKED_TICKET);
-            }
-        });
+        Ticket duplicate = ticketRepository.findByUserIdAndShowId(ticket.getUserId(), ticket.getShowId());
+        if(duplicate != null) {
+            throw new CustomException(ExceptionCode.CHECKED_TICKET);
+        }
     }
 
     private void saveTicket(Ticket ticket) {
-        getLock("showTicket_" + ticket.getShowId(), () -> {
+        getLock(ticket.getShowId(), () -> {
+            checkDuplicateRequest(ticket);
             Optional<Ticket> savedSeat = ticketRepository.findByShowIdAndSeat(ticket.getShowId(), ticket.getSeat());
             if(savedSeat.isPresent()) {
                 throw new CustomException(ExceptionCode.SEAT_SELECTED);
@@ -86,7 +81,7 @@ public class TicketingService {
      *  티켓을 취소한다.
      */
     public void cancelTicket(TicketingRequestDto request) {
-        getLock("cancelTicket_" + request.getTicketId(), () -> {
+        getLock(request.getShowId(), () -> {
             ticketRepository.findByTicketIdForUpdate(request.getTicketId()).orElseThrow(() -> {
                 throw new CustomException(ExceptionCode.NOT_DATA);
             });
