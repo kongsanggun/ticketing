@@ -66,8 +66,6 @@ public class ConcertUnitTests {
         // then
         assertThat(result.getConcertId().length(), is(13));
         assertThat(result.getName(), is("test"));
-
-        concertRepository.delete(newData);
     }
 
     @DisplayName("concert - 잘못 된 값으로 생성된 테스트")
@@ -118,8 +116,6 @@ public class ConcertUnitTests {
         for(Concert item : result) {
             assertThat(item.getConcertId().length(), is(13));
         }
-
-        concertRepository.delete(newData);
     }
 
     @DisplayName("concert - 존재하지 않는 공연 조회 테스트")
@@ -166,13 +162,11 @@ public class ConcertUnitTests {
         Concert result = concertRepository.findByConcertId(testData.getConcertId());
 
         // then
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            result.getConcertId();
-        });
+        assertThat(result, is(nullValue()));
     }
 
     @AfterEach()
     void deleteData() {
-        concertRepository.delete(this.concert);
+        concertRepository.deleteAll();
     }
 }

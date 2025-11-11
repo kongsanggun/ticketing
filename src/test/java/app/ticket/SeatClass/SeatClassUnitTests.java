@@ -17,8 +17,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 
 @SpringBootTest
 @Slf4j
@@ -176,15 +175,11 @@ public class SeatClassUnitTests {
         SeatClass result = seatClassRepository.findBySeatClassId(testData.getSeatClassId());
 
         // then
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            result.getSeatClassId();
-        });
+        assertThat(result, is(nullValue()));
     }
 
     @AfterEach()
     void deleteData() {
-        for(SeatClass item : seatClassRepository.findByConcertId("test")) {
-            seatClassRepository.delete(item);
-        }
+        seatClassRepository.deleteAll();
     }
 }

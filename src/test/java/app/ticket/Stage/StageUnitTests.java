@@ -170,15 +170,11 @@ public class StageUnitTests {
         Stage result = stageRepository.findByStageId(testData.getStageId());
 
         // then
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            result.getStageId();
-        });
+        assertThat(result, is(nullValue()));
     }
 
     @AfterEach()
     void deleteData() {
-        for(Stage item : stageRepository.findByConcertId("test")) {
-            stageRepository.delete(item);
-        }
+        stageRepository.deleteAll();
     }
 }

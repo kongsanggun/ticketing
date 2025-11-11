@@ -136,9 +136,6 @@ public class ConcertServiceTests {
 
     @AfterEach()
     void deleteData() {
-        List<Concert> deleteList = concertRepository.findByName("test");
-        for(Concert item : deleteList) {
-            concertRepository.delete(item);
-        }
+        concertRepository.deleteAll();
     }
 }

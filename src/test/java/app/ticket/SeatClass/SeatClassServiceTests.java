@@ -139,8 +139,6 @@ public class SeatClassServiceTests {
 
     @AfterEach()
     void deleteData() {
-        for(SeatClass item : seatClassRepository.findByConcertId(this.concertId)) {
-            seatClassRepository.delete(item);
-        }
+        seatClassRepository.deleteAll();
     }
 }
