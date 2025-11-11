@@ -1,14 +1,18 @@
 package app.ticket;
 
+import app.ticket.ticketing.common.exception.CustomException;
+import app.ticket.ticketing.db.Ticket;
 import app.ticket.ticketing.ticketing.TicketingRequestDto;
 import app.ticket.ticketing.ticketing.TicketingResponseDto;
 import app.ticket.ticketing.ticketing.TicketingService;
 import app.ticket.ticketing.ticketing.TicketRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.GenericJDBCException;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -43,9 +47,11 @@ public class TicketingConcurrencyTests {
                 if(response != null) {
                     successCount.getAndIncrement();
                 }
-                log.info("Thread " + index + " - 완료");
-            } catch (RuntimeException e) {
-                //Assertions.assertEquals(RuntimeException.class, e);
+                log.info("Thread " + index + " - 완료 : " + dto.getSeat());
+            } catch (CustomException e) {
+                log.info("Thread " + index + " - Exception : " + e.getErrorMessage());
+            } catch (GenericJDBCException e) {
+                log.info("Thread " + index + " - Exception : " + e.getErrorMessage());
             }
             latch.countDown();
         });
@@ -55,14 +61,21 @@ public class TicketingConcurrencyTests {
     private void cancelTicket(int index) {
         executor.execute(() -> {
             try {
+                List<Ticket> list = ticketRepository.findAll();
+                if(list.isEmpty()) {
+                    latch.countDown();
+                    return;
+                }
                 TicketingRequestDto dto = new TicketingRequestDto(
-                        ticketRepository.findAll().get(0).getTicketId(), null, null, null
+                        list.get(0).getTicketId(), list.get(0).getUserId(), list.get(0).getShowId(), list.get(0).getSeat()
                 );
                 ticketingService.cancelTicket(dto);
                 successCount.getAndIncrement();
                 log.info("Thread " + index + " - 예약이 취소되었습니다.");
-            } catch (Exception e) {
-                //Assertions.assertEquals(null, e.getMessage());
+            } catch (CustomException e) {
+                log.info("Thread " + index + " - Exception : " + e.getErrorMessage());
+            } catch (GenericJDBCException e) {
+                log.info("Thread " + index + " - Exception : " + e.getErrorMessage());
             }
             latch.countDown();
         });
@@ -71,7 +84,6 @@ public class TicketingConcurrencyTests {
     TicketingRequestDto setRequestData(String user, String seat) {
         TicketingRequestDto request = new TicketingRequestDto();
 
-        // TSID 라이브러리 dev에 머지되면 수정 예정
         request.setTicketId(UUID.randomUUID().toString().substring(0, 13));
         request.setUserId(user);
         request.setShowId("test");
@@ -80,9 +92,6 @@ public class TicketingConcurrencyTests {
         return request;
     }
 
-    /*
-    멀티 스레트 테스트 1 (스레드 1000개 자리는 하나로 고정하고 예약한다.)
-    */
     @Test
     @DisplayName("ticket - 멀티 스레드 테스트1 - 스레드 1000개 자리는 하나로 고정하고 예약한다.")
     void multiThreadTest1() throws InterruptedException {
@@ -91,19 +100,18 @@ public class TicketingConcurrencyTests {
             getTicket(index, setRequestData("user_" + index, "A1"));
         }
         latch.await();
-        assertThat(String.valueOf(successCount), not("0"));
+
+        // then
+        assertThat(String.valueOf(successCount), is("1"));
+        assertThat((int) latch.getCount(), is(0));
     }
 
-    /*
-    멀티 스레트 테스트 2 (1000개 중 900개는 예약이고 100개는 예약 취소가 진행되는 스레드이다.)
-    단, 예약 취소 같은 경우 500번 부터 시작되며 이미 있는 티켓 ID를 통하여 예약 취소가 진행되어진다.
-    */
     @Test
     @DisplayName("ticket - 멀티 스레드 테스트2 - 멀티 스레트 테스트 2 (1000개 중 900개는 예약이고 100개는 예약 취소가 진행되는 스레드이다. 단, 자리는 하나로 고정하고 예약한다.)")
     void multiThreadTest2() throws InterruptedException {
         List<Integer> cancelList = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
-            cancelList.add(500 + (int) Math.round(Math.random() * 500));
+            cancelList.add(500 + (int) Math.round(Math.random() * 450));
         }
 
         for (int i = 0; i < 1000; i++) {
@@ -115,12 +123,12 @@ public class TicketingConcurrencyTests {
             }
         }
         latch.await();
+
+        // then
         assertThat(String.valueOf(successCount), not("0"));
+        assertThat((int) latch.getCount(), is(0));
     }
 
-    /*
-멀티 스레트 테스트 1 (스레드 1000개 자리는 하나로 고정하고 예약한다.)
-*/
     @Test
     @DisplayName("ticket - 멀티 스레드 테스트3 - 스레드 1000개")
     void multiThreadTest3() throws InterruptedException {
@@ -133,19 +141,18 @@ public class TicketingConcurrencyTests {
             });
         }
         latch.await();
+
+        // then
         assertThat(String.valueOf(successCount), not("0"));
+        assertThat((int) latch.getCount(), is(0));
     }
 
-    /*
-    멀티 스레트 테스트 2 (1000개 중 900개는 예약이고 100개는 예약 취소가 진행되는 스레드이다.)
-    단, 예약 취소 같은 경우 500번 부터 시작되며 이미 있는 티켓 ID를 통하여 예약 취소가 진행되어진다.
-    */
     @Test
     @DisplayName("ticket - 멀티 스레드 테스트4 - 멀티 스레트 테스트 2 (1000개 중 900개는 예약이고 100개는 예약 취소가 진행되는 스레드이다.)")
     void multiThreadTest4() throws InterruptedException {
         List<Integer> cancelList = new ArrayList<>();
         for (int i = 0; i < 100; i++) {
-            cancelList.add(500 + (int) Math.round(Math.random() * 500));
+            cancelList.add(500 + (int) Math.round(Math.random() * 450));
         }
 
         for (int i = 0; i < 1000; i++) {
@@ -159,7 +166,10 @@ public class TicketingConcurrencyTests {
             }
         }
         latch.await();
+
+        // then
         assertThat(String.valueOf(successCount), not("0"));
+        assertThat((int) latch.getCount(), is(0));
     }
 
     @AfterEach()

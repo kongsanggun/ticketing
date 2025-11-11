@@ -15,7 +15,9 @@ public enum ExceptionCode {
     EMPTY_PRICE("4022", "삭제 이후 공연 내 가격이 존재하지 않습니다.", HttpStatus.UNPROCESSABLE_ENTITY),
     EMPTY_STAGE("4022", "삭제 이후 공연 시간이 존재하지 않습니다. ", HttpStatus.UNPROCESSABLE_ENTITY),
     NOT_FOUND("4041", "Resource not found.", HttpStatus.NOT_FOUND),
-    SERVER_ERROR("5001", "Internal server error.", HttpStatus.INTERNAL_SERVER_ERROR);
+    SERVER_ERROR("5001", "Internal server error.", HttpStatus.INTERNAL_SERVER_ERROR),
+    LOCK_TIME_OUT("4009", "다른 요청이 처리 중입니다.", HttpStatus.CONFLICT),
+    INTERRUPTED("4008", "요청이 중단되었습니다.", HttpStatus.REQUEST_TIMEOUT);
 
     private final String code;         // 에러 코드
     private final String message;      // 에러 메시지
