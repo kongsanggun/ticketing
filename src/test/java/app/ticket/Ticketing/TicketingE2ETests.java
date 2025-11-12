@@ -1,5 +1,6 @@
-package app.ticket;
+package app.ticket.Ticketing;
 
+import app.ticket.StartApplication;
 import app.ticket.ticketing.db.Ticket;
 import app.ticket.ticketing.ticketing.TicketRepository;
 import app.ticket.ticketing.ticketing.TicketingController;

@@ -9,10 +9,12 @@ import org.springframework.data.jpa.repository.Query;
 
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Repository
+@Transactional()
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
     @Query("SELECT ticketId FROM Ticket t WHERE t.showId = :showId AND t.seat = :seat")
