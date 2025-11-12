@@ -7,7 +7,6 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 
-import org.springframework.transaction.annotation.Transactional;
 import app.ticket.ticketing.common.exception.ExceptionCode;
 import app.ticket.ticketing.db.Ticket;
 
@@ -22,7 +21,6 @@ interface ILogic {
 @RequiredArgsConstructor
 @Slf4j
 @Service
-@Transactional()
 public class TicketingService {
     private final TicketRepository ticketRepository;
 
@@ -43,7 +41,7 @@ public class TicketingService {
             Thread.currentThread().interrupt();
             throw new CustomException(ExceptionCode.INTERRUPTED);
         } finally {
-            if(lock != null && lock.isLocked()) {
+            if(lock != null && lock.isHeldByCurrentThread()) {
                 lock.unlock();
             }
         }

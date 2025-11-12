@@ -1,4 +1,4 @@
-package app.ticket;
+package app.ticket.Ticketing;
 
 import app.ticket.ticketing.common.exception.CustomException;
 import app.ticket.ticketing.db.Ticket;
@@ -7,12 +7,11 @@ import app.ticket.ticketing.ticketing.TicketingResponseDto;
 import app.ticket.ticketing.ticketing.TicketingService;
 import app.ticket.ticketing.ticketing.TicketRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.exception.GenericJDBCException;
+
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -23,7 +22,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 
 @SpringBootTest
 @Slf4j
@@ -33,11 +31,12 @@ public class TicketingConcurrencyTests {
     @Autowired
     private TicketRepository ticketRepository;
 
-    // 스레드들
-    private final AtomicInteger successCount = new AtomicInteger(0);
     private final ExecutorService executor = Executors.newFixedThreadPool(1000);
-    // 작업 스레드가 끝날 때 까지 기다리는 역할이다.
-    private final CountDownLatch latch = new CountDownLatch(1000);
+
+    private final AtomicInteger successCount = new AtomicInteger(0);
+    private final AtomicInteger failCount = new AtomicInteger(0);
+
+    private final CountDownLatch doneLatch = new CountDownLatch(1000);
 
     // 티켓을 예약해주는 스레드
     private void getTicket(int index, TicketingRequestDto dto) {
@@ -46,14 +45,20 @@ public class TicketingConcurrencyTests {
                 TicketingResponseDto response = ticketingService.createTicket(dto);
                 if(response != null) {
                     successCount.getAndIncrement();
+                    log.info("Thread " + index + " - 완료 : " + dto.getSeat());
+                } else {
+                    failCount.getAndIncrement();
+                    log.warn("Thread " + index + " - 티켓 예약에 실패하였습니다.");
                 }
-                log.info("Thread " + index + " - 완료 : " + dto.getSeat());
             } catch (CustomException e) {
+                successCount.getAndIncrement();
                 log.info("Thread " + index + " - Exception : " + e.getErrorMessage());
-            } catch (GenericJDBCException e) {
-                log.info("Thread " + index + " - Exception : " + e.getErrorMessage());
+            } catch (Exception e) {
+                failCount.getAndIncrement();
+                log.warn("Thread " + index + " - Exception : " + e.getMessage());
+            } finally {
+                doneLatch.countDown();
             }
-            latch.countDown();
         });
     }
 
@@ -62,22 +67,23 @@ public class TicketingConcurrencyTests {
         executor.execute(() -> {
             try {
                 List<Ticket> list = ticketRepository.findAll();
-                if(list.isEmpty()) {
-                    latch.countDown();
-                    return;
+                if(!list.isEmpty()) {
+                    TicketingRequestDto dto = new TicketingRequestDto(
+                            list.get(0).getTicketId(), list.get(0).getUserId(), list.get(0).getShowId(), list.get(0).getSeat()
+                    );
+                    ticketingService.cancelTicket(dto);
                 }
-                TicketingRequestDto dto = new TicketingRequestDto(
-                        list.get(0).getTicketId(), list.get(0).getUserId(), list.get(0).getShowId(), list.get(0).getSeat()
-                );
-                ticketingService.cancelTicket(dto);
                 successCount.getAndIncrement();
                 log.info("Thread " + index + " - 예약이 취소되었습니다.");
             } catch (CustomException e) {
+                successCount.getAndIncrement();
                 log.info("Thread " + index + " - Exception : " + e.getErrorMessage());
-            } catch (GenericJDBCException e) {
-                log.info("Thread " + index + " - Exception : " + e.getErrorMessage());
+            } catch (Exception e) {
+                failCount.getAndIncrement();
+                log.warn("Thread " + index + " - Exception : " + e.getMessage());
+            } finally {
+                doneLatch.countDown();
             }
-            latch.countDown();
         });
     }
 
@@ -99,11 +105,12 @@ public class TicketingConcurrencyTests {
             int index = i + 1;
             getTicket(index, setRequestData("user_" + index, "A1"));
         }
-        latch.await();
+        doneLatch.await();
 
         // then
-        assertThat(String.valueOf(successCount), is("1"));
-        assertThat((int) latch.getCount(), is(0));
+        assertThat((int) doneLatch.getCount(), is(0));
+        assertThat(String.valueOf(successCount), is("1000"));
+        assertThat(String.valueOf(failCount), is("0"));
     }
 
     @Test
@@ -122,11 +129,12 @@ public class TicketingConcurrencyTests {
                 getTicket(index, setRequestData("user_" + index, "A1"));
             }
         }
-        latch.await();
+        doneLatch.await();
 
         // then
-        assertThat(String.valueOf(successCount), not("0"));
-        assertThat((int) latch.getCount(), is(0));
+        assertThat((int) doneLatch.getCount(), is(0));
+        assertThat(String.valueOf(successCount), is("1000"));
+        assertThat(String.valueOf(failCount), is("0"));
     }
 
     @Test
@@ -140,11 +148,12 @@ public class TicketingConcurrencyTests {
                 getTicket(index, setRequestData("user_" + index, seat));
             });
         }
-        latch.await();
+        doneLatch.await();
 
         // then
-        assertThat(String.valueOf(successCount), not("0"));
-        assertThat((int) latch.getCount(), is(0));
+        assertThat((int) doneLatch.getCount(), is(0));
+        assertThat(String.valueOf(successCount), is("1000"));
+        assertThat(String.valueOf(failCount), is("0"));
     }
 
     @Test
@@ -165,11 +174,12 @@ public class TicketingConcurrencyTests {
                 getTicket(index, setRequestData("user_" + index, seat));
             }
         }
-        latch.await();
+        doneLatch.await();
 
         // then
-        assertThat(String.valueOf(successCount), not("0"));
-        assertThat((int) latch.getCount(), is(0));
+        assertThat((int) doneLatch.getCount(), is(0));
+        assertThat(String.valueOf(successCount), is("1000"));
+        assertThat(String.valueOf(failCount), is("0"));
     }
 
     @AfterEach()

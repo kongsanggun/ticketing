@@ -1,4 +1,4 @@
-package app.ticket;
+package app.ticket.Ticketing;
 
 import app.ticket.ticketing.ticketing.TicketingRequestDto;
 import app.ticket.ticketing.db.Ticket;
@@ -138,14 +138,12 @@ public class TicketingUnitTests {
         Ticket result = ticketRepository.findByTicketId(testData.getTicketId());
 
         // then
-        Assertions.assertThrows(NullPointerException.class, () -> {
-            result.getTicketId();
-        });
+        assertThat(result, is(nullValue()));
     }
 
     @AfterEach()
     void deleteData() {
-        ticketRepository.delete(this.ticket);
+        ticketRepository.deleteAll();
     }
 
 }

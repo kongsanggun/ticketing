@@ -56,8 +56,6 @@ test {
 	jacoco {
 		excludes += [
 				'app/ticket/StartApplication.class',
-				'app/ticket/ticketing/ticketing/*',
-				'app/ticket/ticketing/db/Ticket.class',
 				'app/ticket/ticketing/common/*',
 				'app/ticket/ticketing/redis/*'
 		]
@@ -98,8 +96,6 @@ jacocoTestReport {
 		classDirectories.setFrom(files(classDirectories.files.collect {
 			fileTree(dir: it,
 					exclude: ['app/ticket/StartApplication.class',
-							  'app/ticket/ticketing/ticketing/*',
-							  'app/ticket/ticketing/db/Ticket.class',
 							  'app/ticket/ticketing/common/*',
 							  'app/ticket/ticketing/redis/*'])
 		}))
@@ -110,7 +106,7 @@ jacocoTestCoverageVerification {
 	violationRules {
 		rule {
 			limit {
-				minimum = 0.80
+				minimum = 0.95
 			}
 		}
 	}
