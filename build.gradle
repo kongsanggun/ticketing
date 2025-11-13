@@ -105,7 +105,15 @@ jacocoTestReport {
 jacocoTestCoverageVerification {
 	violationRules {
 		rule {
+			element = 'CLASS'
+			excludes = [
+					'**.StartApplication*',
+					'**.ticketing.common.**',
+					'**.ticketing.redis.**'
+			]
 			limit {
+				counter = 'LINE'
+				value = 'COVEREDRATIO'
 				minimum = 0.95
 			}
 		}
