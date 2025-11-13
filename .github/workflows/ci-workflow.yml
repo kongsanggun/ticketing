@@ -51,12 +51,14 @@ jobs:
           docker compose up --build --exit-code-from server-test
 
       - name: Copy JaCoCo report to host
+        if: always()
         run: |
           mkdir -p reports
           docker compose cp server-test:/app/build/reports/jacoco/test/jacocoTestReport.xml ./reports/
           docker compose cp server-test:/app/build/reports/jacoco/test/html ./reports/html
 
       - name: Report test Coverage
+        if: always()
         uses: madrapps/jacoco-report@v1.6.1
         with:
           title: 📝 Test Coverage Report
