@@ -60,8 +60,6 @@ public class TicketingUnitTests {
         // then
         assertThat(result.getTicketId().length(), is(13));
         assertThat(result.getUserId(), is(newData.getUserId()));
-
-        ticketRepository.delete(newData);
     }
 
     @DisplayName("ticket - 잘못 된 값으로 생성된 테스트")
