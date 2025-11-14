@@ -21,7 +21,7 @@ public abstract class BaseDB{
     @CreatedDate
     @Column(name = "created_at", nullable = false)
     @ColumnDefault("CURRENT_TIMESTAMP()")
-    private Date createdAt;
+    protected Date createdAt;
 
     @LastModifiedDate
     @Column(name = "updated_at")
