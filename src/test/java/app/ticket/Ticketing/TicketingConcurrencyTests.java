@@ -1,17 +1,14 @@
 package app.ticket.Ticketing;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
 import app.ticket.ticketing.common.exception.CustomException;
 import app.ticket.ticketing.db.Ticket;
+import app.ticket.ticketing.ticketing.TicketRepository;
 import app.ticket.ticketing.ticketing.TicketingRequestDto;
 import app.ticket.ticketing.ticketing.TicketingResponseDto;
 import app.ticket.ticketing.ticketing.TicketingService;
-import app.ticket.ticketing.ticketing.TicketRepository;
-import lombok.extern.slf4j.Slf4j;
-
-import org.junit.jupiter.api.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -19,9 +16,10 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 @Slf4j
@@ -43,7 +41,7 @@ public class TicketingConcurrencyTests {
         executor.execute(() -> {
             try {
                 TicketingResponseDto response = ticketingService.createTicket(dto);
-                if(response != null) {
+                if (response != null) {
                     successCount.getAndIncrement();
                     log.info("Thread " + index + " - 완료 : " + dto.getSeat());
                 } else {
@@ -67,10 +65,9 @@ public class TicketingConcurrencyTests {
         executor.execute(() -> {
             try {
                 List<Ticket> list = ticketRepository.findAll();
-                if(!list.isEmpty()) {
-                    TicketingRequestDto dto = new TicketingRequestDto(
-                            list.get(0).getTicketId(), list.get(0).getUserId(), list.get(0).getShowId(), list.get(0).getSeat()
-                    );
+                if (!list.isEmpty()) {
+                    TicketingRequestDto dto = new TicketingRequestDto(list.get(0).getTicketId(),
+                                    list.get(0).getUserId(), list.get(0).getShowId(), list.get(0).getSeat());
                     ticketingService.cancelTicket(dto);
                 }
                 successCount.getAndIncrement();
@@ -123,7 +120,7 @@ public class TicketingConcurrencyTests {
 
         for (int i = 0; i < 1000; i++) {
             int index = i + 1;
-            if(cancelList.contains(i)) {
+            if (cancelList.contains(i)) {
                 cancelTicket(index);
             } else {
                 getTicket(index, setRequestData("user_" + index, "A1"));
@@ -144,7 +141,7 @@ public class TicketingConcurrencyTests {
             int index = i + 1;
             executor.execute(() -> {
                 final String seatNumber = String.valueOf(Math.round((Math.random() * 40) + 1));
-                final String seat = String.valueOf((char)(Math.round((Math.random() * 14) + 65))) + seatNumber;
+                final String seat = String.valueOf((char) (Math.round((Math.random() * 14) + 65))) + seatNumber;
                 getTicket(index, setRequestData("user_" + index, seat));
             });
         }
@@ -166,11 +163,11 @@ public class TicketingConcurrencyTests {
 
         for (int i = 0; i < 1000; i++) {
             int index = i + 1;
-            if(cancelList.contains(i)) {
+            if (cancelList.contains(i)) {
                 cancelTicket(index);
             } else {
                 final String seatNumber = String.valueOf(Math.round((Math.random() * 40) + 1));
-                final String seat = String.valueOf((char)(Math.round((Math.random() * 14) + 65))) + seatNumber;
+                final String seat = String.valueOf((char) (Math.round((Math.random() * 14) + 65))) + seatNumber;
                 getTicket(index, setRequestData("user_" + index, seat));
             }
         }
@@ -188,5 +185,3 @@ public class TicketingConcurrencyTests {
         ticketRepository.deleteAll();
     }
 }
-
-

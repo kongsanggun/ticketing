@@ -1,20 +1,19 @@
 package app.ticket.Stage;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+
 import app.ticket.StartApplication;
 import app.ticket.ticketing.db.Stage;
 import app.ticket.ticketing.stage.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 
 @SpringBootTest
 @Slf4j
@@ -22,7 +21,7 @@ import static org.hamcrest.Matchers.*;
 public class StageControllerTests {
 
     /*
-        StageController를 Test한다.
+     * StageController를 Test한다.
      */
 
     @Autowired
@@ -55,7 +54,7 @@ public class StageControllerTests {
     @BeforeEach()
     void setData() {
         this.stages = new ArrayList<>();
-        for(int i = 0; i < 5; i++) {
+        for (int i = 0; i < 5; i++) {
             Stage newData = new Stage(setRequestData());
             newData.setCreatedAt(new Date());
             this.stages.add(newData);
@@ -81,11 +80,11 @@ public class StageControllerTests {
     @Test
     void readStagesControllerTest() {
         // when
-        List<Stage> result =  stageController.readStages("test");
+        List<Stage> result = stageController.readStages("test");
 
         // then
         assertThat(result.size(), is(5));
-        for(Stage item : result) {
+        for (Stage item : result) {
             assertThat(item.getStageId().length(), is(13));
         }
     }
@@ -94,13 +93,13 @@ public class StageControllerTests {
     @Test
     void updateStageControllerTest() {
         // given
-        List<Stage> testDatas =  this.stages;
+        List<Stage> testDatas = this.stages;
         Stage testData = testDatas.get(0);
 
         // when
         StageRequestDto data = setRequestData(testData);
         data.setStageTime(new Date());
-        StageResponseDto result =  stageController.updateStage(data);
+        StageResponseDto result = stageController.updateStage(data);
 
         // then
         assertThat(result.getStageId(), is(notNullValue()));
@@ -110,7 +109,7 @@ public class StageControllerTests {
     @Test
     void deleteStageControllerTest() {
         // given
-        List<Stage> testDatas =  this.stages;
+        List<Stage> testDatas = this.stages;
         Stage testData = testDatas.get(0);
 
         // when

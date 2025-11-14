@@ -1,5 +1,8 @@
 package app.ticket.Ticketing;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+
 import app.ticket.StartApplication;
 import app.ticket.ticketing.db.Ticket;
 import app.ticket.ticketing.ticketing.TicketRepository;
@@ -7,6 +10,7 @@ import app.ticket.ticketing.ticketing.TicketingController;
 import app.ticket.ticketing.ticketing.TicketingRequestDto;
 import app.ticket.ticketing.ticketing.TicketingResponseDto;
 import io.hypersistence.tsid.TSID;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,19 +20,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.util.Date;
-import java.util.UUID;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-
 @SpringBootTest
 @Slf4j
 @ContextConfiguration(classes = StartApplication.class)
 public class TicketingControllerTests {
 
     /*
-        TicketingController를 Test한다.
+     * TicketingController를 Test한다.
      */
 
     @Autowired
@@ -84,7 +82,7 @@ public class TicketingControllerTests {
     @Test
     void readTicketingControllerTest() {
         // when
-        Ticket result =  ticketingController.checkTicket(ticket.getTicketId());
+        Ticket result = ticketingController.checkTicket(ticket.getTicketId());
 
         // then
         assertThat(result.getTicketId().length(), is(13));

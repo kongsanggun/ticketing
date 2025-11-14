@@ -1,5 +1,10 @@
 package app.ticket.SeatClass;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+
 import app.ticket.StartApplication;
 import app.ticket.ticketing.common.exception.CustomException;
 import app.ticket.ticketing.common.exception.ExceptionCode;
@@ -9,20 +14,14 @@ import app.ticket.ticketing.seatclass.SeatClassRequestDto;
 import app.ticket.ticketing.seatclass.SeatClassResponseDto;
 import app.ticket.ticketing.seatclass.SeatClassService;
 import io.hypersistence.tsid.TSID;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
-
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 
 @SpringBootTest
 @Slf4j
@@ -30,7 +29,7 @@ import static org.hamcrest.Matchers.nullValue;
 public class SeatClassServiceTests {
 
     /*
-        SeatClassService를 Test한다.
+     * SeatClassService를 Test한다.
      */
 
     @Autowired
@@ -43,7 +42,7 @@ public class SeatClassServiceTests {
     private List<SeatClass> seatClass;
 
     SeatClassRequestDto setRequestData() {
-        char seatChar = (char)(Math.round((Math.random() * 14) + 65));
+        char seatChar = (char) (Math.round((Math.random() * 14) + 65));
         SeatClassRequestDto request = new SeatClassRequestDto();
         request.setConcertId(this.concertId);
         request.setName(seatChar + "석");
@@ -64,7 +63,7 @@ public class SeatClassServiceTests {
     void setData() {
         this.concertId = TSID.fast().toString();
         this.seatClass = new ArrayList<>();
-        for(int i = 0; i < 3; i++) {
+        for (int i = 0; i < 3; i++) {
             SeatClass newData = new SeatClass(setRequestData());
             newData.setCreatedAt(new Date());
             this.seatClass.add(newData);
@@ -72,37 +71,35 @@ public class SeatClassServiceTests {
         seatClassRepository.saveAllAndFlush(this.seatClass);
     }
 
-
     @DisplayName("seatClass - 조회 서비스 테스트")
     @Test
     void readSeatClassServiceTest() {
         // when
-        List<SeatClass> result =  seatClassService.readSeatClass(this.concertId);
+        List<SeatClass> result = seatClassService.readSeatClass(this.concertId);
 
         // then
         assertThat(result.size(), is(3));
-        for(SeatClass item : result) {
+        for (SeatClass item : result) {
             assertThat(item.getSeatClassId().length(), is(13));
         }
 
         // then
-        assertThatThrownBy(() -> seatClassService.readSeatClass("wrongTest"))
-                .isInstanceOf(CustomException.class)
-                .hasFieldOrPropertyWithValue("errorMessage", ExceptionCode.NOT_DATA.getMessage());
+        assertThatThrownBy(() -> seatClassService.readSeatClass("wrongTest")).isInstanceOf(CustomException.class)
+                        .hasFieldOrPropertyWithValue("errorMessage", ExceptionCode.NOT_DATA.getMessage());
     }
 
     @DisplayName("seatClass - 수정 서비스 테스트")
     @Test
     void updateSeatClassServiceTest() {
         // given
-        List<SeatClass> testDatas =  this.seatClass;
+        List<SeatClass> testDatas = this.seatClass;
         SeatClass testData = testDatas.get(0);
 
         // when
         SeatClassRequestDto data = setRequestData(testData);
         data.setName("testUpdated");
         data.setPrice(10000);
-        SeatClassResponseDto result =  seatClassService.updateSeatClass(data);
+        SeatClassResponseDto result = seatClassService.updateSeatClass(data);
 
         // then
         assertThat(result.getSeatClassId(), is(data.getSeatClassId()));
@@ -114,7 +111,7 @@ public class SeatClassServiceTests {
     @Test
     void deleteSeatClassServiceTest() {
         // given
-        List<SeatClass> testDatas =  this.seatClass;
+        List<SeatClass> testDatas = this.seatClass;
         SeatClass testData = testDatas.get(0);
 
         // when
@@ -126,15 +123,14 @@ public class SeatClassServiceTests {
         assertThat(result, is(nullValue()));
 
         assertThatThrownBy(() -> seatClassService.deleteSeatClass(setRequestData(testDatas.get(0))))
-                .isInstanceOf(CustomException.class)
-                .hasFieldOrPropertyWithValue("errorMessage", ExceptionCode.NOT_DATA.getMessage());
+                        .isInstanceOf(CustomException.class)
+                        .hasFieldOrPropertyWithValue("errorMessage", ExceptionCode.NOT_DATA.getMessage());
 
         assertThatThrownBy(() -> {
             seatClassService.deleteSeatClass(setRequestData(testDatas.get(1)));
             seatClassService.deleteSeatClass(setRequestData(testDatas.get(2)));
-        })
-                .isInstanceOf(CustomException.class)
-                .hasFieldOrPropertyWithValue("errorMessage", ExceptionCode.EMPTY_PRICE.getMessage());
+        }).isInstanceOf(CustomException.class).hasFieldOrPropertyWithValue("errorMessage",
+                        ExceptionCode.EMPTY_PRICE.getMessage());
     }
 
     @AfterEach()

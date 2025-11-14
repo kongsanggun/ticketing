@@ -1,8 +1,14 @@
 package app.ticket.Stage;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+
 import app.ticket.StartApplication;
 import app.ticket.ticketing.db.Stage;
 import app.ticket.ticketing.stage.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,20 +17,13 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-
 @SpringBootTest
 @Slf4j
 @ContextConfiguration(classes = StartApplication.class)
 public class StageUnitTests {
 
     /*
-        Stage 객체를 Test한다.
+     * Stage 객체를 Test한다.
      */
 
     @Autowired
@@ -44,7 +43,7 @@ public class StageUnitTests {
     @BeforeEach()
     void setData() {
         this.stages = new ArrayList<>();
-        for(int i = 0; i < 5; i++) {
+        for (int i = 0; i < 5; i++) {
             Stage newData = new Stage(setRequestData());
             newData.setCreatedAt(new Date());
             this.stages.add(newData);
@@ -92,8 +91,8 @@ public class StageUnitTests {
     @Test
     void readStageTest() {
         // given
-        List<Stage> testDatas =  this.stages;
-        Stage testData =  testDatas.get(0);
+        List<Stage> testDatas = this.stages;
+        Stage testData = testDatas.get(0);
 
         // when
         Stage result = stageRepository.findByStageId(testData.getStageId());
@@ -109,11 +108,11 @@ public class StageUnitTests {
         // given
 
         // when
-        List<Stage> result =  stageRepository.findByConcertId("test");
+        List<Stage> result = stageRepository.findByConcertId("test");
 
         // then
         assertThat(result.size(), is(5));
-        for(Stage item : result) {
+        for (Stage item : result) {
             assertThat(item.getStageId().length(), is(13));
         }
     }
@@ -144,7 +143,7 @@ public class StageUnitTests {
     @Test
     void updateStageTest() {
         // given
-        List<Stage> testDatas =  this.stages;
+        List<Stage> testDatas = this.stages;
         Stage testData = testDatas.get(0);
 
         // when
@@ -152,7 +151,7 @@ public class StageUnitTests {
         testData.setStageTime(updateDate);
         testData.setUpdatedAt(updateDate);
 
-        Stage result =  stageRepository.saveAndFlush(testData);
+        Stage result = stageRepository.saveAndFlush(testData);
 
         // then
         assertThat(result.getUpdatedAt(), is(notNullValue()));
@@ -162,7 +161,7 @@ public class StageUnitTests {
     @Test
     void deleteStageTest() {
         // given
-        List<Stage> testDatas =  this.stages;
+        List<Stage> testDatas = this.stages;
         Stage testData = testDatas.get(0);
 
         // when

@@ -1,9 +1,9 @@
 package app.ticket.ticketing.ticketing;
+
+import app.ticket.ticketing.db.Ticket;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import app.ticket.ticketing.db.Ticket;
 
 @RequiredArgsConstructor
 @RestController

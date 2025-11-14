@@ -2,14 +2,12 @@ package app.ticket.ticketing.db;
 
 import app.ticket.ticketing.concert.ConcertRequestDto;
 import io.hypersistence.tsid.TSID;
-import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
+import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.Date;
 
 @Entity
 @Getter
@@ -17,24 +15,24 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "concert")
-public class Concert extends BaseDB {
+public class Concert extends Basedb {
 
     // TSID 전략으로 PK 키 생성
     @Id
     @PrimaryKeyJoinColumn
-    @Column(name="concertId", columnDefinition = "CHAR(13)")
+    @Column(name = "concertId", columnDefinition = "CHAR(13)")
     private String concertId;
 
-    @Column(name="name")
+    @Column(name = "name")
     private String name;
 
-    @Column(name="detail")
+    @Column(name = "detail")
     private String detail;
 
-    @Column(name="bookStartTime")
+    @Column(name = "bookStartTime")
     private Date bookStartTime;
 
-    @Column(name="isDelete")
+    @Column(name = "isDelete")
     private Boolean isDelete;
 
     public Concert(ConcertRequestDto request) {
@@ -42,6 +40,6 @@ public class Concert extends BaseDB {
         this.name = request.getName();
         this.detail = request.getDetail();
         this.bookStartTime = request.getBookStartTime();
-        this.isDelete =  false;
+        this.isDelete = false;
     }
 }

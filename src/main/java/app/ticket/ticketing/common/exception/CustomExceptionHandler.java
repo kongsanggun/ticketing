@@ -1,6 +1,7 @@
 package app.ticket.ticketing.common.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,12 +9,11 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.util.*;
-
 @Slf4j
 @ControllerAdvice
 public class CustomExceptionHandler {
-    @ExceptionHandler(value = {CustomException.class,  RuntimeException.class})
+
+    @ExceptionHandler(value = {CustomException.class, RuntimeException.class})
     public ResponseEntity<Map<String, String>> customExceptionHandler(CustomException e, HttpServletRequest request) {
         log.error("ExceptionHandler() 호출 - {}, {}", request.getRequestURI(), e.getErrorMessage());
 
@@ -25,7 +25,8 @@ public class CustomExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationExceptionHandler(MethodArgumentNotValidException e, HttpServletRequest request) {
+    public ResponseEntity<Map<String, String>> handleValidationExceptionHandler(MethodArgumentNotValidException e,
+                    HttpServletRequest request) {
         log.error("ExceptionHandler() 호출 - {}, {}", request.getRequestURI(), "올바르지 않은 Parameter를 요청했습니다.");
 
         Map<String, String> responseMap = new HashMap<>();

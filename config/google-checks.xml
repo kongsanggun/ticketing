@@ -86,7 +86,6 @@
             <property name="allowByTailComment" value="true"/>
             <property name="allowNonPrintableEscapes" value="true"/>
         </module>
-        <module name="AvoidStarImport"/>
         <module name="OneTopLevelClass"/>
         <module name="NoLineWrap">
             <property name="tokens" value="PACKAGE_DEF, IMPORT, STATIC_IMPORT"/>
@@ -313,7 +312,7 @@
         </module>
         <module name="Indentation">
             <property name="basicOffset" value="4"/>
-            <property name="braceAdjustment" value="4"/>
+            <property name="braceAdjustment" value="0"/>
             <property name="caseIndent" value="4"/>
             <property name="throwsIndent" value="8"/>
             <property name="lineWrappingIndentation" value="8"/>

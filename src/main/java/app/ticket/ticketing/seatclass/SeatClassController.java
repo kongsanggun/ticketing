@@ -2,16 +2,16 @@ package app.ticket.ticketing.seatclass;
 
 import app.ticket.ticketing.db.SeatClass;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
 public class SeatClassController {
     private final SeatClassService seatClassService;
+
     @GetMapping("/seat-class/{id}")
     public List<SeatClass> readSeatClass(@PathVariable final String id) {
         return seatClassService.readSeatClass(id);

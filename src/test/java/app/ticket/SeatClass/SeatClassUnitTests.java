@@ -1,9 +1,15 @@
 package app.ticket.SeatClass;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+
 import app.ticket.StartApplication;
 import app.ticket.ticketing.db.SeatClass;
 import app.ticket.ticketing.seatclass.SeatClassRepository;
 import app.ticket.ticketing.seatclass.SeatClassRequestDto;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,20 +18,13 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-
 @SpringBootTest
 @Slf4j
 @ContextConfiguration(classes = StartApplication.class)
 public class SeatClassUnitTests {
 
     /*
-        SeatClass 객체를 Test한다.
+     * SeatClass 객체를 Test한다.
      */
 
     @Autowired
@@ -34,7 +33,7 @@ public class SeatClassUnitTests {
     private List<SeatClass> seatClass;
 
     SeatClassRequestDto setRequestData() {
-        char seatChar = (char)(Math.round((Math.random() * 14) + 65));
+        char seatChar = (char) (Math.round((Math.random() * 14) + 65));
         SeatClassRequestDto request = new SeatClassRequestDto();
         request.setConcertId("test");
         request.setName(seatChar + "석");
@@ -46,7 +45,7 @@ public class SeatClassUnitTests {
     @BeforeEach()
     void setData() {
         this.seatClass = new ArrayList<>();
-        for(int i = 0; i < 5; i++) {
+        for (int i = 0; i < 5; i++) {
             SeatClass newData = new SeatClass(setRequestData());
             newData.setCreatedAt(new Date());
             this.seatClass.add(newData);
@@ -94,8 +93,8 @@ public class SeatClassUnitTests {
     @Test
     void readSeatClassTest() {
         // given
-        List<SeatClass> testDatas =  this.seatClass;
-        SeatClass testData =  testDatas.get(0);
+        List<SeatClass> testDatas = this.seatClass;
+        SeatClass testData = testDatas.get(0);
 
         // when
         SeatClass result = seatClassRepository.findBySeatClassId(testData.getSeatClassId());
@@ -111,11 +110,11 @@ public class SeatClassUnitTests {
         // given
 
         // when
-        List<SeatClass> result =  seatClassRepository.findByConcertId("test");
+        List<SeatClass> result = seatClassRepository.findByConcertId("test");
 
         // then
         assertThat(result.size(), is(5));
-        for(SeatClass item : result) {
+        for (SeatClass item : result) {
             assertThat(item.getSeatClassId().length(), is(13));
         }
     }
@@ -146,15 +145,15 @@ public class SeatClassUnitTests {
     @Test
     void updateSeatClassTest() {
         // given
-        List<SeatClass> testDatas =  this.seatClass;
-        SeatClass testData =  testDatas.get(0);
+        List<SeatClass> testDatas = this.seatClass;
+        SeatClass testData = testDatas.get(0);
 
         // when
         testData.setName("testUpdated");
         testData.setPrice(10000);
         testData.setUpdatedAt(new Date());
 
-        SeatClass result =  seatClassRepository.saveAndFlush(testData);
+        SeatClass result = seatClassRepository.saveAndFlush(testData);
 
         // then
         assertThat(result.getSeatClassId(), is(testData.getSeatClassId()));
@@ -167,8 +166,8 @@ public class SeatClassUnitTests {
     @Test
     void deleteSeatClassTest() {
         // given
-        List<SeatClass> testDatas =  this.seatClass;
-        SeatClass testData =  testDatas.get(0);
+        List<SeatClass> testDatas = this.seatClass;
+        SeatClass testData = testDatas.get(0);
 
         // when
         seatClassRepository.delete(testData);

@@ -1,11 +1,10 @@
 package app.ticket.ticketing.ticketing;
 
+import app.ticket.ticketing.db.Ticket;
+import java.util.Date;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import app.ticket.ticketing.db.Ticket;
-
-import java.util.Date;
 
 @NoArgsConstructor
 @Getter
@@ -22,6 +21,6 @@ public class TicketingResponseDto {
         this.userId = ticket.getUserId();
         this.showId = ticket.getShowId();
         this.seat = ticket.getSeat();
-        this.bookTime =  ticket.getBookTime();
+        this.bookTime = ticket.getBookTime();
     }
 }
