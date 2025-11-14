@@ -3,12 +3,8 @@ package app.ticket.Ticketing;
 import app.ticket.StartApplication;
 import app.ticket.ticketing.common.exception.CustomException;
 import app.ticket.ticketing.common.exception.ExceptionCode;
-import app.ticket.ticketing.db.Stage;
 import app.ticket.ticketing.db.Ticket;
-import app.ticket.ticketing.stage.StageRepository;
-import app.ticket.ticketing.stage.StageRequestDto;
-import app.ticket.ticketing.stage.StageResponseDto;
-import app.ticket.ticketing.stage.StageService;
+
 import app.ticket.ticketing.ticketing.TicketRepository;
 import app.ticket.ticketing.ticketing.TicketingRequestDto;
 import app.ticket.ticketing.ticketing.TicketingResponseDto;
@@ -23,9 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -49,10 +42,7 @@ public class TicketingServiceTests {
 
     private Ticket ticket;
 
-    TicketingRequestDto setRequestData() {
-        final String seatNumber = String.valueOf(Math.round((Math.random() * 40) + 1));
-        final String seat = String.valueOf((char)(Math.round((Math.random() * 14) + 65))) + seatNumber;
-
+    TicketingRequestDto setRequestData(String seat) {
         TicketingRequestDto request = new TicketingRequestDto();
         request.setTicketId(TSID.fast().toString());
         request.setUserId(UUID.randomUUID().toString().substring(0, 13));
@@ -75,9 +65,7 @@ public class TicketingServiceTests {
 
     @BeforeEach()
     void setData() {
-        this.ticket = new Ticket(setRequestData());
-        this.ticket.setCreatedAt(new Date());
-
+        this.ticket = new Ticket(setRequestData("A1"));
         ticketRepository.saveAndFlush(ticket);
     }
 
@@ -85,16 +73,16 @@ public class TicketingServiceTests {
     @Test
     void createTicketServiceTest() {
         // given
-        Ticket newData = new Ticket(setRequestData());
+        TicketingRequestDto dto = setRequestData("B1");
 
         // when
-        TicketingResponseDto result = ticketingService.createTicket(setRequestData(newData));
+        TicketingResponseDto result = ticketingService.createTicket(dto);
 
         // then
         assertThat(result.getTicketId().length(), is(13));
         assertThat(result.getShowId(), is("service"));
 
-        assertThatThrownBy(() -> ticketingService.createTicket(setRequestData(newData)))
+        assertThatThrownBy(() -> ticketingService.createTicket(dto))
                 .isInstanceOf(CustomException.class)
                 .hasFieldOrPropertyWithValue("errorMessage", ExceptionCode.CHECKED_TICKET.getMessage());
     }

@@ -26,10 +26,7 @@ public class TicketingUnitTests {
 
     private Ticket ticket;
 
-    TicketingRequestDto setRequestData() {
-        final String seatNumber = String.valueOf(Math.round((Math.random() * 40) + 1));
-        final String seat = String.valueOf((char)(Math.round((Math.random() * 14) + 65))) + seatNumber;
-
+    TicketingRequestDto setRequestData(String seat) {
         TicketingRequestDto request = new TicketingRequestDto();
         request.setTicketId(TSID.fast().toString());
         request.setUserId(UUID.randomUUID().toString().substring(0, 13));
@@ -41,9 +38,7 @@ public class TicketingUnitTests {
 
     @BeforeEach()
     void setData() {
-        this.ticket = new Ticket(setRequestData());
-        this.ticket.setCreatedAt(new Date());
-
+        this.ticket = new Ticket(setRequestData("A1"));
         ticketRepository.saveAndFlush(ticket);
     }
 
@@ -51,7 +46,7 @@ public class TicketingUnitTests {
     @Test
     void createTicketTest() {
         // given
-        Ticket newData = new Ticket(setRequestData());
+        Ticket newData = new Ticket(setRequestData("B1"));
         newData.setCreatedAt(new Date());
 
         // when
@@ -66,7 +61,9 @@ public class TicketingUnitTests {
     @Test
     void createWrongTicketTest() {
         // given
-        Ticket notCreatedAtData = new Ticket(setRequestData());
+        Ticket notCreatedAtData = new Ticket(setRequestData("B1"));
+        notCreatedAtData.setCreatedAt(null);
+
         Ticket notIdData = new Ticket();
 
         // when
@@ -98,7 +95,7 @@ public class TicketingUnitTests {
     @Test
     void readUserIdTest() {
         // given
-        Ticket testData= this.ticket;
+        Ticket testData = this.ticket;
 
         // when
         Ticket result = ticketRepository.findByUserIdAndShowId(testData.getUserId(), testData.getShowId());

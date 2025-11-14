@@ -59,8 +59,6 @@ public class TicketingE2ETests {
     public TicketingRequestDto setData() {
         TicketingRequestDto param = setParam();
         Ticket ticket = new Ticket(param);
-        ticket.setCreatedAt(new Date());
-
         ticketRepository.save(ticket);
         return param;
     }

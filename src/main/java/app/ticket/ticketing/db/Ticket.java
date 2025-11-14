@@ -41,5 +41,6 @@ public class Ticket extends BaseDB {
         this.showId = request.getShowId();
         this.seat = request.getSeat();
         this.bookTime =  new Date();
+        this.setCreatedAt(new Date());
     }
 }
