@@ -1,16 +1,13 @@
 package app.ticket.ticketing.db;
 
-import app.ticket.ticketing.seatclass.SeatClassRequestDto;
 import app.ticket.ticketing.concert.ConcertRequestDto;
+import app.ticket.ticketing.seatclass.SeatClassRequestDto;
 import io.hypersistence.tsid.TSID;
-import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.UUID;
 
 @Entity
 @Getter
@@ -18,20 +15,20 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "seat_class")
-public class SeatClass extends BaseDB {
+public class SeatClass extends Basedb {
 
     // TSID 전략으로 PK 키 생성
     @Id
-    @Column(name="seatClassId", columnDefinition = "CHAR(13)")
+    @Column(name = "seatClassId", columnDefinition = "CHAR(13)")
     private String seatClassId;
 
-    @Column(nullable = false, name="concertId")
+    @Column(nullable = false, name = "concertId")
     private String concertId;
 
-    @Column(name="name")
+    @Column(name = "name")
     private String name;
 
-    @Column(nullable = false, name="price")
+    @Column(nullable = false, name = "price")
     private Integer price;
 
     public SeatClass(SeatClassRequestDto request) {

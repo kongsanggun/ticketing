@@ -1,21 +1,20 @@
 package app.ticket.Ticketing;
 
-import app.ticket.ticketing.ticketing.TicketingRequestDto;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+
 import app.ticket.ticketing.db.Ticket;
 import app.ticket.ticketing.ticketing.TicketRepository;
+import app.ticket.ticketing.ticketing.TicketingRequestDto;
 import io.hypersistence.tsid.TSID;
+import java.util.Date;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
-
-import java.util.Date;
-import java.util.UUID;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 
 @SpringBootTest
 @Slf4j
@@ -81,7 +80,7 @@ public class TicketingUnitTests {
     @Test
     void readTicketIdTest() {
         // given
-        Ticket testData= this.ticket;
+        Ticket testData = this.ticket;
 
         // when
         Ticket result = ticketRepository.findByTicketId(testData.getTicketId());
@@ -140,5 +139,4 @@ public class TicketingUnitTests {
     void deleteData() {
         ticketRepository.deleteAll();
     }
-
 }

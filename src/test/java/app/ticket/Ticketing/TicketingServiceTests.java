@@ -1,15 +1,19 @@
 package app.ticket.Ticketing;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+
 import app.ticket.StartApplication;
 import app.ticket.ticketing.common.exception.CustomException;
 import app.ticket.ticketing.common.exception.ExceptionCode;
 import app.ticket.ticketing.db.Ticket;
-
 import app.ticket.ticketing.ticketing.TicketRepository;
 import app.ticket.ticketing.ticketing.TicketingRequestDto;
 import app.ticket.ticketing.ticketing.TicketingResponseDto;
 import app.ticket.ticketing.ticketing.TicketingService;
 import io.hypersistence.tsid.TSID;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,19 +23,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.util.UUID;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-
 @SpringBootTest
 @Slf4j
 @ContextConfiguration(classes = StartApplication.class)
 public class TicketingServiceTests {
 
     /*
-        TicketingService를 Test한다.
+     * TicketingService를 Test한다.
      */
 
     @Autowired
@@ -82,9 +80,8 @@ public class TicketingServiceTests {
         assertThat(result.getTicketId().length(), is(13));
         assertThat(result.getShowId(), is("service"));
 
-        assertThatThrownBy(() -> ticketingService.createTicket(dto))
-                .isInstanceOf(CustomException.class)
-                .hasFieldOrPropertyWithValue("errorMessage", ExceptionCode.CHECKED_TICKET.getMessage());
+        assertThatThrownBy(() -> ticketingService.createTicket(dto)).isInstanceOf(CustomException.class)
+                        .hasFieldOrPropertyWithValue("errorMessage", ExceptionCode.CHECKED_TICKET.getMessage());
     }
 
     @DisplayName("ticketing - 조회 서비스 테스트")
@@ -98,9 +95,8 @@ public class TicketingServiceTests {
         assertThat(result.getTicketId(), is(ticket.getTicketId()));
         assertThat(result.getShowId(), is("service"));
 
-        assertThatThrownBy(() -> ticketingService.checkTicket("wrongTest"))
-                .isInstanceOf(CustomException.class)
-                .hasFieldOrPropertyWithValue("errorMessage", ExceptionCode.NOT_DATA.getMessage());
+        assertThatThrownBy(() -> ticketingService.checkTicket("wrongTest")).isInstanceOf(CustomException.class)
+                        .hasFieldOrPropertyWithValue("errorMessage", ExceptionCode.NOT_DATA.getMessage());
     }
 
     @DisplayName("ticketing - 삭제 서비스 테스트")
@@ -116,8 +112,8 @@ public class TicketingServiceTests {
         assertThat(result, is(nullValue()));
 
         assertThatThrownBy(() -> ticketingService.cancelTicket(setRequestData(ticket)))
-                .isInstanceOf(CustomException.class)
-                .hasFieldOrPropertyWithValue("errorMessage", ExceptionCode.NOT_DATA.getMessage());
+                        .isInstanceOf(CustomException.class)
+                        .hasFieldOrPropertyWithValue("errorMessage", ExceptionCode.NOT_DATA.getMessage());
     }
 
     @AfterEach()

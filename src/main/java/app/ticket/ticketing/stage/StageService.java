@@ -5,12 +5,10 @@ import app.ticket.ticketing.common.exception.ExceptionCode;
 import app.ticket.ticketing.concert.ConcertRequestDto;
 import app.ticket.ticketing.db.Stage;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-
-import org.springframework.stereotype.Service;
-
 import java.util.Date;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
@@ -19,10 +17,10 @@ public class StageService {
     private final StageRepository stageRepository;
 
     /*
-     *  공연 내 모든 시간표을 조회한다.
+     * 공연 내 모든 시간표을 조회한다.
      */
     public List<Stage> readStages(String concertId) {
-        List<Stage> stage =  stageRepository.findByConcertId(concertId);
+        List<Stage> stage = stageRepository.findByConcertId(concertId);
         if (stage.isEmpty()) {
             throw new CustomException(ExceptionCode.NOT_DATA);
         }
@@ -30,7 +28,7 @@ public class StageService {
     }
 
     /*
-     *   공연 내 시간표를 추가한다.
+     * 공연 내 시간표를 추가한다.
      */
     public StageResponseDto createStage(StageRequestDto request) {
         Stage stage = new Stage(request);
@@ -40,7 +38,7 @@ public class StageService {
     }
 
     /*
-     *   공연 생성으로 인하여 공연 내 시간표를 추가한다.
+     * 공연 생성으로 인하여 공연 내 시간표를 추가한다.
      */
     public void createPriceByConcert(ConcertRequestDto request) {
         Stage stage = new Stage(request);
@@ -49,7 +47,7 @@ public class StageService {
     }
 
     /*
-     *   공연 내 시간표를 수정한다.
+     * 공연 내 시간표를 수정한다.
      */
     public StageResponseDto updateStage(StageRequestDto request) {
         Stage stage = checkExist(request);
@@ -60,7 +58,7 @@ public class StageService {
     }
 
     /*
-     *  공연 내 시간표를 삭제한다.
+     * 공연 내 시간표를 삭제한다.
      */
     public void deleteStage(StageRequestDto request) {
         // 1. 삭제 이후 남아있는 가격이 존재하지 않을 경우가 있는지 확인한다.
@@ -74,11 +72,10 @@ public class StageService {
     }
 
     /*
-     *  존재하는 공연 내 시간표인지 확인한다.
-     *  존재 시 해당 값을 반환한다.
+     * 존재하는 공연 내 시간표인지 확인한다. 존재 시 해당 값을 반환한다.
      */
     private Stage checkExist(StageRequestDto request) {
-        Stage stage =  stageRepository.findByStageId(request.getStageId());
+        Stage stage = stageRepository.findByStageId(request.getStageId());
         if (stage == null) {
             throw new CustomException(ExceptionCode.NOT_DATA);
         }

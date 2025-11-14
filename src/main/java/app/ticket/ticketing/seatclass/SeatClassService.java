@@ -4,13 +4,11 @@ import app.ticket.ticketing.common.exception.CustomException;
 import app.ticket.ticketing.common.exception.ExceptionCode;
 import app.ticket.ticketing.concert.ConcertRequestDto;
 import app.ticket.ticketing.db.SeatClass;
-
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.util.Date;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
@@ -19,10 +17,10 @@ public class SeatClassService {
     private final SeatClassRepository seatClassRepository;
 
     /*
-     *  공연 내 모든 가격을 조회한다.
+     * 공연 내 모든 가격을 조회한다.
      */
     public List<SeatClass> readSeatClass(String concertId) {
-        List<SeatClass> seatClass =  seatClassRepository.findByConcertId(concertId);
+        List<SeatClass> seatClass = seatClassRepository.findByConcertId(concertId);
         if (seatClass.isEmpty()) {
             throw new CustomException(ExceptionCode.NOT_DATA);
         }
@@ -30,7 +28,7 @@ public class SeatClassService {
     }
 
     /*
-     *  공연 내 가격을 추가한다.
+     * 공연 내 가격을 추가한다.
      */
     public SeatClassResponseDto createSeatClass(SeatClassRequestDto request) {
         SeatClass seatClass = new SeatClass(request);
@@ -40,7 +38,7 @@ public class SeatClassService {
     }
 
     /*
-     *  공연 생성으로 인하여 공연 내 가격을 추가한다.
+     * 공연 생성으로 인하여 공연 내 가격을 추가한다.
      */
     public void createSeatClassByConcert(ConcertRequestDto request) {
         SeatClass seatClass = new SeatClass(request);
@@ -49,7 +47,7 @@ public class SeatClassService {
     }
 
     /*
-     *  공연 내 가격을 수정한다.
+     * 공연 내 가격을 수정한다.
      */
     public SeatClassResponseDto updateSeatClass(SeatClassRequestDto request) {
         SeatClass seatClass = checkExist(request);
@@ -61,7 +59,7 @@ public class SeatClassService {
     }
 
     /*
-     *  공연 내 가격을 삭제한다.
+     * 공연 내 가격을 삭제한다.
      */
     public void deleteSeatClass(SeatClassRequestDto request) {
         // 1. 삭제 이후 남아있는 가격이 존재하지 않을 경우가 있는지 확인한다.
@@ -75,11 +73,10 @@ public class SeatClassService {
     }
 
     /*
-     *  존재하는 공연 내 가격인지 확인한다.
-     *  존재 시 해당 값을 반환한다.
+     * 존재하는 공연 내 가격인지 확인한다. 존재 시 해당 값을 반환한다.
      */
     private SeatClass checkExist(SeatClassRequestDto request) {
-        SeatClass seatClass =  seatClassRepository.findBySeatClassId(request.getSeatClassId());
+        SeatClass seatClass = seatClassRepository.findBySeatClassId(request.getSeatClassId());
         if (seatClass == null) {
             throw new CustomException(ExceptionCode.NOT_DATA);
         }

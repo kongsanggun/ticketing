@@ -1,9 +1,14 @@
 package app.ticket.Concert;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+
 import app.ticket.StartApplication;
 import app.ticket.ticketing.concert.ConcertRepository;
 import app.ticket.ticketing.concert.ConcertRequestDto;
 import app.ticket.ticketing.db.Concert;
+import java.util.Date;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,19 +17,13 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.util.Date;
-import java.util.List;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-
 @SpringBootTest
 @Slf4j
 @ContextConfiguration(classes = StartApplication.class)
 public class ConcertUnitTests {
 
     /*
-        concert 객체를 Test한다.
+     * concert 객체를 Test한다.
      */
 
     @Autowired
@@ -90,7 +89,7 @@ public class ConcertUnitTests {
     @Test
     void readConcertTest() {
         // given
-        Concert testData= this.concert;
+        Concert testData = this.concert;
 
         // when
         Concert result = concertRepository.findByConcertId(testData.getConcertId());
@@ -113,7 +112,7 @@ public class ConcertUnitTests {
 
         // then
         assertThat(result.size(), not(1));
-        for(Concert item : result) {
+        for (Concert item : result) {
             assertThat(item.getConcertId().length(), is(13));
         }
     }
@@ -138,7 +137,7 @@ public class ConcertUnitTests {
     @Test
     void updateConcertTest() {
         // given
-        Concert testData= this.concert;
+        Concert testData = this.concert;
 
         // when
         testData.setName("testUpdated");

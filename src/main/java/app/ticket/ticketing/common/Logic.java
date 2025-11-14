@@ -1,5 +1,6 @@
 package app.ticket.ticketing.common;
 
-public interface ILogic {
+public interface Logic {
+
     void execute();
 }

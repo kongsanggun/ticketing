@@ -1,17 +1,12 @@
 package app.ticket.ticketing.ticketing;
 
 import app.ticket.ticketing.db.Ticket;
-import jakarta.persistence.LockModeType;
-
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
-
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Repository
 @Transactional()
@@ -26,5 +21,6 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     Ticket findByUserIdAndShowId(String userId, String showId);
 
     Ticket findByTicketId(String ticketId);
+
     void deleteByTicketId(String ticketId);
 }

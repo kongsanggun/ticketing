@@ -1,21 +1,20 @@
 package app.ticket.Concert;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+
 import app.ticket.StartApplication;
 import app.ticket.ticketing.concert.ConcertController;
 import app.ticket.ticketing.concert.ConcertRepository;
 import app.ticket.ticketing.concert.ConcertRequestDto;
 import app.ticket.ticketing.concert.ConcertResponseDto;
 import app.ticket.ticketing.db.Concert;
+import java.util.Date;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
-
-import java.util.Date;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 
 @SpringBootTest
 @Slf4j
@@ -23,7 +22,7 @@ import static org.hamcrest.Matchers.*;
 public class ConcertControllerTests {
 
     /*
-        ConcertController를 Test한다.
+     * ConcertController를 Test한다.
      */
 
     @Autowired
@@ -68,7 +67,7 @@ public class ConcertControllerTests {
     @Test
     void readConcertControllerTest() {
         // given
-        Concert testData= this.concert;
+        Concert testData = this.concert;
 
         // when
         Concert result = concertController.readConcert(testData.getConcertId());

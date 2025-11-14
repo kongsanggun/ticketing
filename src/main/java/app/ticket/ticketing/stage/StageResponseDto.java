@@ -1,12 +1,11 @@
 package app.ticket.ticketing.stage;
 
 import app.ticket.ticketing.db.Stage;
+import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor

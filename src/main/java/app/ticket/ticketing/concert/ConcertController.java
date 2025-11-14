@@ -23,7 +23,7 @@ public class ConcertController {
     @PostMapping("/concert")
     @ResponseStatus(HttpStatus.CREATED)
     public ConcertResponseDto createConcert(@Valid @RequestBody final ConcertRequestDto request) {
-        ConcertResponseDto result =  concertService.createConcert(request);
+        ConcertResponseDto result = concertService.createConcert(request);
 
         request.setConcertId(result.getConcertId());
         seatClassService.createSeatClassByConcert(request);
