@@ -39,10 +39,7 @@ public class TicketingControllerTests {
 
     private Ticket ticket;
 
-    TicketingRequestDto setRequestData() {
-        final String seatNumber = String.valueOf(Math.round((Math.random() * 40) + 1));
-        final String seat = String.valueOf((char)(Math.round((Math.random() * 14) + 65))) + seatNumber;
-
+    TicketingRequestDto setRequestData(String seat) {
         TicketingRequestDto request = new TicketingRequestDto();
         request.setTicketId(TSID.fast().toString());
         request.setUserId(UUID.randomUUID().toString().substring(0, 13));
@@ -65,9 +62,7 @@ public class TicketingControllerTests {
 
     @BeforeEach()
     void setData() {
-        this.ticket = new Ticket(setRequestData());
-        this.ticket.setCreatedAt(new Date());
-
+        this.ticket = new Ticket(setRequestData("A1"));
         ticketRepository.saveAndFlush(ticket);
     }
 
@@ -75,10 +70,10 @@ public class TicketingControllerTests {
     @Test
     void createTicketingControllerTest() throws Exception {
         // given
-        Ticket newData = new Ticket(setRequestData());
+        TicketingRequestDto dto = setRequestData("B1");
 
         // when
-        TicketingResponseDto result = ticketingController.createTicket(setRequestData(newData));
+        TicketingResponseDto result = ticketingController.createTicket(dto);
 
         // then
         assertThat(result.getTicketId().length(), is(13));
