@@ -1,7 +1,7 @@
 package app.ticket.ticketing.seatclass;
 
-import app.ticket.ticketing.common.exception.CustomException;
-import app.ticket.ticketing.common.exception.ExceptionCode;
+import app.ticket.ticketing.common.exception.custom.seatclass.SeatClassIdNotDataException;
+import app.ticket.ticketing.common.exception.custom.seatclass.SeatClassNotRemainException;
 import app.ticket.ticketing.concert.ConcertRequestDto;
 import app.ticket.ticketing.db.SeatClass;
 import jakarta.transaction.Transactional;
@@ -22,7 +22,7 @@ public class SeatClassService {
     public List<SeatClass> readSeatClass(String concertId) {
         List<SeatClass> seatClass = seatClassRepository.findByConcertId(concertId);
         if (seatClass.isEmpty()) {
-            throw new CustomException(ExceptionCode.NOT_DATA);
+            throw new SeatClassIdNotDataException();
         }
         return seatClass;
     }
@@ -64,7 +64,7 @@ public class SeatClassService {
     public void deleteSeatClass(SeatClassRequestDto request) {
         // 1. 삭제 이후 남아있는 가격이 존재하지 않을 경우가 있는지 확인한다.
         if (this.readSeatClass(request.getConcertId()).size() <= 1) {
-            throw new CustomException(ExceptionCode.EMPTY_PRICE);
+            throw new SeatClassNotRemainException();
         }
 
         // 2. 동일한 중복요청이 있는지 확인한다.
@@ -78,7 +78,7 @@ public class SeatClassService {
     private SeatClass checkExist(SeatClassRequestDto request) {
         SeatClass seatClass = seatClassRepository.findBySeatClassId(request.getSeatClassId());
         if (seatClass == null) {
-            throw new CustomException(ExceptionCode.NOT_DATA);
+            throw new SeatClassIdNotDataException();
         }
         return seatClass;
     }

@@ -1,7 +1,7 @@
 package app.ticket.ticketing.concert;
 
-import app.ticket.ticketing.common.exception.CustomException;
-import app.ticket.ticketing.common.exception.ExceptionCode;
+import app.ticket.ticketing.common.exception.custom.concert.ConcertAlreadyExistException;
+import app.ticket.ticketing.common.exception.custom.concert.ConcertIdNotDataException;
 import app.ticket.ticketing.db.Concert;
 import java.util.Date;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ public class ConcertService {
     public Concert readConcert(String concertId) {
         Concert concert = concertRepository.findByConcertId(concertId);
         if (concert == null) {
-            throw new CustomException(ExceptionCode.NOT_DATA);
+            throw new ConcertIdNotDataException();
         }
         return concert;
     }
@@ -30,7 +30,7 @@ public class ConcertService {
     public ConcertResponseDto createConcert(ConcertRequestDto request) {
         // 1. 동일한 중복요청이 있는지 확인한다.
         if (concertRepository.findByConcertId(request.getConcertId()) != null) {
-            throw new CustomException(ExceptionCode.ADDED_SHOW);
+            throw new ConcertAlreadyExistException();
         }
 
         // 2. 공연을 추가한다.
@@ -69,7 +69,7 @@ public class ConcertService {
     private Concert checkExist(ConcertRequestDto request) {
         Concert result = concertRepository.findByConcertIdAndIsDelete(request.getConcertId(), false);
         if (result == null) {
-            throw new CustomException(ExceptionCode.NOT_DATA);
+            throw new ConcertIdNotDataException();
         }
         return result;
     }

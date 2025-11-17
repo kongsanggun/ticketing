@@ -1,7 +1,8 @@
 package app.ticket.ticketing.ticketing;
 
-import app.ticket.ticketing.common.exception.CustomException;
-import app.ticket.ticketing.common.exception.ExceptionCode;
+import app.ticket.ticketing.common.exception.custom.ticket.TicketAlreadyExistException;
+import app.ticket.ticketing.common.exception.custom.ticket.TicketIdNotDataException;
+import app.ticket.ticketing.common.exception.custom.ticket.TicketSelectedException;
 import app.ticket.ticketing.db.Ticket;
 import app.ticket.ticketing.redis.RedisLock;
 import java.util.Date;
@@ -29,7 +30,7 @@ public class TicketingService {
     private void checkDuplicateRequest(Ticket ticket) {
         Ticket duplicate = ticketRepository.findByUserIdAndShowId(ticket.getUserId(), ticket.getShowId());
         if (duplicate != null) {
-            throw new CustomException(ExceptionCode.CHECKED_TICKET);
+            throw new TicketAlreadyExistException();
         }
     }
 
@@ -38,7 +39,7 @@ public class TicketingService {
             checkDuplicateRequest(ticket);
             Optional<Ticket> savedSeat = ticketRepository.findByShowIdAndSeat(ticket.getShowId(), ticket.getSeat());
             if (savedSeat.isPresent()) {
-                throw new CustomException(ExceptionCode.SEAT_SELECTED);
+                throw new TicketSelectedException();
             }
             ticket.setCreatedAt(new Date());
             ticketRepository.saveAndFlush(ticket);
@@ -51,7 +52,7 @@ public class TicketingService {
     public void cancelTicket(TicketingRequestDto request) {
         redisLock.getLock(request.getShowId(), () -> {
             ticketRepository.findByTicketIdForUpdate(request.getTicketId()).orElseThrow(() -> {
-                throw new CustomException(ExceptionCode.NOT_DATA);
+                throw new TicketIdNotDataException();
             });
             ticketRepository.deleteByTicketId(request.getTicketId());
         });
@@ -63,7 +64,7 @@ public class TicketingService {
     public Ticket checkTicket(String ticketId) {
         Ticket ticket = ticketRepository.findByTicketId(ticketId);
         if (ticket == null) {
-            throw new CustomException(ExceptionCode.NOT_DATA);
+            throw new TicketIdNotDataException();
         }
         return ticket;
     }
