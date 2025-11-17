@@ -6,8 +6,8 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
 import app.ticket.StartApplication;
-import app.ticket.ticketing.common.exception.CustomException;
-import app.ticket.ticketing.common.exception.ExceptionCode;
+import app.ticket.ticketing.common.exception.custom.seatclass.SeatClassIdNotDataException;
+import app.ticket.ticketing.common.exception.custom.seatclass.SeatClassNotRemainException;
 import app.ticket.ticketing.db.SeatClass;
 import app.ticket.ticketing.seatclass.SeatClassRepository;
 import app.ticket.ticketing.seatclass.SeatClassRequestDto;
@@ -84,8 +84,8 @@ public class SeatClassServiceTests {
         }
 
         // then
-        assertThatThrownBy(() -> seatClassService.readSeatClass("wrongTest")).isInstanceOf(CustomException.class)
-                        .hasFieldOrPropertyWithValue("errorMessage", ExceptionCode.NOT_DATA.getMessage());
+        assertThatThrownBy(() -> seatClassService.readSeatClass("wrongTest"))
+                        .isInstanceOf(SeatClassIdNotDataException.class);
     }
 
     @DisplayName("seatClass - 수정 서비스 테스트")
@@ -123,14 +123,12 @@ public class SeatClassServiceTests {
         assertThat(result, is(nullValue()));
 
         assertThatThrownBy(() -> seatClassService.deleteSeatClass(setRequestData(testDatas.get(0))))
-                        .isInstanceOf(CustomException.class)
-                        .hasFieldOrPropertyWithValue("errorMessage", ExceptionCode.NOT_DATA.getMessage());
+                        .isInstanceOf(SeatClassIdNotDataException.class);
 
         assertThatThrownBy(() -> {
             seatClassService.deleteSeatClass(setRequestData(testDatas.get(1)));
             seatClassService.deleteSeatClass(setRequestData(testDatas.get(2)));
-        }).isInstanceOf(CustomException.class).hasFieldOrPropertyWithValue("errorMessage",
-                        ExceptionCode.EMPTY_PRICE.getMessage());
+        }).isInstanceOf(SeatClassNotRemainException.class);
     }
 
     @AfterEach()

@@ -1,8 +1,8 @@
 package app.ticket.ticketing.redis;
 
 import app.ticket.ticketing.common.Logic;
-import app.ticket.ticketing.common.exception.CustomException;
-import app.ticket.ticketing.common.exception.ExceptionCode;
+import app.ticket.ticketing.common.exception.custom.redis.RedisInterruptedException;
+import app.ticket.ticketing.common.exception.custom.redis.RedisTimeoutException;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RLock;
@@ -23,11 +23,11 @@ public class RedisLock {
             if (lock.tryLock(10, 5, TimeUnit.SECONDS)) {
                 logic.execute();
             } else {
-                throw new CustomException(ExceptionCode.LOCK_TIME_OUT);
+                throw new RedisTimeoutException();
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new CustomException(ExceptionCode.INTERRUPTED);
+            throw new RedisInterruptedException();
         } finally {
             if (lock != null && lock.isHeldByCurrentThread()) {
                 lock.unlock();

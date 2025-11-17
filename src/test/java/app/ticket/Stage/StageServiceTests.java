@@ -5,8 +5,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 import app.ticket.StartApplication;
-import app.ticket.ticketing.common.exception.CustomException;
-import app.ticket.ticketing.common.exception.ExceptionCode;
+import app.ticket.ticketing.common.exception.custom.stage.StageIdNotDataException;
+import app.ticket.ticketing.common.exception.custom.stage.StageNotRemainException;
 import app.ticket.ticketing.db.Stage;
 import app.ticket.ticketing.stage.*;
 import io.hypersistence.tsid.TSID;
@@ -76,8 +76,7 @@ public class StageServiceTests {
             assertThat(item.getStageId().length(), is(13));
         }
 
-        assertThatThrownBy(() -> stageService.readStages("wrongTest")).isInstanceOf(CustomException.class)
-                        .hasFieldOrPropertyWithValue("errorMessage", ExceptionCode.NOT_DATA.getMessage());
+        assertThatThrownBy(() -> stageService.readStages("wrongTest")).isInstanceOf(StageIdNotDataException.class);
     }
 
     @DisplayName("stage - 수정 서비스 테스트")
@@ -112,14 +111,12 @@ public class StageServiceTests {
         assertThat(result, is(nullValue()));
 
         assertThatThrownBy(() -> stageService.deleteStage(setRequestData(testDatas.get(0))))
-                        .isInstanceOf(CustomException.class)
-                        .hasFieldOrPropertyWithValue("errorMessage", ExceptionCode.NOT_DATA.getMessage());
+                        .isInstanceOf(StageIdNotDataException.class);
 
         assertThatThrownBy(() -> {
             stageService.deleteStage(setRequestData(testDatas.get(1)));
             stageService.deleteStage(setRequestData(testDatas.get(2)));
-        }).isInstanceOf(CustomException.class).hasFieldOrPropertyWithValue("errorMessage",
-                        ExceptionCode.EMPTY_STAGE.getMessage());
+        }).isInstanceOf(StageNotRemainException.class);
     }
 
     @AfterEach()

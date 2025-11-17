@@ -5,8 +5,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 import app.ticket.StartApplication;
-import app.ticket.ticketing.common.exception.CustomException;
-import app.ticket.ticketing.common.exception.ExceptionCode;
+import app.ticket.ticketing.common.exception.custom.concert.ConcertAlreadyExistException;
+import app.ticket.ticketing.common.exception.custom.concert.ConcertIdNotDataException;
 import app.ticket.ticketing.concert.ConcertRepository;
 import app.ticket.ticketing.concert.ConcertRequestDto;
 import app.ticket.ticketing.concert.ConcertResponseDto;
@@ -80,8 +80,7 @@ public class ConcertServiceTests {
         assertThat(result.getConcertId().length(), is(13));
         assertThat(result.getName(), is("test"));
         assertThatThrownBy(() -> concertService.createConcert(setRequestData(newData)))
-                        .isInstanceOf(CustomException.class)
-                        .hasFieldOrPropertyWithValue("errorMessage", ExceptionCode.ADDED_SHOW.getMessage());
+                        .isInstanceOf(ConcertAlreadyExistException.class);
     }
 
     @DisplayName("concert - 조회 서비스 테스트")
@@ -92,8 +91,7 @@ public class ConcertServiceTests {
 
         // then
         assertThat(result.getConcertId().length(), is(13));
-        assertThatThrownBy(() -> concertService.readConcert("wrongTest")).isInstanceOf(CustomException.class)
-                        .hasFieldOrPropertyWithValue("errorMessage", ExceptionCode.NOT_DATA.getMessage());
+        assertThatThrownBy(() -> concertService.readConcert("wrongTest")).isInstanceOf(ConcertIdNotDataException.class);
     }
 
     @DisplayName("concert - 수정 서비스 테스트")
@@ -125,8 +123,7 @@ public class ConcertServiceTests {
 
         // then
         assertThat(result, is(nullValue()));
-        assertThatThrownBy(() -> concertService.deleteConcert(data)).isInstanceOf(CustomException.class)
-                        .hasFieldOrPropertyWithValue("errorMessage", ExceptionCode.NOT_DATA.getMessage());
+        assertThatThrownBy(() -> concertService.deleteConcert(data)).isInstanceOf(ConcertIdNotDataException.class);
     }
 
     @AfterEach()
