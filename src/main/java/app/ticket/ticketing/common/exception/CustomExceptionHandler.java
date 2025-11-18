@@ -18,7 +18,6 @@ public class CustomExceptionHandler {
         log.error("ExceptionHandler() 호출 - {}, {}", request.getRequestURI(), e.getErrorMessage());
 
         Map<String, String> responseMap = new HashMap<>();
-        responseMap.put("code", String.valueOf(e.getErrorCode()));
         responseMap.put("message", String.valueOf(e.getErrorMessage()));
 
         return ResponseEntity.status(e.getHttpStatus()).body(responseMap);
@@ -30,7 +29,6 @@ public class CustomExceptionHandler {
         log.error("ExceptionHandler() 호출 - {}, {}", request.getRequestURI(), "올바르지 않은 Parameter를 요청했습니다.");
 
         Map<String, String> responseMap = new HashMap<>();
-        responseMap.put("code", String.valueOf("4000"));
         responseMap.put("message", String.valueOf("올바르지 않은 Parameter를 요청했습니다."));
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
