@@ -4,7 +4,7 @@ import app.ticket.ticketing.common.exception.CustomException;
 import app.ticket.ticketing.common.exception.ExceptionCode;
 
 public class SeatClassIdNotDataException extends CustomException {
-    public SeatClassIdNotDataException() {
-        super(ExceptionCode.NOT_DATA);
+    public SeatClassIdNotDataException(String seatClassId) {
+        super(ExceptionCode.NOT_DATA, seatClassId);
     }
 }

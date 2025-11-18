@@ -22,7 +22,7 @@ public class SeatClassService {
     public List<SeatClass> readSeatClass(String concertId) {
         List<SeatClass> seatClass = seatClassRepository.findByConcertId(concertId);
         if (seatClass.isEmpty()) {
-            throw new SeatClassIdNotDataException();
+            throw new SeatClassIdNotDataException(concertId);
         }
         return seatClass;
     }
@@ -78,7 +78,7 @@ public class SeatClassService {
     private SeatClass checkExist(SeatClassRequestDto request) {
         SeatClass seatClass = seatClassRepository.findBySeatClassId(request.getSeatClassId());
         if (seatClass == null) {
-            throw new SeatClassIdNotDataException();
+            throw new SeatClassIdNotDataException(request.getSeatClassId());
         }
         return seatClass;
     }

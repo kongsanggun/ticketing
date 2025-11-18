@@ -4,7 +4,7 @@ import app.ticket.ticketing.common.exception.CustomException;
 import app.ticket.ticketing.common.exception.ExceptionCode;
 
 public class TicketAlreadyExistException extends CustomException {
-    public TicketAlreadyExistException() {
-        super(ExceptionCode.CHECKED_TICKET);
+    public TicketAlreadyExistException(String detail) {
+        super(ExceptionCode.CHECKED_TICKET, detail);
     }
 }

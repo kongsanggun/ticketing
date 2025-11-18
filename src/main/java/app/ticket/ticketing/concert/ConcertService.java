@@ -19,7 +19,7 @@ public class ConcertService {
     public Concert readConcert(String concertId) {
         Concert concert = concertRepository.findByConcertId(concertId);
         if (concert == null) {
-            throw new ConcertIdNotDataException();
+            throw new ConcertIdNotDataException(concertId);
         }
         return concert;
     }
@@ -30,7 +30,7 @@ public class ConcertService {
     public ConcertResponseDto createConcert(ConcertRequestDto request) {
         // 1. 동일한 중복요청이 있는지 확인한다.
         if (concertRepository.findByConcertId(request.getConcertId()) != null) {
-            throw new ConcertAlreadyExistException();
+            throw new ConcertAlreadyExistException(request.getConcertId());
         }
 
         // 2. 공연을 추가한다.
@@ -69,7 +69,7 @@ public class ConcertService {
     private Concert checkExist(ConcertRequestDto request) {
         Concert result = concertRepository.findByConcertIdAndIsDelete(request.getConcertId(), false);
         if (result == null) {
-            throw new ConcertIdNotDataException();
+            throw new ConcertIdNotDataException(request.getConcertId());
         }
         return result;
     }

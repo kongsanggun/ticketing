@@ -30,7 +30,7 @@ public class TicketingService {
     private void checkDuplicateRequest(Ticket ticket) {
         Ticket duplicate = ticketRepository.findByUserIdAndShowId(ticket.getUserId(), ticket.getShowId());
         if (duplicate != null) {
-            throw new TicketAlreadyExistException();
+            throw new TicketAlreadyExistException(ticket.getUserId() + "/" + ticket.getShowId());
         }
     }
 
@@ -39,7 +39,7 @@ public class TicketingService {
             checkDuplicateRequest(ticket);
             Optional<Ticket> savedSeat = ticketRepository.findByShowIdAndSeat(ticket.getShowId(), ticket.getSeat());
             if (savedSeat.isPresent()) {
-                throw new TicketSelectedException();
+                throw new TicketSelectedException(ticket.getSeat());
             }
             ticket.setCreatedAt(new Date());
             ticketRepository.saveAndFlush(ticket);
@@ -52,7 +52,7 @@ public class TicketingService {
     public void cancelTicket(TicketingRequestDto request) {
         redisLock.getLock(request.getShowId(), () -> {
             ticketRepository.findByTicketIdForUpdate(request.getTicketId()).orElseThrow(() -> {
-                throw new TicketIdNotDataException();
+                throw new TicketIdNotDataException(request.getTicketId());
             });
             ticketRepository.deleteByTicketId(request.getTicketId());
         });
@@ -64,7 +64,7 @@ public class TicketingService {
     public Ticket checkTicket(String ticketId) {
         Ticket ticket = ticketRepository.findByTicketId(ticketId);
         if (ticket == null) {
-            throw new TicketIdNotDataException();
+            throw new TicketIdNotDataException(ticketId);
         }
         return ticket;
     }

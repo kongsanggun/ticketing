@@ -4,7 +4,7 @@ import app.ticket.ticketing.common.exception.CustomException;
 import app.ticket.ticketing.common.exception.ExceptionCode;
 
 public class TicketSelectedException extends CustomException {
-    public TicketSelectedException() {
-        super(ExceptionCode.SEAT_SELECTED);
+    public TicketSelectedException(String seat) {
+        super(ExceptionCode.SEAT_SELECTED, seat);
     }
 }
