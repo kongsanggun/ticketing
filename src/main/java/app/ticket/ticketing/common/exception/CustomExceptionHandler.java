@@ -5,6 +5,7 @@ import java.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,6 +20,7 @@ public class CustomExceptionHandler {
 
         Map<String, String> responseMap = new HashMap<>();
         responseMap.put("message", String.valueOf(e.getErrorMessage()));
+        responseMap.put("detail", e.getDetail());
 
         return ResponseEntity.status(e.getHttpStatus()).body(responseMap);
     }
@@ -29,7 +31,11 @@ public class CustomExceptionHandler {
         log.error("ExceptionHandler() 호출 - {}, {}", request.getRequestURI(), "올바르지 않은 Parameter를 요청했습니다.");
 
         Map<String, String> responseMap = new HashMap<>();
+        FieldError error = e.getBindingResult().getFieldErrors().get(0);
+        String detail = error.getField() + " - " + error.getDefaultMessage();
+
         responseMap.put("message", String.valueOf("올바르지 않은 Parameter를 요청했습니다."));
+        responseMap.put("detail", detail);
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMap);
     }

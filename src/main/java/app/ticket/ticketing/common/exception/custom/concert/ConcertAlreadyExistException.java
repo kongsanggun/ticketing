@@ -4,7 +4,7 @@ import app.ticket.ticketing.common.exception.CustomException;
 import app.ticket.ticketing.common.exception.ExceptionCode;
 
 public class ConcertAlreadyExistException extends CustomException {
-    public ConcertAlreadyExistException() {
-        super(ExceptionCode.ADDED_SHOW);
+    public ConcertAlreadyExistException(String concertId) {
+        super(ExceptionCode.ADDED_SHOW, concertId);
     }
 }

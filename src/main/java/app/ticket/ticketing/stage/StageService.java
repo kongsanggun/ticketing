@@ -22,7 +22,7 @@ public class StageService {
     public List<Stage> readStages(String concertId) {
         List<Stage> stage = stageRepository.findByConcertId(concertId);
         if (stage.isEmpty()) {
-            throw new StageIdNotDataException();
+            throw new StageIdNotDataException(concertId);
         }
         return stage;
     }
@@ -77,7 +77,7 @@ public class StageService {
     private Stage checkExist(StageRequestDto request) {
         Stage stage = stageRepository.findByStageId(request.getStageId());
         if (stage == null) {
-            throw new StageIdNotDataException();
+            throw new StageIdNotDataException(request.getStageId());
         }
         return stage;
     }
