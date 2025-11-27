@@ -2,6 +2,7 @@ package app.ticket.User;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
@@ -44,14 +45,13 @@ public class UserUnitTests {
     UserRequestDto setRequestData() {
         UserRequestDto request = new UserRequestDto();
         request.setName("test");
-        request.setPoint(50000);
         return request;
     }
 
     @BeforeEach()
     void setData() {
         User user = new User(setRequestData());
-        user.setCreatedAt(new Date());
+        user.setPoint(50000);
         this.user = user;
         userRepository.saveAndFlush(user);
     }
@@ -77,15 +77,11 @@ public class UserUnitTests {
     @Test
     void createWrongUserTest() {
         // given
-        User notCreatedAtData = new User(setRequestData());
         User notIdData = new User();
 
         // when
 
         // then
-        Assertions.assertThrows(DataIntegrityViolationException.class, () -> {
-            userRepository.saveAndFlush(notCreatedAtData);
-        });
         Assertions.assertThrows(JpaSystemException.class, () -> {
             userRepository.saveAndFlush(notIdData);
         });
@@ -101,6 +97,7 @@ public class UserUnitTests {
         assertThat(result.getUserId().length(), is(13));
         assertThat(result.getName(), is("test"));
         assertThat(result.getPoint(), is(50000));
+        assertThat(result.getCreatedAt(), is(notNullValue()));
     }
 
     @DisplayName("user - 존재하지 않는 공연 조회 테스트")
@@ -122,7 +119,7 @@ public class UserUnitTests {
     @Test
     void updateUserTest() {
         // given
-        User updateData = this.user;
+        User updateData = userRepository.findByUserId(this.user.getUserId());
 
         // when
         updateData.setName("updated");
@@ -134,6 +131,7 @@ public class UserUnitTests {
         assertThat(result.getUserId().length(), is(13));
         assertThat(result.getName(), is("updated"));
         assertThat(result.getPoint(), is(30000));
+        assertThat(result.getCreatedAt(), is(not(result.getUpdatedAt())));
     }
 
     @DisplayName("user - 삭제 테스트")

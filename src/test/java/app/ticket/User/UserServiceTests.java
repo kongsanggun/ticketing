@@ -7,25 +7,13 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
 import app.ticket.StartApplication;
-import app.ticket.ticketing.common.exception.custom.stage.StageIdNotDataException;
-import app.ticket.ticketing.common.exception.custom.stage.StageNotRemainException;
-import app.ticket.ticketing.common.exception.custom.user.NotPointRemainException;
-import app.ticket.ticketing.common.exception.custom.user.UserNotDataException;
-import app.ticket.ticketing.db.Stage;
+import app.ticket.ticketing.common.exception.custom.user.NotEnoughPointsException;
+import app.ticket.ticketing.common.exception.custom.user.NotExistedUserDataException;
 import app.ticket.ticketing.db.User;
-import app.ticket.ticketing.stage.StageRepository;
-import app.ticket.ticketing.stage.StageRequestDto;
-import app.ticket.ticketing.stage.StageResponseDto;
-import app.ticket.ticketing.stage.StageService;
-import app.ticket.ticketing.user.UserPointService;
 import app.ticket.ticketing.user.UserRepository;
 import app.ticket.ticketing.user.UserRequestDto;
 import app.ticket.ticketing.user.UserResponseDto;
 import app.ticket.ticketing.user.UserService;
-import io.hypersistence.tsid.TSID;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,15 +38,11 @@ public class UserServiceTests {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private UserPointService userPointService;
-
     private User user;
 
     UserRequestDto setRequestData() {
         UserRequestDto request = new UserRequestDto();
         request.setName("test");
-        request.setPoint(50000);
         return request;
     }
 
@@ -81,7 +65,7 @@ public class UserServiceTests {
     @BeforeEach()
     void setData() {
         User user = new User(setRequestData());
-        user.setCreatedAt(new Date());
+        user.setPoint(50000);
         this.user = user;
         userRepository.saveAndFlush(user);
     }
@@ -95,7 +79,7 @@ public class UserServiceTests {
         // then
         assertThat(result.getUserId().length(), is(13));
 
-        assertThatThrownBy(() -> userService.readUser("wrongTest")).isInstanceOf(UserNotDataException.class);
+        assertThatThrownBy(() -> userService.readUser("wrongTest")).isInstanceOf(NotExistedUserDataException.class);
     }
 
     @DisplayName("user - 수정 서비스 테스트")
@@ -116,15 +100,17 @@ public class UserServiceTests {
     @Test
     void deleteUserServiceTest() {
         // when
-        UserRequestDto data = setRequestData(this.user);
-        userService.deleteUser(data);
-        User result = userRepository.findByUserId(this.user.getUserId());
+        String userId = this.user.getUserId();
+        userService.deleteUser(userId);
+        User userIdResult = userRepository.findByUserId(userId);
+        User isDeleteResult = userRepository.findByUserIdAndIsDelete(userId, false);
 
         // then
-        assertThat(result, is(nullValue()));
+        assertThat(userIdResult.getIsDelete(), is(true));
+        assertThat(isDeleteResult, is(nullValue()));
 
-        assertThatThrownBy(() -> userService.deleteUser(setRequestData(this.user)))
-                        .isInstanceOf(UserNotDataException.class);
+        assertThatThrownBy(() -> userService.deleteUser(userId))
+                        .isInstanceOf(NotExistedUserDataException.class);
     }
 
     @DisplayName("user - 포인트 충전 서비스 테스트")
@@ -133,13 +119,14 @@ public class UserServiceTests {
         // when
         UserRequestDto data = setRequestData(this.user);
         data.setPoint(10000);
-        UserResponseDto result = userPointService.chargePoint(data);
+        UserResponseDto result = userService.chargePoint(data);
 
         // then
         assertThat(result.getUserId(), is(notNullValue()));
         assertThat(result.getPoint(), is(60000));
 
-        assertThatThrownBy(() -> userPointService.chargePoint(setRequestData())).isInstanceOf(UserNotDataException.class);
+        assertThatThrownBy(() -> userService.chargePoint(setRequestData())).isInstanceOf(
+                NotExistedUserDataException.class);
     }
 
     @DisplayName("user - 포인트 사용 서비스 테스트")
@@ -148,16 +135,16 @@ public class UserServiceTests {
         // when
         UserRequestDto data = setRequestData(this.user);
         data.setPoint(10000);
-        UserResponseDto result = userPointService.usePoint(data);
+        UserResponseDto result = userService.usePoint(data);
 
         // then
         assertThat(result.getUserId(), is(notNullValue()));
         assertThat(result.getPoint(), is(40000));
 
         data.setPoint(50000);
-        assertThatThrownBy(() -> userPointService.usePoint(data)).isInstanceOf(NotPointRemainException.class);
+        assertThatThrownBy(() -> userService.usePoint(data)).isInstanceOf(NotEnoughPointsException.class);
 
-        assertThatThrownBy(() -> userPointService.usePoint(setRequestData())).isInstanceOf(UserNotDataException.class);
+        assertThatThrownBy(() -> userService.usePoint(setRequestData())).isInstanceOf(NotExistedUserDataException.class);
     }
 
     @AfterEach()

@@ -71,15 +71,11 @@ public class ConcertUnitTests {
     @Test
     void createWrongConcertTest() {
         // given
-        Concert notCreatedAtData = new Concert(setRequestData());
         Concert notIdData = new Concert();
 
         // when
 
         // then
-        Assertions.assertThrows(DataIntegrityViolationException.class, () -> {
-            concertRepository.saveAndFlush(notCreatedAtData);
-        });
         Assertions.assertThrows(JpaSystemException.class, () -> {
             concertRepository.saveAndFlush(notIdData);
         });

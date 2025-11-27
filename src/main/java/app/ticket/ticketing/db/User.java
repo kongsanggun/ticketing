@@ -30,9 +30,13 @@ public class User extends Basedb {
     @Column(name = "point")
     private int point;
 
+    @Column(name = "isDelete")
+    private Boolean isDelete;
+
     public User(UserRequestDto request) {
         this.userId = TSID.fast().toString();
         this.name = request.getName();
-        this.point = request.getPoint();
+        this.point = 0;
+        this.isDelete = false;
     }
 }
