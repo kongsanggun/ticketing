@@ -48,7 +48,6 @@ public class UserControllerTests {
     UserRequestDto setRequestData() {
         UserRequestDto request = new UserRequestDto();
         request.setName("test");
-        request.setPoint(50000);
         return request;
     }
 
@@ -71,7 +70,7 @@ public class UserControllerTests {
     @BeforeEach()
     void setData() {
         User user = new User(setRequestData());
-        user.setCreatedAt(new Date());
+        user.setPoint(50000);
         this.user = user;
         userRepository.saveAndFlush(user);
     }
@@ -92,7 +91,7 @@ public class UserControllerTests {
     @Test
     void readUserControllerTest() {
         // when
-        User result = userController.readUser(this.user.getUserId());
+        UserResponseDto result = userController.readUser(this.user.getUserId());
 
         // then
         assertThat(result.getUserId().length(), is(13));
@@ -119,10 +118,11 @@ public class UserControllerTests {
         // when
         UserRequestDto data = setRequestData(this.user);
         userController.deleteUser(data);
-        User result = userRepository.findByUserId(this.user.getUserId());
-
+        User userIdResult = userRepository.findByUserId(this.user.getUserId());
+        User isDeleteResult = userRepository.findByUserIdAndIsDelete(this.user.getUserId(), false);
         // then
-        assertThat(result, is(nullValue()));
+        assertThat(userIdResult.getIsDelete(), is(true));
+        assertThat(isDeleteResult, is(nullValue()));
     }
 
     @DisplayName("user - 포인트 충전 컨트롤러 테스트")

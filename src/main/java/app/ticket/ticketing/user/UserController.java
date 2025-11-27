@@ -1,6 +1,5 @@
 package app.ticket.ticketing.user;
 
-import app.ticket.ticketing.db.User;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,14 +17,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService userService;
-    private final UserPointService userPointService;
 
     /*
      * 유저 ID를 기준으로 유저 정보를 조회한다.
      */
     @GetMapping("/user/{id}")
-    public User readUser(@PathVariable final String id) {
-        return userService.readUser(id);
+    public UserResponseDto readUser(@PathVariable final String id) {
+        return new UserResponseDto(userService.readUser(id));
     }
 
     /*
@@ -49,24 +47,25 @@ public class UserController {
      * 유저 정보를 삭제한다.
      */
     @DeleteMapping("/user")
-    public void deleteUser(@RequestBody final UserRequestDto request) {
-        userService.deleteUser(request);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUser(@Valid @RequestBody final UserRequestDto request) {
+        userService.deleteUser(request.getUserId());
     }
 
     /*
      * 유저 내 포인트를 충전한다.
      */
-    @PutMapping("/point/charge")
+    @PostMapping("/point/charge")
     public UserResponseDto chargePoint(@Valid @RequestBody final UserRequestDto request) {
-        return userPointService.chargePoint(request);
+        return userService.chargePoint(request);
     }
 
     /*
      * 유저 내 포인트를 사용한다.
      */
-    @PutMapping("/point/use")
+    @PostMapping("/point/use")
     public UserResponseDto usePoint(@Valid @RequestBody final UserRequestDto request) {
-        return userPointService.usePoint(request);
+        return userService.usePoint(request);
     }
 
 }

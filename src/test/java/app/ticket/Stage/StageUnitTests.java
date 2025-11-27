@@ -73,15 +73,11 @@ public class StageUnitTests {
     @Test
     void createWrongStageTest() {
         // given
-        Stage notCreatedAtData = new Stage(setRequestData());
         Stage notIdData = new Stage();
 
         // when
 
         // then
-        Assertions.assertThrows(DataIntegrityViolationException.class, () -> {
-            stageRepository.saveAndFlush(notCreatedAtData);
-        });
         Assertions.assertThrows(JpaSystemException.class, () -> {
             stageRepository.saveAndFlush(notIdData);
         });

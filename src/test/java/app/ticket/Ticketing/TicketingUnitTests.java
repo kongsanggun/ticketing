@@ -60,17 +60,11 @@ public class TicketingUnitTests {
     @Test
     void createWrongTicketTest() {
         // given
-        Ticket notCreatedAtData = new Ticket(setRequestData("B1"));
-        notCreatedAtData.setCreatedAt(null);
-
         Ticket notIdData = new Ticket();
 
         // when
 
         // then
-        Assertions.assertThrows(DataIntegrityViolationException.class, () -> {
-            ticketRepository.saveAndFlush(notCreatedAtData);
-        });
         Assertions.assertThrows(JpaSystemException.class, () -> {
             ticketRepository.saveAndFlush(notIdData);
         });

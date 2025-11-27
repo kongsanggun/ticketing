@@ -75,15 +75,11 @@ public class SeatClassUnitTests {
     @Test
     void createWrongSeatClassTest() {
         // given
-        SeatClass notCreatedAtData = new SeatClass(setRequestData());
         SeatClass notIdData = new SeatClass();
 
         // when
 
         // then
-        Assertions.assertThrows(DataIntegrityViolationException.class, () -> {
-            seatClassRepository.saveAndFlush(notCreatedAtData);
-        });
         Assertions.assertThrows(JpaSystemException.class, () -> {
             seatClassRepository.saveAndFlush(notIdData);
         });

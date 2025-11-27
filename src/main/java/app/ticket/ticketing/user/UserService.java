@@ -1,6 +1,7 @@
 package app.ticket.ticketing.user;
 
-import app.ticket.ticketing.common.exception.custom.user.UserNotDataException;
+import app.ticket.ticketing.common.exception.custom.user.NotEnoughPointsException;
+import app.ticket.ticketing.common.exception.custom.user.NotExistedUserDataException;
 import app.ticket.ticketing.db.User;
 import jakarta.transaction.Transactional;
 import java.util.Date;
@@ -17,9 +18,9 @@ public class UserService {
      * 유저 ID를 기준으로 유저 정보를 조회한다.
      */
     public User readUser(String id) {
-        User user = userRepository.findByUserId(id);
+        User user = userRepository.findByUserIdAndIsDelete(id, false);
         if (user == null) {
-            throw new UserNotDataException(id);
+            throw new NotExistedUserDataException(id);
         }
         return user;
     }
@@ -29,8 +30,6 @@ public class UserService {
      */
     public UserResponseDto createUser(UserRequestDto request) {
         User newData = new User(request);
-        newData.setCreatedAt(new Date());
-        newData.setPoint(0);
         userRepository.saveAndFlush(newData);
         return new UserResponseDto(newData);
     }
@@ -39,30 +38,43 @@ public class UserService {
      * 유저 내 정보를 수정한다.
      */
     public UserResponseDto updateUser(UserRequestDto request) {
-        User user = checkExist(request);
+        User user = readUser(request.getUserId());
         user.setName(request.getName());
-        user.setUpdatedAt(new Date());
         userRepository.saveAndFlush(user);
         return new UserResponseDto(user);
     }
 
     /*
-     * 유저 정보를 삭제한다.
+     * 유저 정보를 삭제한다. (soft-delete)
      */
-    public void deleteUser(UserRequestDto request) {
-        checkExist(request);
-        userRepository.deleteByUserId(request.getUserId());
+    public void deleteUser(String userId) {
+        User user = readUser(userId);
+        user.setDeletedAt(new Date());
+        user.setIsDelete(true);
+        userRepository.saveAndFlush(user);
     }
 
     /*
-     * 존재하는 유저인지 확인한다.
+     * 유저 내 포인트를 충전한다.
      */
-    private User checkExist(UserRequestDto request) {
-        User user = userRepository.findByUserId(request.getUserId());
-        if (user == null) {
-            throw new UserNotDataException(request.getUserId());
+    public UserResponseDto chargePoint(UserRequestDto request) {
+        User user = readUser(request.getUserId());
+        user.setPoint(request.getPoint() + user.getPoint());
+        userRepository.saveAndFlush(user);
+        return new UserResponseDto(user);
+    }
+
+    /*
+     * 유저 내 포인트를 사용한다.
+     */
+    public UserResponseDto usePoint(UserRequestDto request) {
+        User user = readUser(request.getUserId());
+        if (request.getPoint() > user.getPoint()) {
+            throw new NotEnoughPointsException(request.getUserId());
         }
-        return user;
+        user.setPoint(user.getPoint() - request.getPoint());
+        userRepository.saveAndFlush(user);
+        return new UserResponseDto(user);
     }
 
 }
