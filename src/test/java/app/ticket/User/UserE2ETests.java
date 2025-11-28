@@ -72,7 +72,7 @@ public class UserE2ETests {
     @DisplayName("[get] : /user/{id} : 실패 1 - 조회 값이 없을 때 ")
     @Test
     void readUserFailTest1() {
-        RestAssured.given().contentType(ContentType.JSON).when().get("/user/wrongId").then().statusCode(400).and()
+        RestAssured.given().contentType(ContentType.JSON).when().get("/user/wrongId").then().statusCode(404).and()
                         .body("message", is("해당 값이 존재하지 않습니다."));
     }
 
@@ -98,7 +98,7 @@ public class UserE2ETests {
     @Test
     void updateUserFailTest1() {
         UserRequestDto testParam = new UserRequestDto();
-        RestAssured.given().contentType(ContentType.JSON).body(testParam).when().put("/user").then().statusCode(400)
+        RestAssured.given().contentType(ContentType.JSON).body(testParam).when().put("/user").then().statusCode(404)
                         .and().body("message", is("해당 값이 존재하지 않습니다."));
     }
 
@@ -119,7 +119,7 @@ public class UserE2ETests {
         UserRequestDto testParam = setParam();
         testParam.setUserId("wrongId");
 
-        RestAssured.given().contentType(ContentType.JSON).body(testParam).when().delete("/user").then().statusCode(400)
+        RestAssured.given().contentType(ContentType.JSON).body(testParam).when().delete("/user").then().statusCode(404)
                         .and().body("message", is("해당 값이 존재하지 않습니다."));
     }
 

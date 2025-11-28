@@ -79,7 +79,7 @@ public class TicketingE2ETests {
     @DisplayName("[get] : /ticket/{id} : 실패 1 - 조회 값이 없을 때")
     @Test
     void checkTicketFailTest() {
-        RestAssured.given().contentType(ContentType.JSON).when().get("/ticket/wrongId").then().statusCode(400).and()
+        RestAssured.given().contentType(ContentType.JSON).when().get("/ticket/wrongId").then().statusCode(404).and()
                         .body("message", is("해당 값이 존재하지 않습니다."));
     }
 
@@ -121,7 +121,7 @@ public class TicketingE2ETests {
         TicketingRequestDto testParam = setParam();
         testParam.setTicketId("wrongId");
         RestAssured.given().contentType(ContentType.JSON).body(testParam).when().delete("/ticket").then()
-                        .statusCode(400).and().body("message", is("해당 값이 존재하지 않습니다."));
+                        .statusCode(404).and().body("message", is("해당 값이 존재하지 않습니다."));
     }
 
     @AfterEach

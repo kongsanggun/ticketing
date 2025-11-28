@@ -31,8 +31,9 @@ public class UserController {
      */
     @PostMapping("/user")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserResponseDto createUser(@RequestBody final UserRequestDto request) {
-        return userService.createUser(request);
+    public UserResponseDto createUser(@RequestBody final UserCreateRequestDto request) {
+        UserRequestDto dto = new UserRequestDto(request);
+        return userService.createUser(dto);
     }
 
     /*
@@ -48,7 +49,8 @@ public class UserController {
      */
     @DeleteMapping("/user")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUser(@Valid @RequestBody final UserRequestDto request) {
+    public void deleteUser(@Valid @RequestBody final UserDeleteRequestDto request) {
+        UserRequestDto dto = new UserRequestDto(request);
         userService.deleteUser(request.getUserId());
     }
 

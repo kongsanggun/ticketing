@@ -13,6 +13,8 @@ import app.ticket.ticketing.stage.StageRepository;
 import app.ticket.ticketing.stage.StageRequestDto;
 import app.ticket.ticketing.stage.StageResponseDto;
 import app.ticket.ticketing.user.UserController;
+import app.ticket.ticketing.user.UserCreateRequestDto;
+import app.ticket.ticketing.user.UserDeleteRequestDto;
 import app.ticket.ticketing.user.UserRepository;
 import app.ticket.ticketing.user.UserRequestDto;
 import app.ticket.ticketing.user.UserResponseDto;
@@ -79,7 +81,8 @@ public class UserControllerTests {
     @Test
     void createUserControllerTest() {
         // when
-        UserResponseDto result = userController.createUser(setRequestData());
+        UserCreateRequestDto dto = new UserCreateRequestDto("test");
+        UserResponseDto result = userController.createUser(dto);
 
         // then
         assertThat(result.getUserId().length(), is(13));
@@ -116,7 +119,7 @@ public class UserControllerTests {
     @Test
     void deleteStageControllerTest() {
         // when
-        UserRequestDto data = setRequestData(this.user);
+        UserDeleteRequestDto data = new UserDeleteRequestDto(this.user.getUserId());
         userController.deleteUser(data);
         User userIdResult = userRepository.findByUserId(this.user.getUserId());
         User isDeleteResult = userRepository.findByUserIdAndIsDelete(this.user.getUserId(), false);
