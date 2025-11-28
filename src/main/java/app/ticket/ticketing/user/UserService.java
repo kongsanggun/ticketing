@@ -18,11 +18,7 @@ public class UserService {
      * 유저 ID를 기준으로 유저 정보를 조회한다.
      */
     public User readUser(String id) {
-        User user = userRepository.findByUserIdAndIsDelete(id, false);
-        if (user == null) {
-            throw new NotExistedUserDataException(id);
-        }
-        return user;
+        return findUser(id);
     }
 
     /*
@@ -38,7 +34,7 @@ public class UserService {
      * 유저 내 정보를 수정한다.
      */
     public UserResponseDto updateUser(UserRequestDto request) {
-        User user = readUser(request.getUserId());
+        User user = findUser(request.getUserId());
         user.setName(request.getName());
         userRepository.saveAndFlush(user);
         return new UserResponseDto(user);
@@ -48,9 +44,8 @@ public class UserService {
      * 유저 정보를 삭제한다. (soft-delete)
      */
     public void deleteUser(String userId) {
-        User user = readUser(userId);
-        user.setDeletedAt(new Date());
-        user.setIsDelete(true);
+        User user = findUser(userId);
+        user.setDeleteData();
         userRepository.saveAndFlush(user);
     }
 
@@ -58,7 +53,7 @@ public class UserService {
      * 유저 내 포인트를 충전한다.
      */
     public UserResponseDto chargePoint(UserRequestDto request) {
-        User user = readUser(request.getUserId());
+        User user = findUser(request.getUserId());
         user.setPoint(request.getPoint() + user.getPoint());
         userRepository.saveAndFlush(user);
         return new UserResponseDto(user);
@@ -68,7 +63,7 @@ public class UserService {
      * 유저 내 포인트를 사용한다.
      */
     public UserResponseDto usePoint(UserRequestDto request) {
-        User user = readUser(request.getUserId());
+        User user = findUser(request.getUserId());
         if (request.getPoint() > user.getPoint()) {
             throw new NotEnoughPointsException(request.getUserId());
         }
@@ -77,4 +72,14 @@ public class UserService {
         return new UserResponseDto(user);
     }
 
+    /*
+     * 유저 ID를 기준으로 유저 정보를 조회한다.
+     */
+    private User findUser(String userId) {
+        User result = userRepository.findByUserIdAndIsDelete(userId, false);
+        if (result == null) {
+            throw new NotExistedUserDataException(userId);
+        }
+        return result;
+    }
 }

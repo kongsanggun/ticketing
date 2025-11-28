@@ -6,6 +6,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,5 +39,10 @@ public class User extends Basedb {
         this.name = request.getName();
         this.point = 0;
         this.isDelete = false;
+    }
+
+    public void setDeleteData() {
+        this.setDeletedAt(new Date());
+        this.isDelete = true;
     }
 }

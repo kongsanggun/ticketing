@@ -77,7 +77,7 @@ public class ConcertE2ETests {
     @DisplayName("[get] : /concert/{id} : 실패 1 - 조회 값이 없을 때 ")
     @Test
     void readConcertFailTest1() {
-        RestAssured.given().contentType(ContentType.JSON).when().get("/concert/wrongId").then().statusCode(400).and()
+        RestAssured.given().contentType(ContentType.JSON).when().get("/concert/wrongId").then().statusCode(404).and()
                         .body("message", is("해당 값이 존재하지 않습니다."));
     }
 
@@ -124,7 +124,7 @@ public class ConcertE2ETests {
     @Test
     void updateConcertFailTest1() {
         ConcertRequestDto testParam = new ConcertRequestDto();
-        RestAssured.given().contentType(ContentType.JSON).body(testParam).when().put("/concert").then().statusCode(400)
+        RestAssured.given().contentType(ContentType.JSON).body(testParam).when().put("/concert").then().statusCode(404)
                         .and().body("message", is("해당 값이 존재하지 않습니다."));
     }
 
@@ -144,7 +144,7 @@ public class ConcertE2ETests {
     void deleteConcertFailTest1() {
         ConcertRequestDto testParam = new ConcertRequestDto();
         RestAssured.given().contentType(ContentType.JSON).body(testParam).when().delete("/concert").then()
-                        .statusCode(400).and().body("message", is("해당 값이 존재하지 않습니다."));
+                        .statusCode(404).and().body("message", is("해당 값이 존재하지 않습니다."));
     }
 
     @AfterEach()

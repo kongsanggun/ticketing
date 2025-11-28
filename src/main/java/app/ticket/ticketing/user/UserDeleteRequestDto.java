@@ -11,18 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class UserRequestDto {
+public class UserDeleteRequestDto {
     @NotNull()
     private String userId;
-    private String name;
-    @Min(0)
-    private int point;
-
-    UserRequestDto(UserCreateRequestDto dto) {
-        this.name = dto.getName();
-    }
-
-    UserRequestDto(UserDeleteRequestDto dto) {
-        this.userId = dto.getUserId();
-    }
 }

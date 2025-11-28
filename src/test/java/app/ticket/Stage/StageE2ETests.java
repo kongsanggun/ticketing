@@ -73,7 +73,7 @@ public class StageE2ETests {
     @DisplayName("[get] : /stage/{id} : 실패 1 - 조회 값이 없을 때 ")
     @Test
     void readStagesFailTest1() {
-        RestAssured.given().contentType(ContentType.JSON).when().get("/stage/wrongId").then().statusCode(400).and()
+        RestAssured.given().contentType(ContentType.JSON).when().get("/stage/wrongId").then().statusCode(404).and()
                         .body("message", is("해당 값이 존재하지 않습니다."));
     }
 
@@ -106,7 +106,7 @@ public class StageE2ETests {
     @Test
     void updateStageFailTest1() {
         StageRequestDto testParam = new StageRequestDto();
-        RestAssured.given().contentType(ContentType.JSON).body(testParam).when().put("/stage").then().statusCode(400)
+        RestAssured.given().contentType(ContentType.JSON).body(testParam).when().put("/stage").then().statusCode(404)
                         .and().body("message", is("해당 값이 존재하지 않습니다."));
     }
 
@@ -131,7 +131,7 @@ public class StageE2ETests {
         testParam.setStageId(responseData.getStageId());
         stageController.deleteStage(testParam);
 
-        RestAssured.given().contentType(ContentType.JSON).body(testParam).when().delete("/stage").then().statusCode(400)
+        RestAssured.given().contentType(ContentType.JSON).body(testParam).when().delete("/stage").then().statusCode(404)
                         .and().body("message", is("해당 값이 존재하지 않습니다."));
     }
 
