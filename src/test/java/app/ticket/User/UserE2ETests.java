@@ -10,6 +10,7 @@ import app.ticket.ticketing.stage.StageRepository;
 import app.ticket.ticketing.stage.StageRequestDto;
 import app.ticket.ticketing.stage.StageResponseDto;
 import app.ticket.ticketing.user.UserController;
+import app.ticket.ticketing.user.UserCreateRequestDto;
 import app.ticket.ticketing.user.UserRepository;
 import app.ticket.ticketing.user.UserRequestDto;
 import app.ticket.ticketing.user.UserResponseDto;
@@ -49,8 +50,12 @@ public class UserE2ETests {
         return result;
     }
 
+    public UserCreateRequestDto setCreateDto() {
+        return new UserCreateRequestDto("test");
+    }
+
     public User setData() {
-        User param = new User(setParam());
+        User param = new User(setCreateDto());
         param.setPoint(50000);
         userRepository.save(param);
         return param;
@@ -79,11 +84,11 @@ public class UserE2ETests {
     @DisplayName("[post] : /user : 성공")
     @Test
     void createUserSuccessTest() {
-        UserRequestDto testParam = setParam();
+        UserCreateRequestDto testParam = setCreateDto();
         RestAssured.given().contentType(ContentType.JSON).body(testParam).when().post("/user").then().statusCode(201);
     }
 
-    @DisplayName("[put] : /user : 성공")
+    @DisplayName("[put] : /user/{id} : 성공")
     @Test
     void updateUserSuccessTest() {
         User user = setData();
@@ -91,35 +96,29 @@ public class UserE2ETests {
         testParam.setUserId(user.getUserId());
         testParam.setName("testUpdated");
 
-        RestAssured.given().contentType(ContentType.JSON).body(testParam).when().put("/user").then().statusCode(200);
+        RestAssured.given().contentType(ContentType.JSON).body(testParam).when().put("/user/" + user.getUserId()).then().statusCode(200);
     }
 
-    @DisplayName("[put] : /user : 실패 1 - 조회 값이 없을 때 ")
+    @DisplayName("[put] : /user/{id} : 실패 1 - 조회 값이 없을 때 ")
     @Test
     void updateUserFailTest1() {
         UserRequestDto testParam = new UserRequestDto();
-        RestAssured.given().contentType(ContentType.JSON).body(testParam).when().put("/user").then().statusCode(404)
+        RestAssured.given().contentType(ContentType.JSON).body(testParam).when().put("/user/wrongId").then().statusCode(404)
                         .and().body("message", is("해당 값이 존재하지 않습니다."));
     }
 
-    @DisplayName("[delete] : /user : 성공")
+    @DisplayName("[delete] : /user/{id} : 성공")
     @Test
     void deleteUserSuccessTest() {
         User user = setData();
-        UserRequestDto testParam = setParam();
-        testParam.setUserId(user.getUserId());
-
-        RestAssured.given().contentType(ContentType.JSON).body(testParam).when().delete("/user").then()
+        RestAssured.given().contentType(ContentType.JSON).when().delete("/user/" + user.getUserId()).then()
                         .statusCode(204);
     }
 
-    @DisplayName("[delete] : /user : 실패 1 - 조회 값이 없을 때 ")
+    @DisplayName("[delete] : /user/{id} : 실패 1 - 조회 값이 없을 때 ")
     @Test
     void deleteUserFailTest1() {
-        UserRequestDto testParam = setParam();
-        testParam.setUserId("wrongId");
-
-        RestAssured.given().contentType(ContentType.JSON).body(testParam).when().delete("/user").then().statusCode(404)
+        RestAssured.given().contentType(ContentType.JSON).when().delete("/user/wrongId").then().statusCode(404)
                         .and().body("message", is("해당 값이 존재하지 않습니다."));
     }
 

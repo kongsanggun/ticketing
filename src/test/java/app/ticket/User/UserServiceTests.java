@@ -10,6 +10,7 @@ import app.ticket.StartApplication;
 import app.ticket.ticketing.common.exception.custom.user.NotEnoughPointsException;
 import app.ticket.ticketing.common.exception.custom.user.NotExistedUserDataException;
 import app.ticket.ticketing.db.User;
+import app.ticket.ticketing.user.UserCreateRequestDto;
 import app.ticket.ticketing.user.UserRepository;
 import app.ticket.ticketing.user.UserRequestDto;
 import app.ticket.ticketing.user.UserResponseDto;
@@ -40,6 +41,10 @@ public class UserServiceTests {
 
     private User user;
 
+    public UserCreateRequestDto setCreateDto() {
+        return new UserCreateRequestDto("test");
+    }
+
     UserRequestDto setRequestData() {
         UserRequestDto request = new UserRequestDto();
         request.setName("test");
@@ -64,7 +69,7 @@ public class UserServiceTests {
 
     @BeforeEach()
     void setData() {
-        User user = new User(setRequestData());
+        User user = new User(setCreateDto());
         user.setPoint(50000);
         this.user = user;
         userRepository.saveAndFlush(user);
@@ -88,7 +93,7 @@ public class UserServiceTests {
         // when
         UserRequestDto data = setRequestData(this.user);
         data.setName("updated");
-        UserResponseDto result = userService.updateUser(data);
+        UserResponseDto result = userService.updateUser(this.user.getUserId(), data);
 
         // then
         assertThat(result.getUserId(), is(notNullValue()));

@@ -11,6 +11,7 @@ import app.ticket.ticketing.db.Stage;
 import app.ticket.ticketing.db.User;
 import app.ticket.ticketing.stage.StageRepository;
 import app.ticket.ticketing.stage.StageRequestDto;
+import app.ticket.ticketing.user.UserCreateRequestDto;
 import app.ticket.ticketing.user.UserRepository;
 import app.ticket.ticketing.user.UserRequestDto;
 import java.util.ArrayList;
@@ -42,15 +43,13 @@ public class UserUnitTests {
 
     private User user;
 
-    UserRequestDto setRequestData() {
-        UserRequestDto request = new UserRequestDto();
-        request.setName("test");
-        return request;
+    public UserCreateRequestDto setCreateDto() {
+        return new UserCreateRequestDto("test");
     }
 
     @BeforeEach()
     void setData() {
-        User user = new User(setRequestData());
+        User user = new User(setCreateDto());
         user.setPoint(50000);
         this.user = user;
         userRepository.saveAndFlush(user);
@@ -60,7 +59,7 @@ public class UserUnitTests {
     @Test
     void createUserTest() {
         // given
-        User newData = new User(setRequestData());
+        User newData = new User(setCreateDto());
         newData.setCreatedAt(new Date());
 
         // when

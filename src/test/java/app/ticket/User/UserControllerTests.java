@@ -6,21 +6,12 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
 import app.ticket.StartApplication;
-import app.ticket.ticketing.db.Stage;
 import app.ticket.ticketing.db.User;
-import app.ticket.ticketing.stage.StageController;
-import app.ticket.ticketing.stage.StageRepository;
-import app.ticket.ticketing.stage.StageRequestDto;
-import app.ticket.ticketing.stage.StageResponseDto;
 import app.ticket.ticketing.user.UserController;
 import app.ticket.ticketing.user.UserCreateRequestDto;
-import app.ticket.ticketing.user.UserDeleteRequestDto;
 import app.ticket.ticketing.user.UserRepository;
 import app.ticket.ticketing.user.UserRequestDto;
 import app.ticket.ticketing.user.UserResponseDto;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,10 +38,8 @@ public class UserControllerTests {
 
     private User user;
 
-    UserRequestDto setRequestData() {
-        UserRequestDto request = new UserRequestDto();
-        request.setName("test");
-        return request;
+    public UserCreateRequestDto setCreateDto() {
+        return new UserCreateRequestDto("test");
     }
 
     UserRequestDto setRequestData(User user) {
@@ -71,7 +60,7 @@ public class UserControllerTests {
 
     @BeforeEach()
     void setData() {
-        User user = new User(setRequestData());
+        User user = new User(setCreateDto());
         user.setPoint(50000);
         this.user = user;
         userRepository.saveAndFlush(user);
@@ -108,7 +97,7 @@ public class UserControllerTests {
         // when
         UserRequestDto data = setRequestData(this.user);
         data.setName("updated");
-        UserResponseDto result = userController.updateUser(data);
+        UserResponseDto result = userController.updateUser(this.user.getUserId(), data);
 
         // then
         assertThat(result.getUserId().length(), is(13));
@@ -119,8 +108,7 @@ public class UserControllerTests {
     @Test
     void deleteStageControllerTest() {
         // when
-        UserDeleteRequestDto data = new UserDeleteRequestDto(this.user.getUserId());
-        userController.deleteUser(data);
+        userController.deleteUser(this.user.getUserId());
         User userIdResult = userRepository.findByUserId(this.user.getUserId());
         User isDeleteResult = userRepository.findByUserIdAndIsDelete(this.user.getUserId(), false);
         // then

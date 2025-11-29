@@ -1,5 +1,6 @@
 package app.ticket.ticketing.db;
 
+import app.ticket.ticketing.user.UserCreateRequestDto;
 import app.ticket.ticketing.user.UserRequestDto;
 import io.hypersistence.tsid.TSID;
 import jakarta.persistence.Column;
@@ -34,7 +35,7 @@ public class User extends Basedb {
     @Column(name = "isDelete")
     private Boolean isDelete;
 
-    public User(UserRequestDto request) {
+    public User(UserCreateRequestDto request) {
         this.userId = TSID.fast().toString();
         this.name = request.getName();
         this.point = 0;

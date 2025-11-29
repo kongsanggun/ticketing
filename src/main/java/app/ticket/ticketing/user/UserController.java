@@ -32,26 +32,24 @@ public class UserController {
     @PostMapping("/user")
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponseDto createUser(@RequestBody final UserCreateRequestDto request) {
-        UserRequestDto dto = new UserRequestDto(request);
-        return userService.createUser(dto);
+        return userService.createUser(request);
     }
 
     /*
      * 유저 내 정보를 수정한다. (포인트 제외)
      */
-    @PutMapping("/user")
-    public UserResponseDto updateUser(@RequestBody final UserRequestDto request) {
-        return userService.updateUser(request);
+    @PutMapping("/user/{id}")
+    public UserResponseDto updateUser(@PathVariable final String id, @RequestBody final UserRequestDto request) {
+        return userService.updateUser(id, request);
     }
 
     /*
      * 유저 정보를 삭제한다.
      */
-    @DeleteMapping("/user")
+    @DeleteMapping("/user/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteUser(@Valid @RequestBody final UserDeleteRequestDto request) {
-        UserRequestDto dto = new UserRequestDto(request);
-        userService.deleteUser(request.getUserId());
+    public void deleteUser(@PathVariable final String id) {
+        userService.deleteUser(id);
     }
 
     /*
