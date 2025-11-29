@@ -3,10 +3,10 @@ package app.ticket.ticketing.user;
 import app.ticket.ticketing.common.exception.custom.user.NotEnoughPointsException;
 import app.ticket.ticketing.common.exception.custom.user.NotExistedUserDataException;
 import app.ticket.ticketing.db.User;
-import jakarta.transaction.Transactional;
-import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -24,7 +24,7 @@ public class UserService {
     /*
      * 유저 정보를 생성한다. (단, 포인트는 0으로 생성)
      */
-    public UserResponseDto createUser(UserRequestDto request) {
+    public UserResponseDto createUser(UserCreateRequestDto request) {
         User newData = new User(request);
         userRepository.saveAndFlush(newData);
         return new UserResponseDto(newData);
@@ -33,8 +33,8 @@ public class UserService {
     /*
      * 유저 내 정보를 수정한다.
      */
-    public UserResponseDto updateUser(UserRequestDto request) {
-        User user = findUser(request.getUserId());
+    public UserResponseDto updateUser(String userId, UserRequestDto request) {
+        User user = findUser(userId);
         user.setName(request.getName());
         userRepository.saveAndFlush(user);
         return new UserResponseDto(user);
@@ -62,6 +62,7 @@ public class UserService {
     /*
      * 유저 내 포인트를 사용한다.
      */
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     public UserResponseDto usePoint(UserRequestDto request) {
         User user = findUser(request.getUserId());
         if (request.getPoint() > user.getPoint()) {

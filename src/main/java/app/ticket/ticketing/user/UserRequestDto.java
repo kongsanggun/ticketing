@@ -17,12 +17,4 @@ public class UserRequestDto {
     private String name;
     @Min(0)
     private int point;
-
-    UserRequestDto(UserCreateRequestDto dto) {
-        this.name = dto.getName();
-    }
-
-    UserRequestDto(UserDeleteRequestDto dto) {
-        this.userId = dto.getUserId();
-    }
 }
