@@ -39,7 +39,7 @@ public class UserController {
      * 유저 내 정보를 수정한다. (포인트 제외)
      */
     @PutMapping("/user/{id}")
-    public UserResponseDto updateUser(@PathVariable final String id, @RequestBody final UserRequestDto request) {
+    public UserResponseDto updateUser(@PathVariable final String id, @RequestBody final UserPutRequestDto request) {
         return userService.updateUser(id, request);
     }
 
@@ -56,7 +56,7 @@ public class UserController {
      * 유저 내 포인트를 충전한다.
      */
     @PostMapping("/point/charge")
-    public UserResponseDto chargePoint(@Valid @RequestBody final UserRequestDto request) {
+    public UserResponseDto chargePoint(@Valid @RequestBody final UserPointRequestDto request) {
         return userService.chargePoint(request);
     }
 
@@ -64,7 +64,7 @@ public class UserController {
      * 유저 내 포인트를 사용한다.
      */
     @PostMapping("/point/use")
-    public UserResponseDto usePoint(@Valid @RequestBody final UserRequestDto request) {
+    public UserResponseDto usePoint(@Valid @RequestBody final UserPointRequestDto request) {
         return userService.usePoint(request);
     }
 

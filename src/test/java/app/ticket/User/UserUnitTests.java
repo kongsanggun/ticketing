@@ -7,16 +7,10 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
 import app.ticket.StartApplication;
-import app.ticket.ticketing.db.Stage;
 import app.ticket.ticketing.db.User;
-import app.ticket.ticketing.stage.StageRepository;
-import app.ticket.ticketing.stage.StageRequestDto;
 import app.ticket.ticketing.user.UserCreateRequestDto;
 import app.ticket.ticketing.user.UserRepository;
-import app.ticket.ticketing.user.UserRequestDto;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -25,7 +19,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.orm.jpa.JpaSystemException;
 import org.springframework.test.context.ContextConfiguration;
 

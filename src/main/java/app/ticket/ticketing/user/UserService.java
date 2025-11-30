@@ -33,7 +33,7 @@ public class UserService {
     /*
      * 유저 내 정보를 수정한다.
      */
-    public UserResponseDto updateUser(String userId, UserRequestDto request) {
+    public UserResponseDto updateUser(String userId, UserPutRequestDto request) {
         User user = findUser(userId);
         user.setName(request.getName());
         userRepository.saveAndFlush(user);
@@ -52,7 +52,7 @@ public class UserService {
     /*
      * 유저 내 포인트를 충전한다.
      */
-    public UserResponseDto chargePoint(UserRequestDto request) {
+    public UserResponseDto chargePoint(UserPointRequestDto request) {
         User user = findUser(request.getUserId());
         user.setPoint(request.getPoint() + user.getPoint());
         userRepository.saveAndFlush(user);
@@ -63,7 +63,7 @@ public class UserService {
      * 유저 내 포인트를 사용한다.
      */
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public UserResponseDto usePoint(UserRequestDto request) {
+    public UserResponseDto usePoint(UserPointRequestDto request) {
         User user = findUser(request.getUserId());
         if (request.getPoint() > user.getPoint()) {
             throw new NotEnoughPointsException(request.getUserId());

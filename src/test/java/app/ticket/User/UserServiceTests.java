@@ -11,8 +11,9 @@ import app.ticket.ticketing.common.exception.custom.user.NotEnoughPointsExceptio
 import app.ticket.ticketing.common.exception.custom.user.NotExistedUserDataException;
 import app.ticket.ticketing.db.User;
 import app.ticket.ticketing.user.UserCreateRequestDto;
+import app.ticket.ticketing.user.UserPointRequestDto;
 import app.ticket.ticketing.user.UserRepository;
-import app.ticket.ticketing.user.UserRequestDto;
+import app.ticket.ticketing.user.UserPutRequestDto;
 import app.ticket.ticketing.user.UserResponseDto;
 import app.ticket.ticketing.user.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -45,26 +46,8 @@ public class UserServiceTests {
         return new UserCreateRequestDto("test");
     }
 
-    UserRequestDto setRequestData() {
-        UserRequestDto request = new UserRequestDto();
-        request.setName("test");
-        return request;
-    }
-
-    UserRequestDto setRequestData(User user) {
-        UserRequestDto request = new UserRequestDto();
-        request.setUserId(user.getUserId());
-        request.setName(user.getName());
-        request.setPoint(user.getPoint());
-        return request;
-    }
-
-    UserRequestDto setRequestData(User user, int point) {
-        UserRequestDto request = new UserRequestDto();
-        request.setUserId(user.getUserId());
-        request.setName(user.getName());
-        request.setPoint(point);
-        return request;
+    UserPutRequestDto setRequestData() {
+        return new UserPutRequestDto("test");
     }
 
     @BeforeEach()
@@ -91,8 +74,7 @@ public class UserServiceTests {
     @Test
     void updateUserServiceTest() {
         // when
-        UserRequestDto data = setRequestData(this.user);
-        data.setName("updated");
+        UserPutRequestDto data = new UserPutRequestDto("updated");
         UserResponseDto result = userService.updateUser(this.user.getUserId(), data);
 
         // then
@@ -122,15 +104,15 @@ public class UserServiceTests {
     @Test
     void chargePointServiceTest() {
         // when
-        UserRequestDto data = setRequestData(this.user);
-        data.setPoint(10000);
+        UserPointRequestDto data = new UserPointRequestDto(this.user.getUserId(), 10000);
+        UserPointRequestDto wrongData = new UserPointRequestDto("wrongId", 10000);
         UserResponseDto result = userService.chargePoint(data);
 
         // then
         assertThat(result.getUserId(), is(notNullValue()));
         assertThat(result.getPoint(), is(60000));
 
-        assertThatThrownBy(() -> userService.chargePoint(setRequestData())).isInstanceOf(
+        assertThatThrownBy(() -> userService.chargePoint(wrongData)).isInstanceOf(
                 NotExistedUserDataException.class);
     }
 
@@ -138,8 +120,8 @@ public class UserServiceTests {
     @Test
     void usePointServiceTest() {
         // when
-        UserRequestDto data = setRequestData(this.user);
-        data.setPoint(10000);
+        UserPointRequestDto data = new UserPointRequestDto(this.user.getUserId(), 10000);
+        UserPointRequestDto wrongData = new UserPointRequestDto("wrongId", 10000);
         UserResponseDto result = userService.usePoint(data);
 
         // then
@@ -149,7 +131,7 @@ public class UserServiceTests {
         data.setPoint(50000);
         assertThatThrownBy(() -> userService.usePoint(data)).isInstanceOf(NotEnoughPointsException.class);
 
-        assertThatThrownBy(() -> userService.usePoint(setRequestData())).isInstanceOf(NotExistedUserDataException.class);
+        assertThatThrownBy(() -> userService.usePoint(wrongData)).isInstanceOf(NotExistedUserDataException.class);
     }
 
     @AfterEach()
