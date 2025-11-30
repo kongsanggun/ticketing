@@ -9,8 +9,9 @@ import app.ticket.StartApplication;
 import app.ticket.ticketing.db.User;
 import app.ticket.ticketing.user.UserController;
 import app.ticket.ticketing.user.UserCreateRequestDto;
+import app.ticket.ticketing.user.UserPointRequestDto;
 import app.ticket.ticketing.user.UserRepository;
-import app.ticket.ticketing.user.UserRequestDto;
+import app.ticket.ticketing.user.UserPutRequestDto;
 import app.ticket.ticketing.user.UserResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
@@ -40,22 +41,6 @@ public class UserControllerTests {
 
     public UserCreateRequestDto setCreateDto() {
         return new UserCreateRequestDto("test");
-    }
-
-    UserRequestDto setRequestData(User user) {
-        UserRequestDto request = new UserRequestDto();
-        request.setUserId(user.getUserId());
-        request.setName(user.getName());
-        request.setPoint(user.getPoint());
-        return request;
-    }
-
-    UserRequestDto setRequestData(User user, int point) {
-        UserRequestDto request = new UserRequestDto();
-        request.setUserId(user.getUserId());
-        request.setName(user.getName());
-        request.setPoint(point);
-        return request;
     }
 
     @BeforeEach()
@@ -95,8 +80,7 @@ public class UserControllerTests {
     @Test
     void updateUserControllerTest() {
         // when
-        UserRequestDto data = setRequestData(this.user);
-        data.setName("updated");
+        UserPutRequestDto data = new UserPutRequestDto("updated");
         UserResponseDto result = userController.updateUser(this.user.getUserId(), data);
 
         // then
@@ -120,7 +104,7 @@ public class UserControllerTests {
     @Test
     void chargePointControllerTest() {
         // when
-        UserRequestDto data = setRequestData(this.user, 10000);
+        UserPointRequestDto data = new UserPointRequestDto(this.user.getUserId(), 10000);
         UserResponseDto result = userController.chargePoint(data);
 
         // then
@@ -132,7 +116,7 @@ public class UserControllerTests {
     @Test
     void usePointControllerTest() {
         // when
-        UserRequestDto data = setRequestData(this.user, 10000);
+        UserPointRequestDto data = new UserPointRequestDto(this.user.getUserId(), 10000);
         UserResponseDto result = userController.usePoint(data);
 
         // then

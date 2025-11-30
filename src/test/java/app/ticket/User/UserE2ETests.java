@@ -3,20 +3,13 @@ package app.ticket.User;
 import static org.hamcrest.Matchers.is;
 
 import app.ticket.StartApplication;
-import app.ticket.ticketing.common.exception.ExceptionCode;
 import app.ticket.ticketing.db.User;
-import app.ticket.ticketing.stage.StageController;
-import app.ticket.ticketing.stage.StageRepository;
-import app.ticket.ticketing.stage.StageRequestDto;
-import app.ticket.ticketing.stage.StageResponseDto;
-import app.ticket.ticketing.user.UserController;
 import app.ticket.ticketing.user.UserCreateRequestDto;
+import app.ticket.ticketing.user.UserPointRequestDto;
 import app.ticket.ticketing.user.UserRepository;
-import app.ticket.ticketing.user.UserRequestDto;
-import app.ticket.ticketing.user.UserResponseDto;
+import app.ticket.ticketing.user.UserPutRequestDto;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.util.Date;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -44,10 +37,8 @@ public class UserE2ETests {
     @Autowired
     private UserRepository userRepository;
 
-    public UserRequestDto setParam() {
-        UserRequestDto result = new UserRequestDto();
-        result.setName("test");
-        return result;
+    public UserPutRequestDto setParam() {
+        return new UserPutRequestDto("test");
     }
 
     public UserCreateRequestDto setCreateDto() {
@@ -92,8 +83,7 @@ public class UserE2ETests {
     @Test
     void updateUserSuccessTest() {
         User user = setData();
-        UserRequestDto testParam = setParam();
-        testParam.setUserId(user.getUserId());
+        UserPutRequestDto testParam = setParam();
         testParam.setName("testUpdated");
 
         RestAssured.given().contentType(ContentType.JSON).body(testParam).when().put("/user/" + user.getUserId()).then().statusCode(200);
@@ -102,7 +92,7 @@ public class UserE2ETests {
     @DisplayName("[put] : /user/{id} : 실패 1 - 조회 값이 없을 때 ")
     @Test
     void updateUserFailTest1() {
-        UserRequestDto testParam = new UserRequestDto();
+        UserPutRequestDto testParam = new UserPutRequestDto();
         RestAssured.given().contentType(ContentType.JSON).body(testParam).when().put("/user/wrongId").then().statusCode(404)
                         .and().body("message", is("해당 값이 존재하지 않습니다."));
     }
@@ -126,10 +116,7 @@ public class UserE2ETests {
     @Test
     void chargePointSuccessTest() {
         User user = setData();
-        UserRequestDto testParam = setParam();
-        testParam.setUserId(user.getUserId());
-        testParam.setPoint(10000);
-
+        UserPointRequestDto testParam = new UserPointRequestDto(user.getUserId(), 10000);
         RestAssured.given().contentType(ContentType.JSON).body(testParam).when().post("/point/charge").then()
                 .statusCode(200);
     }
@@ -138,10 +125,7 @@ public class UserE2ETests {
     @Test
     void chargePointFailTest1() {
         User user = setData();
-        UserRequestDto testParam = setParam();
-        testParam.setUserId(user.getUserId());
-        testParam.setPoint(-1);
-
+        UserPointRequestDto testParam = new UserPointRequestDto(user.getUserId(), -1);
         RestAssured.given().contentType(ContentType.JSON).body(testParam).when().post("/point/charge").then()
                 .statusCode(400);
     }
@@ -150,10 +134,7 @@ public class UserE2ETests {
     @Test
     void usePointSuccessTest() {
         User user = setData();
-        UserRequestDto testParam = setParam();
-        testParam.setUserId(user.getUserId());
-        testParam.setPoint(10000);
-
+        UserPointRequestDto testParam = new UserPointRequestDto(user.getUserId(), 10000);
         RestAssured.given().contentType(ContentType.JSON).body(testParam).when().post("/point/use").then()
                 .statusCode(200);
     }
@@ -162,10 +143,7 @@ public class UserE2ETests {
     @Test
     void usePointFailTest1() {
         User user = setData();
-        UserRequestDto testParam = setParam();
-        testParam.setUserId(user.getUserId());
-        testParam.setPoint(-1);
-
+        UserPointRequestDto testParam = new UserPointRequestDto(user.getUserId(), -1);
         RestAssured.given().contentType(ContentType.JSON).body(testParam).when().post("/point/use").then()
                 .statusCode(400);
     }
@@ -174,10 +152,7 @@ public class UserE2ETests {
     @Test
     void usePointFailTest2() {
         User user = setData();
-        UserRequestDto testParam = setParam();
-        testParam.setUserId(user.getUserId());
-        testParam.setPoint(50001);
-
+        UserPointRequestDto testParam = new UserPointRequestDto(user.getUserId(), 50001);
         RestAssured.given().contentType(ContentType.JSON).body(testParam).when().post("/point/use").then()
                 .statusCode(422)
                 .and().body("message", is("잔여 포인트가 충분하지 않습니다."));

@@ -1,7 +1,6 @@
 package app.ticket.ticketing.db;
 
 import app.ticket.ticketing.user.UserCreateRequestDto;
-import app.ticket.ticketing.user.UserRequestDto;
 import io.hypersistence.tsid.TSID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
