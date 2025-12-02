@@ -10,10 +10,16 @@ import org.springframework.web.bind.annotation.*;
 public class TicketingController {
     private final TicketingService ticketingService;
 
+    @PostMapping("/ticket/{seat}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public TicketingResponseDto createSeatedTicket(@PathVariable final int seat, @RequestBody final TicketingRequestDto request) {
+        return ticketingService.createSeatedTicket(seat, request);
+    }
+
     @PostMapping("/ticket")
     @ResponseStatus(HttpStatus.CREATED)
-    public TicketingResponseDto createTicket(@RequestBody final TicketingRequestDto request) throws Exception {
-        return ticketingService.createTicket(request);
+    public TicketingResponseDto createRandomTicket(@RequestBody final TicketingRequestDto request) {
+        return ticketingService.createRandomTicket(request);
     }
 
     @DeleteMapping("/ticket")

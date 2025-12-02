@@ -16,4 +16,6 @@ public class SeatClassRequestDto {
     private String name;
     @NotNull
     private Integer price;
+    @NotNull
+    private Integer capacity;
 }

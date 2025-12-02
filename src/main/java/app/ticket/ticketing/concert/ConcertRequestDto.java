@@ -21,4 +21,6 @@ public class ConcertRequestDto {
     private String priceName;
     @NotNull
     private Integer price;
+    @NotNull
+    private Integer capacity;
 }

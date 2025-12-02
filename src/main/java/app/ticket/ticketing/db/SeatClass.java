@@ -29,13 +29,17 @@ public class SeatClass extends Basedb {
     private String name;
 
     @Column(nullable = false, name = "price")
-    private Integer price;
+    private int price;
+
+    @Column(nullable = false, name = "capacity")
+    private int capacity;
 
     public SeatClass(SeatClassRequestDto request) {
         this.seatClassId = TSID.fast().toString();
         this.concertId = request.getConcertId();
         this.name = request.getName();
         this.price = request.getPrice();
+        this.capacity = request.getCapacity();
     }
 
     public SeatClass(ConcertRequestDto request) {
@@ -43,5 +47,6 @@ public class SeatClass extends Basedb {
         this.concertId = request.getConcertId();
         this.name = request.getPriceName();
         this.price = request.getPrice();
+        this.capacity = request.getCapacity();
     }
 }

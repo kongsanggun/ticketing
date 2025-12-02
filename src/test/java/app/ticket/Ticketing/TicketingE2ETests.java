@@ -49,8 +49,8 @@ public class TicketingE2ETests {
         TicketingRequestDto result = new TicketingRequestDto();
         result.setTicketId(TSID.fast().toString());
         result.setUserId(UUID.randomUUID().toString().substring(0, 13));
-        result.setShowId("test");
-        result.setSeat(seat);
+        //result.setShowId("test");
+        //result.setSeat(seat);
         return result;
     }
 
