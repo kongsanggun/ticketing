@@ -1,7 +1,9 @@
 package app.ticket.ticketing.db;
 
 import app.ticket.ticketing.ticketing.TicketingRequestDto;
+import io.hypersistence.tsid.TSID;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,33 +15,50 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "ticket")
+@Table (
+        name = "ticket",
+        indexes = @Index(name = "concert_stage_seat_class_seat_ux", columnList = "concertId, stageId, seatClassId, seat", unique = true)
+)
 public class Ticket extends Basedb {
     @Id
     @PrimaryKeyJoinColumn
-    @Column(name = "ticketId")
+    @Column(name = "ticketId", columnDefinition = "CHAR(13)")
     private String ticketId;
 
-    @PrimaryKeyJoinColumn
+    @NotNull()
+    @Column(name = "concertId")
+    private String concertId;
+
+    @NotNull()
+    @Column(name = "stageId")
+    private String stageId;
+
+    @NotNull()
+    @Column(name = "seatClassId")
+    private String seatClassId;
+
+    @NotNull()
+    @Column(name = "seat")
+    private int seat;
+
+    @NotNull()
     @Column(name = "userId")
     private String userId;
 
-    @PrimaryKeyJoinColumn
-    @Column(name = "showId")
-    private String showId;
-
-    @Column(name = "seat")
-    private String seat;
-
-    @Column(name = "bookTime")
-    private Date bookTime;
-
     public Ticket(TicketingRequestDto request) {
-        this.ticketId = request.getTicketId();
+        this.ticketId = TSID.fast().toString();
+        this.concertId = request.getUserId();
+        this.stageId = request.getStageId();
+        this.seatClassId = request.getSeatClassId();
         this.userId = request.getUserId();
-        this.showId = request.getShowId();
-        this.seat = request.getSeat();
-        this.bookTime = new Date();
-        this.createdAt = new Date();
+    }
+
+    public Ticket(int seat, TicketingRequestDto request) {
+        this.ticketId = TSID.fast().toString();
+        this.concertId = request.getUserId();
+        this.stageId = request.getStageId();
+        this.seatClassId = request.getSeatClassId();
+        this.seat = seat;
+        this.userId = request.getUserId();
     }
 }

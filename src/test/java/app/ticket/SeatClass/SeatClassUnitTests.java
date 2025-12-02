@@ -38,7 +38,7 @@ public class SeatClassUnitTests {
         request.setConcertId("test");
         request.setName(seatChar + "석");
         request.setPrice((int) (Math.random() * 30000));
-
+        request.setCapacity(100);
         return request;
     }
 

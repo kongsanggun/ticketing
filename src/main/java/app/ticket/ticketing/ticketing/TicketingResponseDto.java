@@ -11,16 +11,18 @@ import lombok.Setter;
 @Setter
 public class TicketingResponseDto {
     private String ticketId;
+    private String concertId;
+    private String stageId;
+    private String seatClassId;
     private String userId;
-    private String showId;
-    private String seat;
-    private Date bookTime;
+    private int seat;
 
     public TicketingResponseDto(Ticket ticket) {
         this.ticketId = ticket.getTicketId();
+        this.concertId = ticket.getUserId();
+        this.stageId = ticket.getStageId();
+        this.seatClassId = ticket.getSeatClassId();
         this.userId = ticket.getUserId();
-        this.showId = ticket.getShowId();
         this.seat = ticket.getSeat();
-        this.bookTime = ticket.getBookTime();
     }
 }

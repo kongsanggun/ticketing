@@ -47,6 +47,7 @@ public class SeatClassServiceTests {
         request.setConcertId(this.concertId);
         request.setName(seatChar + "석");
         request.setPrice((int) (Math.random() * 30000));
+        request.setCapacity(100);
         return request;
     }
 
@@ -56,6 +57,7 @@ public class SeatClassServiceTests {
         request.setConcertId(seatClass.getConcertId());
         request.setName(seatClass.getName());
         request.setPrice(seatClass.getPrice());
+        request.setCapacity(seatClass.getCapacity());
         return request;
     }
 

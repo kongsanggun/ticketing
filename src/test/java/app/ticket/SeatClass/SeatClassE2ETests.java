@@ -40,6 +40,7 @@ public class SeatClassE2ETests {
         result.setConcertId("test");
         result.setName("test석");
         result.setPrice(10000);
+        result.setCapacity(100);
         return result;
     }
 

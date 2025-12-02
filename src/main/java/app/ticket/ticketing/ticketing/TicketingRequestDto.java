@@ -11,7 +11,8 @@ import lombok.Setter;
 @Setter
 public class TicketingRequestDto {
     private String ticketId;
+    private String concertId;
+    private String stageId;
+    private String seatClassId;
     private String userId;
-    private String showId;
-    private String seat;
 }
