@@ -12,11 +12,13 @@ public class TicketingController {
 
     @PostMapping("/ticket/{seat}")
     @ResponseStatus(HttpStatus.CREATED)
-    public TicketingResponseDto createSeatedTicket(@PathVariable final int seat, @RequestBody final TicketingRequestDto request) {
+    public TicketingResponseDto createSeatedTicket(
+            @PathVariable final int seat,
+            @RequestBody final TicketingRequestDto request) {
         return ticketingService.createSeatedTicket(seat, request);
     }
 
-    @PostMapping("/ticket")
+    @PostMapping("/ticket/random")
     @ResponseStatus(HttpStatus.CREATED)
     public TicketingResponseDto createRandomTicket(@RequestBody final TicketingRequestDto request) {
         return ticketingService.createRandomTicket(request);

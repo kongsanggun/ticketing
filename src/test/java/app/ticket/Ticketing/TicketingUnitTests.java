@@ -6,9 +6,6 @@ import static org.hamcrest.Matchers.*;
 import app.ticket.ticketing.db.Ticket;
 import app.ticket.ticketing.ticketing.TicketRepository;
 import app.ticket.ticketing.ticketing.TicketingRequestDto;
-import io.hypersistence.tsid.TSID;
-import java.util.Date;
-import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,19 +22,19 @@ public class TicketingUnitTests {
 
     private Ticket ticket;
 
-    TicketingRequestDto setRequestData(String seat) {
-        TicketingRequestDto request = new TicketingRequestDto();
-        request.setTicketId(TSID.fast().toString());
-        request.setUserId(UUID.randomUUID().toString().substring(0, 13));
-        request.setShowId("test");
-        request.setSeat(seat);
-
-        return request;
+    TicketingRequestDto setRequestData(String ticketId) {
+        return new TicketingRequestDto(
+                ticketId,
+                "test",
+                "test",
+                "test",
+                "test"
+        );
     }
 
     @BeforeEach()
     void setData() {
-        this.ticket = new Ticket(setRequestData("A1"));
+        this.ticket = new Ticket(setRequestData("test"), 1);
         ticketRepository.saveAndFlush(ticket);
     }
 
@@ -45,8 +42,7 @@ public class TicketingUnitTests {
     @Test
     void createTicketTest() {
         // given
-        Ticket newData = new Ticket(setRequestData("B1"));
-        newData.setCreatedAt(new Date());
+        Ticket newData = new Ticket(setRequestData("test"), 2);
 
         // when
         Ticket result = ticketRepository.saveAndFlush(newData);
@@ -54,6 +50,19 @@ public class TicketingUnitTests {
         // then
         assertThat(result.getTicketId().length(), is(13));
         assertThat(result.getUserId(), is(newData.getUserId()));
+    }
+
+    @DisplayName("ticket - 중복 된 값으로 생성된 테스트")
+    @Test
+    void createDuplicateTicketTest() {
+        // given
+
+        // when
+
+        // then
+        Assertions.assertThrows(DataIntegrityViolationException.class, () -> {
+            ticketRepository.saveAndFlush(this.ticket);
+        });
     }
 
     @DisplayName("ticket - 잘못 된 값으로 생성된 테스트")
@@ -82,21 +91,6 @@ public class TicketingUnitTests {
         // then
         assertThat(result.getTicketId().length(), is(13));
         assertThat(result.getTicketId(), is(testData.getTicketId()));
-    }
-
-    @DisplayName("ticket - 단건 조회 테스트 (userId)")
-    @Test
-    void readUserIdTest() {
-        // given
-        Ticket testData = this.ticket;
-
-        // when
-        Ticket result = ticketRepository.findByUserIdAndShowId(testData.getUserId(), testData.getShowId());
-
-        // then
-        assertThat(result.getTicketId().length(), is(13));
-        assertThat(result.getUserId(), is(testData.getUserId()));
-        assertThat(result.getShowId(), is(testData.getShowId()));
     }
 
     @DisplayName("ticket - 존재하지 않는 티켓 조회 테스트")

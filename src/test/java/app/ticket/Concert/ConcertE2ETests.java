@@ -52,6 +52,7 @@ public class ConcertE2ETests {
         result.setStageTime(new Date());
         result.setPriceName("U석");
         result.setPrice(39800);
+        result.setCapacity(20);
         return result;
     }
 

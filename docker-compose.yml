@@ -23,19 +23,6 @@ services:
       start_period: 30s
       timeout: 10s
 
-  redis:
-    image: redis
-    container_name: redis
-    restart: always
-    ports:
-      - "6379:6379"
-    healthcheck:
-      test: [ "CMD", "redis-cli","ping" ]
-      interval: 10s
-      retries: 5
-      start_period: 30s
-      timeout: 10s
-
   server:
     build: ./   # 서버 소스코드 Dockerfile 경로
     container_name: server
@@ -54,8 +41,6 @@ services:
       timeout: 10s
     depends_on:
       db :
-        condition: service_healthy
-      redis :
         condition: service_healthy
 
   server-test:
