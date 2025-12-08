@@ -5,15 +5,17 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 import app.ticket.StartApplication;
-import app.ticket.ticketing.common.exception.custom.ticket.TicketAlreadyExistException;
+import app.ticket.ticketing.common.exception.custom.seatclass.SeatClassIdNotDataException;
+import app.ticket.ticketing.common.exception.custom.ticket.TicketNotAvailableException;
 import app.ticket.ticketing.common.exception.custom.ticket.TicketIdNotDataException;
+import app.ticket.ticketing.common.exception.custom.ticket.TicketSelectedException;
+import app.ticket.ticketing.common.exception.custom.user.NotEnoughPointsException;
+import app.ticket.ticketing.common.exception.custom.user.NotExistedUserDataException;
 import app.ticket.ticketing.db.Ticket;
 import app.ticket.ticketing.ticketing.TicketRepository;
 import app.ticket.ticketing.ticketing.TicketingRequestDto;
 import app.ticket.ticketing.ticketing.TicketingResponseDto;
 import app.ticket.ticketing.ticketing.TicketingService;
-import io.hypersistence.tsid.TSID;
-import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +28,7 @@ import org.springframework.test.context.ContextConfiguration;
 @SpringBootTest
 @Slf4j
 @ContextConfiguration(classes = StartApplication.class)
-public class TicketingServiceTests {
+public class TicketingServiceTests extends TicketingTests {
 
     /*
      * TicketingService를 Test한다.
@@ -40,46 +42,63 @@ public class TicketingServiceTests {
 
     private Ticket ticket;
 
-    TicketingRequestDto setRequestData(String seat) {
-        TicketingRequestDto request = new TicketingRequestDto();
-        request.setTicketId(TSID.fast().toString());
-        request.setUserId(UUID.randomUUID().toString().substring(0, 13));
-        request.setShowId("service");
-        request.setSeat(seat);
-
-        return request;
-    }
-
-    TicketingRequestDto setRequestData(Ticket ticket) {
-        TicketingRequestDto request = new TicketingRequestDto();
-
-        request.setTicketId(ticket.getTicketId());
-        request.setUserId(ticket.getUserId());
-        request.setShowId(ticket.getShowId());
-        request.setSeat(ticket.getSeat());
-
-        return request;
+    TicketingRequestDto setRequestData(String ticketId) {
+        return new TicketingRequestDto(
+                ticketId,
+                "test",
+                "test",
+                "test",
+                "test"
+        );
     }
 
     @BeforeEach()
     void setData() {
-        this.ticket = new Ticket(setRequestData("A1"));
+        this.ticket = new Ticket(setRequestData("test"), 1);
         ticketRepository.saveAndFlush(ticket);
     }
 
-    @DisplayName("ticketing - 생성 서비스 테스트")
+    @DisplayName("ticketing - 티켓팅 생성 서비스 테스트 (지정 좌석)")
     @Test
-    void createTicketServiceTest() {
+    void createSeatedTicketServiceTest() {
         // given
-        TicketingRequestDto dto = setRequestData("B1");
+        TicketingRequestDto dto = setRequestData(null);
 
         // when
-        TicketingResponseDto result = ticketingService.createTicket(dto);
+        TicketingResponseDto result = ticketingService.createSeatedTicket(2, dto);
 
         // then
         assertThat(result.getTicketId().length(), is(13));
-        assertThat(result.getShowId(), is("service"));
-        assertThatThrownBy(() -> ticketingService.createTicket(dto)).isInstanceOf(TicketAlreadyExistException.class);
+        assertThatThrownBy(() -> ticketingService.createSeatedTicket(2, dto)).isInstanceOf(TicketSelectedException.class);
+        assertThatThrownBy(() -> {
+            dto.setSeatClassId("test2");
+            ticketingService.createSeatedTicket(1, dto);
+        }).isInstanceOf(NotEnoughPointsException.class);
+        assertThatThrownBy(() -> {
+            dto.setUserId("wrongId");
+            ticketingService.createSeatedTicket(1, dto);
+        }).isInstanceOf(NotExistedUserDataException.class);
+        assertThatThrownBy(() -> {
+            dto.setSeatClassId("wrongId");
+            ticketingService.createSeatedTicket(1, dto);
+        }).isInstanceOf(SeatClassIdNotDataException.class);
+    }
+
+    @DisplayName("ticketing - 티켓팅 생성 서비스 테스트 (랜덤 좌석)")
+    @Test
+    void createRandomTicketServiceTest() {
+        // given
+        TicketingRequestDto dto = setRequestData(null);
+
+        // when
+        TicketingResponseDto result = ticketingService.createRandomTicket(dto);
+
+        // then
+        assertThat(result.getTicketId().length(), is(13));
+        assertThatThrownBy(() -> {
+            ticketingService.createRandomTicket(dto);
+            ticketingService.createRandomTicket(dto);
+        }).isInstanceOf(TicketNotAvailableException.class);
     }
 
     @DisplayName("ticketing - 조회 서비스 테스트")
@@ -91,7 +110,6 @@ public class TicketingServiceTests {
         // then
         assertThat(result.getTicketId().length(), is(13));
         assertThat(result.getTicketId(), is(ticket.getTicketId()));
-        assertThat(result.getShowId(), is("service"));
         assertThatThrownBy(() -> ticketingService.checkTicket("wrongTest"))
                         .isInstanceOf(TicketIdNotDataException.class);
     }
@@ -100,16 +118,25 @@ public class TicketingServiceTests {
     @Test
     void cancelTicketServiceTest() {
         // given
+        TicketingRequestDto dto = setRequestData(ticket.getTicketId());
 
         // when
-        ticketingService.cancelTicket(setRequestData(ticket));
+        ticketingService.cancelTicket(dto);
         Ticket result = ticketRepository.findByTicketId(ticket.getTicketId());
 
         // then
         assertThat(result, is(nullValue()));
 
-        assertThatThrownBy(() -> ticketingService.cancelTicket(setRequestData(ticket)))
+        assertThatThrownBy(() -> ticketingService.cancelTicket(setRequestData(ticket.getTicketId())))
                         .isInstanceOf(TicketIdNotDataException.class);
+        assertThatThrownBy(() -> {
+            dto.setUserId("wrongId");
+            ticketingService.cancelTicket(dto);
+        }).isInstanceOf(NotExistedUserDataException.class);
+        assertThatThrownBy(() -> {
+            dto.setSeatClassId("wrongId");
+            ticketingService.cancelTicket(dto);
+        }).isInstanceOf(SeatClassIdNotDataException.class);
     }
 
     @AfterEach()

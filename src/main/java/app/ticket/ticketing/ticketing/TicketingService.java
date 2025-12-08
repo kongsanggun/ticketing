@@ -9,9 +9,9 @@ import app.ticket.ticketing.common.exception.custom.user.NotExistedUserDataExcep
 import app.ticket.ticketing.db.SeatClass;
 import app.ticket.ticketing.db.Ticket;
 import app.ticket.ticketing.db.User;
-import app.ticket.ticketing.redis.RedisLock;
 import app.ticket.ticketing.seatclass.SeatClassRepository;
 import app.ticket.ticketing.user.UserRepository;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,58 +25,44 @@ public class TicketingService {
     private final TicketRepository ticketRepository;
     private final SeatClassRepository seatClassRepository;
     private final UserRepository userRepository;
-    private final RedisLock redisLock;
 
     /*
      * 티켓을 예약한다. (좌석 지징)
      */
     public TicketingResponseDto createSeatedTicket(int seat, TicketingRequestDto request) {
-        Ticket ticket = new Ticket(seat, request);
-        SeatClass seatClass = getSeatClass(ticket.getSeatClassId());
-        User user = getUser(ticket.getUserId());
-
-        redisLock.getLock(ticket.getConcertId(), () -> {
-            saveTicket(ticket, user, seatClass.getPrice());
-        });
-
-        return new TicketingResponseDto(ticket);
+        Ticket result = saveTicket(
+                new Ticket(request, seat),
+                getSeatClass(request.getSeatClassId()),
+                getUser(request.getUserId())
+        );
+        return new TicketingResponseDto(result);
     }
 
     /*
      * 티켓을 예약한다. (랜덤 지징)
      */
     public TicketingResponseDto createRandomTicket(TicketingRequestDto request) {
-        Ticket ticket = new Ticket(request);
-        SeatClass seatClass = getSeatClass(ticket.getSeatClassId());
-        User user = getUser(ticket.getUserId());
+        int seat = getRandomSeat(request);
 
-        redisLock.getLock(ticket.getConcertId(), () -> {
-            List<Integer> savedSeats = ticketRepository.findAvailableSeat(
-                    ticket.getConcertId(),
-                    ticket.getStageId(),
-                    ticket.getSeatClassId());
-            if(savedSeats.isEmpty()) {
-                throw new TicketNotAvailableException(ticket.getConcertId());
-            }
-            int index = (int) Math.round(Math.random() * savedSeats.size());
-            ticket.setSeat(savedSeats.get(index));
-            saveTicket(ticket, user, seatClass.getPrice());
-        });
-
-        return new TicketingResponseDto(ticket);
+        Ticket result = saveTicket(
+                new Ticket(request, seat),
+                getSeatClass(request.getSeatClassId()),
+                getUser(request.getUserId())
+        );
+        return new TicketingResponseDto(result);
     }
 
-    /*
-     * 티켓을 예약한다.
-     */
-    private void saveTicket(Ticket ticket, User user, int price) {
-        if (price> user.getPoint()) {
+    @Transactional()
+    private Ticket saveTicket(Ticket ticket, SeatClass seatClass, User user) {
+        int price = seatClass.getPrice();
+
+        if (price > user.getPoint()) {
             throw new NotEnoughPointsException(user.getUserId());
         }
         user.setPoint(user.getPoint() - price);
         userRepository.save(user);
         try {
-            ticketRepository.saveAndFlush(ticket);
+            return ticketRepository.saveAndFlush(ticket);
         } catch (DataIntegrityViolationException e) {
             throw new TicketSelectedException("" + ticket.getSeat());
         }
@@ -85,23 +71,23 @@ public class TicketingService {
     /*
      * 티켓을 취소한다.
      */
+    @Transactional()
     public void cancelTicket(TicketingRequestDto request) {
         SeatClass seatClass = getSeatClass(request.getSeatClassId());
         User user = getUser(request.getUserId());
 
-        redisLock.getLock(request.getConcertId(), () -> {
-            ticketRepository.findByTicketIdForUpdate(request.getTicketId()).orElseThrow(() -> {
-                throw new TicketIdNotDataException(request.getTicketId());
-            });
-            user.setPoint(user.getPoint() + seatClass.getPrice());
-            userRepository.save(user);
-            ticketRepository.deleteByTicketId(request.getTicketId());
+        ticketRepository.findByTicketIdForUpdate(request.getTicketId()).orElseThrow(() -> {
+            throw new TicketIdNotDataException(request.getTicketId());
         });
+        user.setPoint(user.getPoint() + seatClass.getPrice());
+        userRepository.save(user);
+        ticketRepository.deleteByTicketId(request.getTicketId());
     }
 
     /*
      * 티켓을 조회한다.
      */
+    @Transactional()
     public Ticket checkTicket(String ticketId) {
         Ticket ticket = ticketRepository.findByTicketId(ticketId);
         if (ticket == null) {
@@ -111,9 +97,24 @@ public class TicketingService {
     }
 
     /*
+     * 랜덤 자리를 지정한다.
+     */
+    private int getRandomSeat(TicketingRequestDto dto) {
+        List<Integer> savedSeats = ticketRepository.findAvailableSeat(
+                dto.getConcertId(),
+                dto.getStageId(),
+                dto.getSeatClassId());
+        if (savedSeats.isEmpty()) {
+            throw new TicketNotAvailableException(dto.getConcertId());
+        }
+        int index = (int) Math.floor(Math.random() * (savedSeats.size() - 1));
+        return savedSeats.get(index);
+    }
+
+    /*
      * SeatClass을 조회한다.
      */
-    public SeatClass getSeatClass(String seatClassId) {
+    private SeatClass getSeatClass(String seatClassId) {
         SeatClass result = seatClassRepository.findBySeatClassId(seatClassId);
         if (result == null) {
             throw new SeatClassIdNotDataException(seatClassId);
@@ -124,7 +125,7 @@ public class TicketingService {
     /*
      * User를 조회한다.
      */
-    public User getUser(String userId) {
+    private User getUser(String userId) {
         User result = userRepository.findByUserId(userId);
         if (result == null) {
             throw new NotExistedUserDataException(userId);

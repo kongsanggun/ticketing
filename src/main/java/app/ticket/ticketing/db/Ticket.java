@@ -4,7 +4,6 @@ import app.ticket.ticketing.ticketing.TicketingRequestDto;
 import io.hypersistence.tsid.TSID;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +16,11 @@ import lombok.Setter;
 @AllArgsConstructor
 @Table (
         name = "ticket",
-        indexes = @Index(name = "concert_stage_seat_class_seat_ux", columnList = "concertId, stageId, seatClassId, seat", unique = true)
+        indexes = @Index(
+                name = "concert_stage_seat_class_seat_ux",
+                columnList = "concertId, stageId, seatClassId, seat",
+                unique = true
+        )
 )
 public class Ticket extends Basedb {
     @Id
@@ -45,20 +48,12 @@ public class Ticket extends Basedb {
     @Column(name = "userId")
     private String userId;
 
-    public Ticket(TicketingRequestDto request) {
+    public Ticket(TicketingRequestDto dto, int seat) {
         this.ticketId = TSID.fast().toString();
-        this.concertId = request.getUserId();
-        this.stageId = request.getStageId();
-        this.seatClassId = request.getSeatClassId();
-        this.userId = request.getUserId();
-    }
-
-    public Ticket(int seat, TicketingRequestDto request) {
-        this.ticketId = TSID.fast().toString();
-        this.concertId = request.getUserId();
-        this.stageId = request.getStageId();
-        this.seatClassId = request.getSeatClassId();
+        this.concertId = dto.getConcertId();
+        this.stageId = dto.getStageId();
+        this.seatClassId = dto.getSeatClassId();
+        this.userId = dto.getUserId();
         this.seat = seat;
-        this.userId = request.getUserId();
     }
 }

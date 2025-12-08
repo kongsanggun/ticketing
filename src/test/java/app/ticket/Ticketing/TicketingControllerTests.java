@@ -9,8 +9,6 @@ import app.ticket.ticketing.ticketing.TicketRepository;
 import app.ticket.ticketing.ticketing.TicketingController;
 import app.ticket.ticketing.ticketing.TicketingRequestDto;
 import app.ticket.ticketing.ticketing.TicketingResponseDto;
-import io.hypersistence.tsid.TSID;
-import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +21,7 @@ import org.springframework.test.context.ContextConfiguration;
 @SpringBootTest
 @Slf4j
 @ContextConfiguration(classes = StartApplication.class)
-public class TicketingControllerTests {
+public class TicketingControllerTests extends TicketingTests {
 
     /*
      * TicketingController를 Test한다.
@@ -37,45 +35,46 @@ public class TicketingControllerTests {
 
     private Ticket ticket;
 
-    TicketingRequestDto setRequestData(String seat) {
-        TicketingRequestDto request = new TicketingRequestDto();
-        request.setTicketId(TSID.fast().toString());
-        request.setUserId(UUID.randomUUID().toString().substring(0, 13));
-        request.setShowId("controller");
-        request.setSeat(seat);
-
-        return request;
-    }
-
-    TicketingRequestDto setRequestData(Ticket ticket) {
-        TicketingRequestDto request = new TicketingRequestDto();
-
-        request.setTicketId(ticket.getTicketId());
-        request.setUserId(ticket.getUserId());
-        request.setShowId(ticket.getShowId());
-        request.setSeat(ticket.getSeat());
-
-        return request;
+    TicketingRequestDto setRequestData(String ticketId) {
+        return new TicketingRequestDto(
+                ticketId,
+                "test",
+                "test",
+                "test",
+                "test"
+        );
     }
 
     @BeforeEach()
     void setData() {
-        this.ticket = new Ticket(setRequestData("A1"));
-        ticketRepository.saveAndFlush(ticket);
+        this.ticket = new Ticket(setRequestData("test"), 1);
+        ticketRepository.saveAndFlush(this.ticket);
     }
 
-    @DisplayName("ticketing - 생성 컨트롤러 테스트")
+    @DisplayName("ticketing - 티켓팅 생성 컨트롤러 테스트 (지정 좌석)")
     @Test
-    void createTicketingControllerTest() throws Exception {
+    void createSeatedTicketControllerTest() {
         // given
-        TicketingRequestDto dto = setRequestData("B1");
+        TicketingRequestDto dto = setRequestData(null);
 
         // when
-        TicketingResponseDto result = ticketingController.createTicket(dto);
+        TicketingResponseDto result = ticketingController.createSeatedTicket(2, dto);
 
         // then
         assertThat(result.getTicketId().length(), is(13));
-        assertThat(result.getShowId(), is("controller"));
+    }
+
+    @DisplayName("ticketing - 티켓팅 생성 컨트롤러 테스트 (랜덤 좌석)")
+    @Test
+    void createRandomTicketControllerTest() {
+        // given
+        TicketingRequestDto dto = setRequestData(null);
+
+        // when
+        TicketingResponseDto result = ticketingController.createRandomTicket(dto);
+
+        // then
+        assertThat(result.getTicketId().length(), is(13));
     }
 
     @DisplayName("ticketing - 조회 컨트롤러 테스트")
@@ -87,7 +86,6 @@ public class TicketingControllerTests {
         // then
         assertThat(result.getTicketId().length(), is(13));
         assertThat(result.getTicketId(), is(ticket.getTicketId()));
-        assertThat(result.getShowId(), is("controller"));
     }
 
     @DisplayName("ticketing - 삭제 컨트롤러 테스트")
@@ -96,7 +94,7 @@ public class TicketingControllerTests {
         // given
 
         // when
-        ticketingController.cancelTicket(setRequestData(ticket));
+        ticketingController.cancelTicket(setRequestData(ticket.getTicketId()));
         Ticket result = ticketRepository.findByTicketId(ticket.getTicketId());
 
         // then
