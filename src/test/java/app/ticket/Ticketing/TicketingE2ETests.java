@@ -21,7 +21,7 @@ import org.springframework.test.context.ContextConfiguration;
 @SpringBootTest
 @Slf4j
 @ContextConfiguration(classes = StartApplication.class)
-public class TicketingE2ETests extends TicketingTests {
+public class TicketingE2ETests extends TicketingTest {
 
     /*
      * TicketingController 내 api 관점에서 테스트 한다.
@@ -36,18 +36,26 @@ public class TicketingE2ETests extends TicketingTests {
     @Autowired
     private TicketRepository ticketRepository;
 
+    @BeforeEach()
+    void setBasicData() {
+        setConcert();
+        setStage(1);
+        setSeatClass(1, new int[]{10000}, new int[]{2});
+        setUserData(1);
+    }
+
     public TicketingRequestDto setParam(String ticketId) {
         return new TicketingRequestDto(
                 ticketId,
-                "test",
-                "test",
-                "test",
-                "test"
+                concert.getConcertId(),
+                stageList.get(0).getStageId(),
+                seatClassList.get(0).getSeatClassId(),
+                userList.get(0).getUserId()
         );
     }
 
     public Ticket setData() {
-        Ticket ticket = new Ticket(setParam("test"), 1);
+        Ticket ticket = new Ticket(setParam(null), 1);
         ticketRepository.save(ticket);
         return ticket;
     }

@@ -21,7 +21,7 @@ import org.springframework.test.context.ContextConfiguration;
 @SpringBootTest
 @Slf4j
 @ContextConfiguration(classes = StartApplication.class)
-public class TicketingControllerTests extends TicketingTests {
+public class TicketingControllerTests extends TicketingTest {
 
     /*
      * TicketingController를 Test한다.
@@ -38,16 +38,21 @@ public class TicketingControllerTests extends TicketingTests {
     TicketingRequestDto setRequestData(String ticketId) {
         return new TicketingRequestDto(
                 ticketId,
-                "test",
-                "test",
-                "test",
-                "test"
+                concert.getConcertId(),
+                stageList.get(0).getStageId(),
+                seatClassList.get(0).getSeatClassId(),
+                userList.get(0).getUserId()
         );
     }
 
     @BeforeEach()
     void setData() {
-        this.ticket = new Ticket(setRequestData("test"), 1);
+        setConcert();
+        setStage(1);
+        setSeatClass(1, new int[]{10000}, new int[]{2});
+        setUserData(1);
+
+        this.ticket = new Ticket(setRequestData(null), 1);
         ticketRepository.saveAndFlush(this.ticket);
     }
 
