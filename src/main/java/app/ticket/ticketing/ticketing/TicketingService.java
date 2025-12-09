@@ -11,12 +11,13 @@ import app.ticket.ticketing.db.Ticket;
 import app.ticket.ticketing.db.User;
 import app.ticket.ticketing.seatclass.SeatClassRepository;
 import app.ticket.ticketing.user.UserRepository;
-import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -52,15 +53,12 @@ public class TicketingService {
         return new TicketingResponseDto(result);
     }
 
-    @Transactional()
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     private Ticket saveTicket(Ticket ticket, SeatClass seatClass, User user) {
-        int price = seatClass.getPrice();
-
-        if (price > user.getPoint()) {
+        int result = userRepository.usePoint(user.getUserId(), seatClass.getPrice());
+        if (result == 0) {
             throw new NotEnoughPointsException(user.getUserId());
         }
-        user.setPoint(user.getPoint() - price);
-        userRepository.save(user);
         try {
             return ticketRepository.saveAndFlush(ticket);
         } catch (DataIntegrityViolationException e) {

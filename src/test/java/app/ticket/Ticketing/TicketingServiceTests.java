@@ -28,7 +28,7 @@ import org.springframework.test.context.ContextConfiguration;
 @SpringBootTest
 @Slf4j
 @ContextConfiguration(classes = StartApplication.class)
-public class TicketingServiceTests extends TicketingTests {
+public class TicketingServiceTests extends TicketingTest {
 
     /*
      * TicketingService를 Test한다.
@@ -45,15 +45,20 @@ public class TicketingServiceTests extends TicketingTests {
     TicketingRequestDto setRequestData(String ticketId) {
         return new TicketingRequestDto(
                 ticketId,
-                "test",
-                "test",
-                "test",
-                "test"
+                concert.getConcertId(),
+                stageList.get(0).getStageId(),
+                seatClassList.get(0).getSeatClassId(),
+                userList.get(0).getUserId()
         );
     }
 
     @BeforeEach()
     void setData() {
+        setConcert();
+        setStage(1);
+        setSeatClass(2, new int[]{10000, 50000}, new int[]{2, 2});
+        setUserData(1);
+
         this.ticket = new Ticket(setRequestData("test"), 1);
         ticketRepository.saveAndFlush(ticket);
     }
@@ -71,7 +76,7 @@ public class TicketingServiceTests extends TicketingTests {
         assertThat(result.getTicketId().length(), is(13));
         assertThatThrownBy(() -> ticketingService.createSeatedTicket(2, dto)).isInstanceOf(TicketSelectedException.class);
         assertThatThrownBy(() -> {
-            dto.setSeatClassId("test2");
+            dto.setSeatClassId(seatClassList.get(1).getSeatClassId());
             ticketingService.createSeatedTicket(1, dto);
         }).isInstanceOf(NotEnoughPointsException.class);
         assertThatThrownBy(() -> {
