@@ -56,7 +56,6 @@ public class StageControllerTests {
         this.stages = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             Stage newData = new Stage(setRequestData());
-            newData.setCreatedAt(new Date());
             this.stages.add(newData);
         }
         stageRepository.saveAllAndFlush(this.stages);
@@ -118,7 +117,7 @@ public class StageControllerTests {
         Stage result = stageRepository.findByStageId(testData.getStageId());
 
         // then
-        assertThat(result, is(nullValue()));
+        assertThat(result.getIsDelete(), is(true));
     }
 
     @AfterEach()

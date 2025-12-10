@@ -17,8 +17,8 @@ import lombok.Setter;
 @Table (
         name = "ticket",
         indexes = @Index(
-                name = "concert_stage_seat_class_seat_ux",
-                columnList = "concertId, stageId, seatClassId, seat",
+                name = "concert_stage_seat_class_seat_deleted_at_ux",
+                columnList = "concertId, stageId, seatClassId, seat, deletedAt",
                 unique = true
         )
 )

@@ -53,7 +53,6 @@ public class UserUnitTests {
     void createUserTest() {
         // given
         User newData = new User(setCreateDto());
-        newData.setCreatedAt(new Date());
 
         // when
         User result = userRepository.saveAndFlush(newData);

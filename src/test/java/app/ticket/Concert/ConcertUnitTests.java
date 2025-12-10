@@ -47,7 +47,6 @@ public class ConcertUnitTests {
     @BeforeEach()
     void setData() {
         this.concert = new Concert(setRequestData());
-        this.concert.setCreatedAt(new Date());
 
         concertRepository.saveAndFlush(concert);
     }
@@ -57,7 +56,6 @@ public class ConcertUnitTests {
     void createConcertTest() {
         // given
         Concert newData = new Concert(setRequestData());
-        newData.setCreatedAt(new Date());
 
         // when
         Concert result = concertRepository.saveAndFlush(newData);
@@ -100,7 +98,6 @@ public class ConcertUnitTests {
     void readConcertsTest() {
         // given
         Concert newData = new Concert(setRequestData());
-        newData.setCreatedAt(new Date());
         concertRepository.saveAndFlush(newData);
 
         // when
@@ -137,7 +134,6 @@ public class ConcertUnitTests {
 
         // when
         testData.setName("testUpdated");
-        testData.setUpdatedAt(new Date());
         Concert result = concertRepository.saveAndFlush(concert);
 
         // then

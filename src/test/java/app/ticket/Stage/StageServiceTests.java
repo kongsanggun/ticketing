@@ -58,7 +58,6 @@ public class StageServiceTests {
         this.stages = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
             Stage newData = new Stage(setRequestData());
-            newData.setCreatedAt(new Date());
             this.stages.add(newData);
         }
         stageRepository.saveAllAndFlush(this.stages);
@@ -108,7 +107,7 @@ public class StageServiceTests {
         Stage result = stageRepository.findByStageId(testData.getStageId());
 
         // then
-        assertThat(result, is(nullValue()));
+        assertThat(result.getIsDelete(), is(true));
 
         assertThatThrownBy(() -> stageService.deleteStage(setRequestData(testDatas.get(0))))
                         .isInstanceOf(StageIdNotDataException.class);

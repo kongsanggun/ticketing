@@ -75,13 +75,16 @@ public class TicketingService {
     public void cancelTicket(TicketingRequestDto request) {
         SeatClass seatClass = getSeatClass(request.getSeatClassId());
         User user = getUser(request.getUserId());
-
-        ticketRepository.findByTicketIdForUpdate(request.getTicketId()).orElseThrow(() -> {
+        Ticket ticket = ticketRepository.findByTicketIdAndIsDelete(request.getTicketId(), false);
+        if (ticket == null) {
             throw new TicketIdNotDataException(request.getTicketId());
-        });
+        }
+
         user.setPoint(user.getPoint() + seatClass.getPrice());
         userRepository.save(user);
-        ticketRepository.deleteByTicketId(request.getTicketId());
+
+        ticket.setDeleteData();
+        ticketRepository.save(ticket);
     }
 
     /*

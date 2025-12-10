@@ -35,7 +35,6 @@ public class ConcertService {
 
         // 2. 공연을 추가한다.
         Concert concert = new Concert(request);
-        concert.setCreatedAt(new Date());
         concertRepository.saveAndFlush(concert);
         return new ConcertResponseDto(concert);
     }
@@ -48,7 +47,6 @@ public class ConcertService {
         concert.setName(request.getName());
         concert.setDetail(request.getDetail());
         concert.setBookStartTime(request.getBookStartTime());
-        concert.setUpdatedAt(new Date());
         concertRepository.saveAndFlush(concert);
         return new ConcertResponseDto(concert);
     }
@@ -58,8 +56,7 @@ public class ConcertService {
      */
     public void deleteConcert(ConcertRequestDto request) {
         Concert concert = checkExist(request);
-        concert.setDeletedAt(new Date());
-        concert.setIsDelete(true);
+        concert.setDeleteData();
         concertRepository.saveAndFlush(concert);
     }
 

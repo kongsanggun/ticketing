@@ -3,7 +3,7 @@ package app.ticket.ticketing.db;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
-import java.util.Date;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
@@ -20,13 +20,23 @@ public abstract class Basedb {
     @CreatedDate
     @Column(name = "created_at", nullable = false)
     @ColumnDefault("CURRENT_TIMESTAMP()")
-    protected Date createdAt;
+    protected LocalDateTime createdAt = LocalDateTime.now();
 
     @LastModifiedDate
     @Column(name = "updated_at")
     @ColumnDefault("CURRENT_TIMESTAMP()")
-    private Date updatedAt;
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
-    @Column(name = "deleted_at")
-    private Date deletedAt;
+    @Column(name = "deleted_at", nullable = false)
+    @ColumnDefault("'9999-12-31 23:59:59'")
+    private LocalDateTime deletedAt = LocalDateTime.parse("9999-12-31T23:59:59");
+
+    @Column(name = "isDelete")
+    @ColumnDefault("false")
+    private Boolean isDelete = false;
+
+    public void setDeleteData() {
+        this.setDeletedAt(LocalDateTime.now());
+        this.isDelete = true;
+    }
 }

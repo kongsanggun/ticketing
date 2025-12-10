@@ -127,7 +127,7 @@ public class TicketingServiceTests extends TicketingTest {
 
         // when
         ticketingService.cancelTicket(dto);
-        Ticket result = ticketRepository.findByTicketId(ticket.getTicketId());
+        Ticket result = ticketRepository.findByTicketIdAndIsDelete(ticket.getTicketId(), false);
 
         // then
         assertThat(result, is(nullValue()));

@@ -32,7 +32,6 @@ public class StageService {
      */
     public StageResponseDto createStage(StageRequestDto request) {
         Stage stage = new Stage(request);
-        stage.setCreatedAt(new Date());
         stageRepository.saveAndFlush(stage);
         return new StageResponseDto(stage);
     }
@@ -42,7 +41,6 @@ public class StageService {
      */
     public void createPriceByConcert(ConcertRequestDto request) {
         Stage stage = new Stage(request);
-        stage.setCreatedAt(new Date());
         stageRepository.saveAndFlush(stage);
     }
 
@@ -52,7 +50,6 @@ public class StageService {
     public StageResponseDto updateStage(StageRequestDto request) {
         Stage stage = checkExist(request);
         stage.setStageTime(request.getStageTime());
-        stage.setUpdatedAt(new Date());
         stageRepository.saveAndFlush(stage);
         return new StageResponseDto(stage);
     }
@@ -62,20 +59,26 @@ public class StageService {
      */
     public void deleteStage(StageRequestDto request) {
         // 1. 삭제 이후 남아있는 가격이 존재하지 않을 경우가 있는지 확인한다.
-        if (readStages(request.getConcertId()).size() <= 1) {
+        if (stageRepository.findByConcertIdAndIsDelete(
+                request.getConcertId(),
+                false).size() <= 1) {
             throw new StageNotRemainException();
         }
 
         // 2. 동일한 중복요청이 있는지 확인한다.
-        checkExist(request);
-        stageRepository.deleteByStageId(request.getStageId());
+        Stage stage = checkExist(request);
+        stage.setDeleteData();
+        stageRepository.saveAndFlush(stage);
     }
 
     /*
      * 존재하는 공연 내 시간표인지 확인한다. 존재 시 해당 값을 반환한다.
      */
     private Stage checkExist(StageRequestDto request) {
-        Stage stage = stageRepository.findByStageId(request.getStageId());
+        Stage stage = stageRepository.findByStageIdAndIsDelete(
+                request.getStageId(),
+                false
+        );
         if (stage == null) {
             throw new StageIdNotDataException(request.getStageId());
         }

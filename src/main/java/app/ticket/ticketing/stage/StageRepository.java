@@ -9,7 +9,8 @@ import org.springframework.stereotype.Repository;
 public interface StageRepository extends JpaRepository<Stage, Long> {
     List<Stage> findByConcertId(String concertId);
 
-    Stage findByStageId(String stageId);
+    List<Stage> findByConcertIdAndIsDelete(String concertId, boolean isDelete);
 
-    void deleteByStageId(String stageId);
+    Stage findByStageId(String stageId);
+    Stage findByStageIdAndIsDelete(String stageId, boolean isDelete);
 }

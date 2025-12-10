@@ -32,14 +32,10 @@ public class Concert extends Basedb {
     @Column(name = "bookStartTime")
     private Date bookStartTime;
 
-    @Column(name = "isDelete")
-    private Boolean isDelete;
-
     public Concert(ConcertRequestDto request) {
         this.concertId = TSID.fast().toString();
         this.name = request.getName();
         this.detail = request.getDetail();
         this.bookStartTime = request.getBookStartTime();
-        this.isDelete = false;
     }
 }
