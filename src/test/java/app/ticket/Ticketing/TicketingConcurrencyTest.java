@@ -67,7 +67,6 @@ public class TicketingConcurrencyTest extends TicketingTest {
             } catch (Exception e) {
                 failCount.getAndIncrement();
                 log.warn("Thread " + index + " - Exception : " + e.getMessage());
-                log.info("헉");
             } finally {
                 doneLatch.countDown();
             }

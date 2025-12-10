@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum ExceptionCode {
-    SEAT_NOT_AVAILABLE("예약 가능한 자리가 존재하지 않습니다.", HttpStatus.FORBIDDEN),
+    SEAT_NOT_AVAILABLE("예약 가능한 자리가 존재하지 않습니다.", HttpStatus.NOT_FOUND),
     SEAT_SELECTED("이미 선점된 자리입니다.", HttpStatus.FORBIDDEN),
     NOT_DATA("해당 값이 존재하지 않습니다.", HttpStatus.NOT_FOUND),
     ADDED_SHOW("이미 추가된 공연입니다.", HttpStatus.CONFLICT),

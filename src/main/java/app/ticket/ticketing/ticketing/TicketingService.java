@@ -85,7 +85,6 @@ public class TicketingService {
     /*
      * 티켓을 조회한다.
      */
-    @Transactional()
     public Ticket checkTicket(String ticketId) {
         Ticket ticket = ticketRepository.findByTicketId(ticketId);
         if (ticket == null) {
@@ -105,7 +104,7 @@ public class TicketingService {
         if (savedSeats.isEmpty()) {
             throw new TicketNotAvailableException(dto.getConcertId());
         }
-        int index = (int) Math.floor(Math.random() * (savedSeats.size() - 1));
+        int index = (int) Math.floor(Math.random() * savedSeats.size());
         return savedSeats.get(index);
     }
 
