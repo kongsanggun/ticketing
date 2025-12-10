@@ -93,7 +93,7 @@ public class TicketingE2ETests extends TicketingTest {
     void createTicketFailTest1() {
         setData();
         TicketingRequestDto testParam = setParam(null);
-        RestAssured.given().contentType(ContentType.JSON).body(testParam).when().post("/ticket/1").then().statusCode(403)
+        RestAssured.given().contentType(ContentType.JSON).body(testParam).when().post("/ticket/1").then().statusCode(400)
                         .and().body("message", is("이미 선점된 자리입니다."));
     }
 

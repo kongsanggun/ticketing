@@ -12,6 +12,7 @@ import app.ticket.ticketing.db.User;
 import app.ticket.ticketing.seatclass.SeatClassRepository;
 import app.ticket.ticketing.user.UserRepository;
 import java.util.List;
+import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -26,6 +27,7 @@ public class TicketingService {
     private final TicketRepository ticketRepository;
     private final SeatClassRepository seatClassRepository;
     private final UserRepository userRepository;
+    private final Random random = new Random();
 
     /*
      * 티켓을 예약한다. (좌석 지징)
@@ -104,7 +106,7 @@ public class TicketingService {
         if (savedSeats.isEmpty()) {
             throw new TicketNotAvailableException(dto.getConcertId());
         }
-        int index = (int) Math.floor(Math.random() * savedSeats.size());
+        int index = random.nextInt(savedSeats.size());
         return savedSeats.get(index);
     }
 
