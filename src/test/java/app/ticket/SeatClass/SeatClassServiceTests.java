@@ -67,7 +67,6 @@ public class SeatClassServiceTests {
         this.seatClass = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
             SeatClass newData = new SeatClass(setRequestData());
-            newData.setCreatedAt(new Date());
             this.seatClass.add(newData);
         }
         seatClassRepository.saveAllAndFlush(this.seatClass);
@@ -122,7 +121,7 @@ public class SeatClassServiceTests {
         SeatClass result = seatClassRepository.findBySeatClassId(testData.getSeatClassId());
 
         // then
-        assertThat(result, is(nullValue()));
+        assertThat(result.getIsDelete(), is(true));
 
         assertThatThrownBy(() -> seatClassService.deleteSeatClass(setRequestData(testDatas.get(0))))
                         .isInstanceOf(SeatClassIdNotDataException.class);

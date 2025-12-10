@@ -37,5 +37,5 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
     Ticket findByTicketId(String ticketId);
 
-    void deleteByTicketId(String ticketId);
+    Ticket findByTicketIdAndIsDelete(String ticketId, boolean isDelete);
 }

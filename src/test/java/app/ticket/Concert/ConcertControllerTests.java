@@ -58,8 +58,6 @@ public class ConcertControllerTests {
     @BeforeEach()
     void setData() {
         this.concert = new Concert(setRequestData());
-        this.concert.setCreatedAt(new Date());
-
         concertRepository.saveAndFlush(concert);
     }
 

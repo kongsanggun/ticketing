@@ -61,7 +61,7 @@ public class TicketingUnitTests {
 
         // then
         Assertions.assertThrows(DataIntegrityViolationException.class, () -> {
-            ticketRepository.saveAndFlush(this.ticket);
+            ticketRepository.saveAndFlush(new Ticket(setRequestData("test"), 1));
         });
     }
 

@@ -47,7 +47,6 @@ public class SeatClassUnitTests {
         this.seatClass = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             SeatClass newData = new SeatClass(setRequestData());
-            newData.setCreatedAt(new Date());
             this.seatClass.add(newData);
         }
         seatClassRepository.saveAllAndFlush(this.seatClass);
@@ -58,7 +57,6 @@ public class SeatClassUnitTests {
     void createSeatClassTest() {
         // given
         SeatClass newData = new SeatClass(setRequestData());
-        newData.setCreatedAt(new Date());
 
         // when
         SeatClass result = seatClassRepository.saveAndFlush(newData);
@@ -147,7 +145,6 @@ public class SeatClassUnitTests {
         // when
         testData.setName("testUpdated");
         testData.setPrice(10000);
-        testData.setUpdatedAt(new Date());
 
         SeatClass result = seatClassRepository.saveAndFlush(testData);
 

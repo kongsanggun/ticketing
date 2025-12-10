@@ -45,7 +45,6 @@ public class StageUnitTests {
         this.stages = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             Stage newData = new Stage(setRequestData());
-            newData.setCreatedAt(new Date());
             this.stages.add(newData);
         }
         stageRepository.saveAllAndFlush(this.stages);
@@ -56,7 +55,6 @@ public class StageUnitTests {
     void createStageTest() {
         // given
         Stage newData = new Stage(setRequestData());
-        newData.setCreatedAt(new Date());
 
         // when
         Stage result = stageRepository.saveAndFlush(newData);
@@ -145,8 +143,6 @@ public class StageUnitTests {
         // when
         Date updateDate = new Date();
         testData.setStageTime(updateDate);
-        testData.setUpdatedAt(updateDate);
-
         Stage result = stageRepository.saveAndFlush(testData);
 
         // then
