@@ -67,7 +67,7 @@ public class StageService {
 
         // 2. 동일한 중복요청이 있는지 확인한다.
         Stage stage = checkExist(request);
-        stage.setDeleteData();
+        stage.deleteData();
         stageRepository.saveAndFlush(stage);
     }
 

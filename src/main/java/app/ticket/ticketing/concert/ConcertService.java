@@ -56,7 +56,7 @@ public class ConcertService {
      */
     public void deleteConcert(ConcertRequestDto request) {
         Concert concert = checkExist(request);
-        concert.setDeleteData();
+        concert.deleteData();
         concertRepository.saveAndFlush(concert);
     }
 

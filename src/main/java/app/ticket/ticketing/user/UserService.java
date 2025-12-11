@@ -45,7 +45,7 @@ public class UserService {
      */
     public void deleteUser(String userId) {
         User user = findUser(userId);
-        user.setDeleteData();
+        user.deleteData();
         userRepository.saveAndFlush(user);
     }
 
