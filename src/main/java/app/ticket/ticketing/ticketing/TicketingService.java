@@ -83,7 +83,7 @@ public class TicketingService {
         user.setPoint(user.getPoint() + seatClass.getPrice());
         userRepository.save(user);
 
-        ticket.setDeleteData();
+        ticket.deleteData();
         ticketRepository.save(ticket);
     }
 

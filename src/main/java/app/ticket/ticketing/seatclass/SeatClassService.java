@@ -68,7 +68,7 @@ public class SeatClassService {
 
         // 2. 동일한 중복요청이 있는지 확인한다.
         SeatClass seatClass = checkExist(request);
-        seatClass.setDeleteData();
+        seatClass.deleteData();
         seatClassRepository.saveAndFlush(seatClass);
     }
 
