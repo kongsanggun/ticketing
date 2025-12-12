@@ -13,6 +13,7 @@ import lombok.Setter;
 @Setter
 public class StageRequestDto {
     private String stageId;
+    @NotNull
     private String concertId;
     @NotNull
     private Date stageTime;

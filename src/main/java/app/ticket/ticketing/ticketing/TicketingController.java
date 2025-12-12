@@ -1,6 +1,7 @@
 package app.ticket.ticketing.ticketing;
 
 import app.ticket.ticketing.db.Ticket;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -14,13 +15,13 @@ public class TicketingController {
     @ResponseStatus(HttpStatus.CREATED)
     public TicketingResponseDto createSeatedTicket(
             @PathVariable final int seat,
-            @RequestBody final TicketingRequestDto request) {
+            @Valid @RequestBody final TicketingRequestDto request) {
         return ticketingService.createSeatedTicket(seat, request);
     }
 
     @PostMapping("/ticket/random")
     @ResponseStatus(HttpStatus.CREATED)
-    public TicketingResponseDto createRandomTicket(@RequestBody final TicketingRequestDto request) {
+    public TicketingResponseDto createRandomTicket(@Valid @RequestBody final TicketingRequestDto request) {
         return ticketingService.createRandomTicket(request);
     }
 

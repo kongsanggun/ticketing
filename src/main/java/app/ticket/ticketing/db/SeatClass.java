@@ -46,7 +46,7 @@ public class SeatClass extends Basedb {
         this.seatClassId = TSID.fast().toString();
         this.concertId = request.getConcertId();
         this.name = request.getPriceName();
-        this.price = request.getPrice();
-        this.capacity = request.getCapacity();
+        this.price = request.getInitialPrice();
+        this.capacity = request.getInitialCapacity();
     }
 }

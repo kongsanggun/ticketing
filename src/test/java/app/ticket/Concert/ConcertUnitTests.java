@@ -39,7 +39,7 @@ public class ConcertUnitTests {
         request.setBookStartTime(new Date());
         request.setStageTime(new Date());
         request.setPriceName("S석");
-        request.setPrice(39800);
+        request.setInitialPrice(39800);
 
         return request;
     }

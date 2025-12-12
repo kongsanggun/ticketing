@@ -12,6 +12,7 @@ import lombok.Setter;
 @Setter
 public class SeatClassRequestDto {
     private String seatClassId;
+    @NotNull
     private String concertId;
     private String name;
     @NotNull

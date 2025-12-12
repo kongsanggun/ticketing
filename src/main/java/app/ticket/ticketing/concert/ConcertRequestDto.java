@@ -20,7 +20,7 @@ public class ConcertRequestDto {
     private Date stageTime;
     private String priceName;
     @NotNull
-    private Integer price;
+    private Integer initialPrice;
     @NotNull
-    private Integer capacity;
+    private Integer initialCapacity;
 }
