@@ -16,13 +16,12 @@ services:
     volumes:
       - ./db/conf.d:/etc/mysql/conf.d
       - ./db/initdb.d:/docker-entrypoint-initdb.d
-
-  redis:
-    image: redis
-    container_name: redis
-    restart: always
-    ports:
-      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
 
   server:
     build: ./   # 서버 소스코드 Dockerfile 경로
@@ -30,10 +29,47 @@ services:
     restart: always
     env_file: # 환경변수 파일
       - ./.env
+    environment:
+      spring.jpa.hibernate.ddl-auto: update
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: [ "CMD", "curl", "-fs", "http://server:8000/actuator/health"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+    depends_on:
+      db :
+        condition: service_healthy
+
+  server-test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: server-test
+    env_file: # 환경변수 파일
+      - ./.env
+    environment:
+      spring.jpa.hibernate.ddl-auto: none
+    depends_on:
+      server:
+        condition: service_healthy
+    command: ["./gradlew", "clean", "test", "jacocoTestReport", "jacocoTestCoverageVerification", "checkstyleMain"]
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
     ports:
       - "3000:3000"
-    depends_on:
-      - db
-      - redis
-    networks:
-      - default

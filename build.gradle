@@ -2,6 +2,9 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.5.4'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'jacoco'
+	id 'checkstyle'
+	id("com.diffplug.spotless") version("7.2.1")
 }
 
 group = 'ticket'
@@ -17,24 +20,119 @@ repositories {
 	mavenCentral()
 }
 
-
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter'
-	implementation 'org.redisson:redisson-spring-boot-starter:3.18.0'
-	testImplementation("junit:junit:4.13.2")
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.7.6'
+	testImplementation 'junit:junit:4.13.2'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.projectlombok:lombok:1.18.22'
+	testImplementation 'io.rest-assured:rest-assured:5.1.1'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testCompileOnly 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'
 }
 
+jacoco {
+	toolVersion = "0.8.12"
+}
+
+checkstyle {
+	maxWarnings = 0
+	configFile = file("${rootDir}/config/google-checks.xml")
+	toolVersion = "12.1.1"
+	configProperties = [
+			"org.checkstyle.google.severity": "error",
+			"org.checkstyle.google.suppressionfilter.config": "checkstyle-suppressions.xml",
+			"org.checkstyle.google.suppressionxpathfilter.config": "checkstyle-xpath-suppressions.xml"
+	]
+}
+
+spotless {
+	java {
+		eclipse().configFile("${rootDir}/config/eclipse-google-style.xml")
+	}
+}
+
 test {
 	useJUnitPlatform()
 	jvmArgs "-Xshare:off"
+
+	finalizedBy jacocoTestReport
+	ignoreFailures = true
+
+	testLogging {
+		events "passed", "failed", "skipped"
+		showStandardStreams = true
+	}
+
+	jacoco {
+		excludes += [
+				'app/ticket/StartApplication.class',
+				'app/ticket/ticketing/common/*'
+		]
+	}
+
+	afterSuite { desc, result ->
+		if (!desc.parent) { // 전체 테스트 요약
+			def total = result.testCount
+			def passed = result.successfulTestCount
+			def failed = result.failedTestCount
+			def skipped = result.skippedTestCount
+			def rate = total > 0 ? (passed * 100 / total) : 0
+
+			println "==============================="
+			println " Test Summary"
+			println "-------------------------------"
+			println " Total:   $total"
+			println " Passed:  $passed"
+			println " Failed:  $failed"
+			println " Skipped: $skipped"
+			println "-------------------------------"
+			println " Pass rate: ${rate}%"
+			println "==============================="
+		}
+	}
+}
+
+jacocoTestReport {
+	dependsOn test
+
+	reports {
+		csv.required = true
+		html.required = true
+		xml.required = true
+	}
+
+	afterEvaluate {
+		classDirectories.setFrom(files(classDirectories.files.collect {
+			fileTree(dir: it,
+					exclude: ['app/ticket/StartApplication.class',
+							  'app/ticket/ticketing/common/*'])
+		}))
+	}
+}
+
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			element = 'CLASS'
+			excludes = [
+					'**.StartApplication*',
+					'**.ticketing.common.**'
+			]
+			limit {
+				counter = 'LINE'
+				value = 'COVEREDRATIO'
+				minimum = 0.95
+			}
+		}
+	}
 }
