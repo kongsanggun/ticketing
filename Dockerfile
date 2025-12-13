@@ -3,7 +3,7 @@ FROM gradle:8.7-jdk17 AS builder
 WORKDIR /app
 
 # 소스 복사
-COPY ../../.. .
+COPY . .
 
 # bootJar 빌드
 RUN gradle clean bootJar --no-daemon
