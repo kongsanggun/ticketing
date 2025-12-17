@@ -7,11 +7,9 @@ import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "concert")
@@ -34,6 +32,12 @@ public class Concert extends Basedb {
 
     public Concert(ConcertRequestDto request) {
         this.concertId = TSID.fast().toString();
+        this.name = request.getName();
+        this.detail = request.getDetail();
+        this.bookStartTime = request.getBookStartTime();
+    }
+
+    public void putData(ConcertRequestDto request) {
         this.name = request.getName();
         this.detail = request.getDetail();
         this.bookStartTime = request.getBookStartTime();

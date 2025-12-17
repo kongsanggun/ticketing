@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.nullValue;
 import app.ticket.StartApplication;
 import app.ticket.ticketing.db.User;
 import app.ticket.ticketing.user.UserCreateRequestDto;
+import app.ticket.ticketing.user.UserPutRequestDto;
 import app.ticket.ticketing.user.UserRepository;
 import java.util.Date;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +44,7 @@ public class UserUnitTests {
     @BeforeEach()
     void setData() {
         User user = new User(setCreateDto());
-        user.setPoint(50000);
+        user.chargePoint(50000);
         this.user = user;
         userRepository.saveAndFlush(user);
     }
@@ -113,15 +114,15 @@ public class UserUnitTests {
         User updateData = userRepository.findByUserId(this.user.getUserId());
 
         // when
-        updateData.setName("updated");
-        updateData.setPoint(30000);
+        updateData.putName(new UserPutRequestDto("updated"));
+        updateData.chargePoint(30000);
 
         User result = userRepository.saveAndFlush(updateData);
 
         // then
         assertThat(result.getUserId().length(), is(13));
         assertThat(result.getName(), is("updated"));
-        assertThat(result.getPoint(), is(30000));
+        assertThat(result.getPoint(), is(80000));
         assertThat(result.getCreatedAt(), is(not(result.getUpdatedAt())));
     }
 

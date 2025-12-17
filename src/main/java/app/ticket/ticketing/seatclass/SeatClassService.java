@@ -39,8 +39,8 @@ public class SeatClassService {
     /*
      * 공연 생성으로 인하여 공연 내 가격을 추가한다.
      */
-    public void createSeatClassByConcert(ConcertRequestDto request) {
-        SeatClass seatClass = new SeatClass(request);
+    public void createSeatClassByConcert(String concertId, ConcertRequestDto request) {
+        SeatClass seatClass = new SeatClass(concertId, request);
         seatClassRepository.saveAndFlush(seatClass);
     }
 
@@ -49,8 +49,7 @@ public class SeatClassService {
      */
     public SeatClassResponseDto updateSeatClass(SeatClassRequestDto request) {
         SeatClass seatClass = checkExist(request);
-        seatClass.setName(request.getName());
-        seatClass.setPrice(request.getPrice());
+        seatClass.putData(request);
         seatClassRepository.saveAndFlush(seatClass);
         return new SeatClassResponseDto(seatClass);
     }

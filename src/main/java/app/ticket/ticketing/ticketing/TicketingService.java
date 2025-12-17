@@ -80,7 +80,7 @@ public class TicketingService {
             throw new TicketIdNotDataException(request.getTicketId());
         }
 
-        user.setPoint(user.getPoint() + seatClass.getPrice());
+        user.chargePoint(seatClass.getPrice());
         userRepository.save(user);
 
         ticket.deleteData();

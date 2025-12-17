@@ -32,12 +32,11 @@ public class StageUnitTests {
     private List<Stage> stages;
 
     StageRequestDto setRequestData() {
-        StageRequestDto request = new StageRequestDto();
-
-        request.setConcertId("test");
-        request.setStageTime(new Date());
-
-        return request;
+        return new StageRequestDto(
+                "test",
+                "test",
+                new Date()
+        );
     }
 
     @BeforeEach()
@@ -142,7 +141,7 @@ public class StageUnitTests {
 
         // when
         Date updateDate = new Date();
-        testData.setStageTime(updateDate);
+        testData.putData(setRequestData());
         Stage result = stageRepository.saveAndFlush(testData);
 
         // then

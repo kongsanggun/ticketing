@@ -5,7 +5,6 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
 import lombok.Getter;
-import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.GeneratedColumn;
 import org.springframework.data.annotation.CreatedDate;
@@ -13,7 +12,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Getter
-@Setter
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public abstract class Basedb {
@@ -40,7 +38,7 @@ public abstract class Basedb {
     private Boolean notArchived;
 
     public void deleteData() {
-        this.setDeletedAt(LocalDateTime.now());
+        this.deletedAt = LocalDateTime.now();
         this.isDelete = true;
     }
 }

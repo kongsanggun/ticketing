@@ -42,13 +42,13 @@ public class TicketingServiceTests extends TicketingTest {
 
     private Ticket ticket;
 
-    TicketingRequestDto setRequestData(String ticketId) {
+    TicketingRequestDto setRequestData(String ticketId, String seatClassId, String userId) {
         return new TicketingRequestDto(
                 ticketId,
                 concert.getConcertId(),
                 stageList.get(0).getStageId(),
-                seatClassList.get(0).getSeatClassId(),
-                userList.get(0).getUserId()
+                seatClassId,
+                userId
         );
     }
 
@@ -59,7 +59,11 @@ public class TicketingServiceTests extends TicketingTest {
         setSeatClass(2, new int[]{10000, 50000}, new int[]{2, 2});
         setUserData(1);
 
-        this.ticket = new Ticket(setRequestData("test"), 1);
+        this.ticket = new Ticket(setRequestData(
+                "test",
+                seatClassList.get(0).getSeatClassId(),
+                userList.get(0).getUserId()
+        ), 1);
         ticketRepository.saveAndFlush(ticket);
     }
 
@@ -67,7 +71,11 @@ public class TicketingServiceTests extends TicketingTest {
     @Test
     void createSeatedTicketServiceTest() {
         // given
-        TicketingRequestDto dto = setRequestData(null);
+        TicketingRequestDto dto = setRequestData(
+                null,
+                seatClassList.get(0).getSeatClassId(),
+                userList.get(0).getUserId()
+        );
 
         // when
         TicketingResponseDto result = ticketingService.createSeatedTicket(2, dto);
@@ -75,17 +83,32 @@ public class TicketingServiceTests extends TicketingTest {
         // then
         assertThat(result.getTicketId().length(), is(13));
         assertThatThrownBy(() -> ticketingService.createSeatedTicket(2, dto)).isInstanceOf(TicketSelectedException.class);
+
         assertThatThrownBy(() -> {
-            dto.setSeatClassId(seatClassList.get(1).getSeatClassId());
-            ticketingService.createSeatedTicket(1, dto);
+            TicketingRequestDto wrongDto = setRequestData(
+                    null,
+                    seatClassList.get(1).getSeatClassId(),
+                    userList.get(0).getUserId()
+            );
+            ticketingService.createSeatedTicket(1, wrongDto);
         }).isInstanceOf(NotEnoughPointsException.class);
+
         assertThatThrownBy(() -> {
-            dto.setUserId("wrongId");
-            ticketingService.createSeatedTicket(1, dto);
+            TicketingRequestDto wrongDto = setRequestData(
+                    null,
+                    seatClassList.get(0).getSeatClassId(),
+                    "wrongId"
+            );
+            ticketingService.createSeatedTicket(1, wrongDto);
         }).isInstanceOf(NotExistedUserDataException.class);
+
         assertThatThrownBy(() -> {
-            dto.setSeatClassId("wrongId");
-            ticketingService.createSeatedTicket(1, dto);
+            TicketingRequestDto wrongDto = setRequestData(
+                    null,
+                    "wrongId",
+                    userList.get(0).getUserId()
+            );
+            ticketingService.createSeatedTicket(1, wrongDto);
         }).isInstanceOf(SeatClassIdNotDataException.class);
     }
 
@@ -93,7 +116,11 @@ public class TicketingServiceTests extends TicketingTest {
     @Test
     void createRandomTicketServiceTest() {
         // given
-        TicketingRequestDto dto = setRequestData(null);
+        TicketingRequestDto dto = setRequestData(
+                null,
+                seatClassList.get(0).getSeatClassId(),
+                userList.get(0).getUserId()
+        );
 
         // when
         TicketingResponseDto result = ticketingService.createRandomTicket(dto);
@@ -123,7 +150,11 @@ public class TicketingServiceTests extends TicketingTest {
     @Test
     void cancelTicketServiceTest() {
         // given
-        TicketingRequestDto dto = setRequestData(ticket.getTicketId());
+        TicketingRequestDto dto = setRequestData(
+                ticket.getTicketId(),
+                seatClassList.get(0).getSeatClassId(),
+                userList.get(0).getUserId()
+        );
 
         // when
         ticketingService.cancelTicket(dto);
@@ -132,15 +163,31 @@ public class TicketingServiceTests extends TicketingTest {
         // then
         assertThat(result, is(nullValue()));
 
-        assertThatThrownBy(() -> ticketingService.cancelTicket(setRequestData(ticket.getTicketId())))
-                        .isInstanceOf(TicketIdNotDataException.class);
         assertThatThrownBy(() -> {
-            dto.setUserId("wrongId");
-            ticketingService.cancelTicket(dto);
+            TicketingRequestDto wrongDto = setRequestData(
+                    ticket.getTicketId(),
+                    seatClassList.get(0).getSeatClassId(),
+                    userList.get(0).getUserId()
+            );
+            ticketingService.cancelTicket(wrongDto);
+        }).isInstanceOf(TicketIdNotDataException.class);
+
+        assertThatThrownBy(() -> {
+            TicketingRequestDto wrongDto = setRequestData(
+                    null,
+                    seatClassList.get(0).getSeatClassId(),
+                    "wrongId"
+            );
+            ticketingService.cancelTicket(wrongDto);
         }).isInstanceOf(NotExistedUserDataException.class);
+
         assertThatThrownBy(() -> {
-            dto.setSeatClassId("wrongId");
-            ticketingService.cancelTicket(dto);
+            TicketingRequestDto wrongDto = setRequestData(
+                    null,
+                    "wrongId",
+                    userList.get(0).getUserId()
+            );
+            ticketingService.cancelTicket(wrongDto);
         }).isInstanceOf(SeatClassIdNotDataException.class);
     }
 

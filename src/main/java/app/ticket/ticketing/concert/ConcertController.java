@@ -24,10 +24,8 @@ public class ConcertController {
     @ResponseStatus(HttpStatus.CREATED)
     public ConcertResponseDto createConcert(@Valid @RequestBody final ConcertRequestDto request) {
         ConcertResponseDto result = concertService.createConcert(request);
-
-        request.setConcertId(result.getConcertId());
-        seatClassService.createSeatClassByConcert(request);
-        stageService.createPriceByConcert(request);
+        seatClassService.createSeatClassByConcert(result.getConcertId(), request);
+        stageService.createPriceByConcert(result.getConcertId(), request);
 
         return result;
     }

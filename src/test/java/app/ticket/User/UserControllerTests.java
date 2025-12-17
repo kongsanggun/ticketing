@@ -46,7 +46,7 @@ public class UserControllerTests {
     @BeforeEach()
     void setData() {
         User user = new User(setCreateDto());
-        user.setPoint(50000);
+        user.chargePoint(50000);
         this.user = user;
         userRepository.saveAndFlush(user);
     }

@@ -38,9 +38,9 @@ public abstract class TicketingTest {
     public List<SeatClass> seatClassList = new ArrayList<>();
     public List<User> userList = new ArrayList<>();
 
-    private ConcertRequestDto setConcertDto(String id, int price, int capacity) {
+    private ConcertRequestDto setConcertDto(int price, int capacity) {
         return new ConcertRequestDto(
-                id,
+                "test",
                 "test",
                 "test",
                 new Date(),
@@ -53,18 +53,18 @@ public abstract class TicketingTest {
 
     private User setUser() {
         User user = new User(new UserCreateRequestDto("test"));
-        user.setPoint(50000);
+        user.chargePoint(50000);
         return user;
     }
 
     public void setConcert() {
-        concert = new Concert(setConcertDto(null, 0, 0));
+        concert = new Concert(setConcertDto(0, 0));
         concertRepository.save(concert);
     }
 
     public void setStage(int size) {
         for(int i = 0; i < size; i++) {
-            stageList.add(new Stage(setConcertDto(concert.getConcertId(), 0, 0)));
+            stageList.add(new Stage(concert.getConcertId(), setConcertDto( 0, 0)));
         }
         stageRepository.saveAll(stageList);
     }
@@ -72,8 +72,8 @@ public abstract class TicketingTest {
     public void setSeatClass(int size, int[] priceList, int[] capacityList) {
         for(int i = 0; i < size; i++) {
             seatClassList.add(new SeatClass(
+                    concert.getConcertId(),
                     setConcertDto(
-                            concert.getConcertId(),
                             priceList[i],
                             capacityList[i]
                     )

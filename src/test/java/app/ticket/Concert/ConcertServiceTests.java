@@ -37,25 +37,29 @@ public class ConcertServiceTests {
     private Concert concert;
 
     ConcertRequestDto setRequestData() {
-        ConcertRequestDto request = new ConcertRequestDto();
-
-        request.setName("test");
-        request.setDetail("테스트 공연");
-        request.setBookStartTime(new Date());
-        request.setStageTime(new Date());
-        request.setPriceName("S석");
-        request.setInitialPrice(39800);
-
-        return request;
+        return new ConcertRequestDto(
+                "test",
+                "test",
+                "테스트입니다.",
+                new Date(),
+                new Date(),
+                "U석",
+                39800,
+                20
+        );
     }
 
     ConcertRequestDto setRequestData(Concert concert) {
-        ConcertRequestDto request = new ConcertRequestDto();
-        request.setConcertId(concert.getConcertId());
-        request.setName(concert.getName());
-        request.setDetail(concert.getDetail());
-        request.setBookStartTime(concert.getBookStartTime());
-        return request;
+        return new ConcertRequestDto(
+                concert.getConcertId(),
+                "testUpdated",
+                concert.getDetail(),
+                concert.getBookStartTime(),
+                new Date(),
+                "U석",
+                39800,
+                20
+        );
     }
 
     @BeforeEach()
@@ -71,13 +75,12 @@ public class ConcertServiceTests {
         Concert newData = new Concert(setRequestData());
 
         // when
-        ConcertResponseDto result = concertService.createConcert(setRequestData(newData));
-        newData.setConcertId(result.getConcertId());
+        ConcertResponseDto result = concertService.createConcert(setRequestData());
 
         // then
         assertThat(result.getConcertId().length(), is(13));
         assertThat(result.getName(), is("test"));
-        assertThatThrownBy(() -> concertService.createConcert(setRequestData(newData)))
+        assertThatThrownBy(() -> concertService.createConcert(setRequestData(this.concert)))
                         .isInstanceOf(ConcertAlreadyExistException.class);
     }
 
@@ -100,7 +103,6 @@ public class ConcertServiceTests {
 
         // when
         ConcertRequestDto data = setRequestData(testData);
-        data.setName("testUpdated");
         ConcertResponseDto result = concertService.updateConcert(data);
 
         // then

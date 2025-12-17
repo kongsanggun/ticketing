@@ -37,8 +37,8 @@ public class UserE2ETests {
     @Autowired
     private UserRepository userRepository;
 
-    public UserPutRequestDto setParam() {
-        return new UserPutRequestDto("test");
+    public UserPutRequestDto setPutParam() {
+        return new UserPutRequestDto("testUpdated");
     }
 
     public UserCreateRequestDto setCreateDto() {
@@ -47,7 +47,7 @@ public class UserE2ETests {
 
     public User setData() {
         User param = new User(setCreateDto());
-        param.setPoint(50000);
+        param.chargePoint(50000);
         userRepository.save(param);
         return param;
     }
@@ -83,9 +83,7 @@ public class UserE2ETests {
     @Test
     void updateUserSuccessTest() {
         User user = setData();
-        UserPutRequestDto testParam = setParam();
-        testParam.setName("testUpdated");
-
+        UserPutRequestDto testParam = setPutParam();
         RestAssured.given().contentType(ContentType.JSON).body(testParam).when().put("/user/" + user.getUserId()).then().statusCode(200);
     }
 

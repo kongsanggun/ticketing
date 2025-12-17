@@ -53,7 +53,7 @@ public class UserServiceTests {
     @BeforeEach()
     void setData() {
         User user = new User(setCreateDto());
-        user.setPoint(50000);
+        user.chargePoint(50000);
         this.user = user;
         userRepository.saveAndFlush(user);
     }
@@ -120,18 +120,22 @@ public class UserServiceTests {
     @Test
     void usePointServiceTest() {
         // when
-        UserPointRequestDto data = new UserPointRequestDto(this.user.getUserId(), 10000);
-        UserPointRequestDto wrongData = new UserPointRequestDto("wrongId", 10000);
-        UserResponseDto result = userService.usePoint(data);
+        UserPointRequestDto dto = new UserPointRequestDto(this.user.getUserId(), 10000);
+        UserResponseDto result = userService.usePoint(dto);
 
         // then
         assertThat(result.getUserId(), is(notNullValue()));
         assertThat(result.getPoint(), is(40000));
 
-        data.setPoint(50000);
-        assertThatThrownBy(() -> userService.usePoint(data)).isInstanceOf(NotEnoughPointsException.class);
+        assertThatThrownBy(() -> {
+            UserPointRequestDto overDto = new UserPointRequestDto(this.user.getUserId(), 50000);
+            userService.usePoint(overDto);
+        }).isInstanceOf(NotEnoughPointsException.class);
 
-        assertThatThrownBy(() -> userService.usePoint(wrongData)).isInstanceOf(NotExistedUserDataException.class);
+        assertThatThrownBy(() -> {
+            UserPointRequestDto wrongDto = new UserPointRequestDto("wrongId", 10000);
+            userService.usePoint(wrongDto);
+        }).isInstanceOf(NotExistedUserDataException.class);
     }
 
     @AfterEach()

@@ -39,21 +39,29 @@ public class StageE2ETests {
     @Autowired
     private StageRepository stageRepository;
 
-    public StageRequestDto setParam() {
-        StageRequestDto result = new StageRequestDto();
-        result.setConcertId("test");
-        result.setStageTime(new Date());
-        return result;
+    public StageRequestDto setParam(String concertId) {
+        return new StageRequestDto(
+                "test",
+                concertId,
+                new Date()
+        );
+    }
+
+    public StageRequestDto setParam(StageResponseDto responseDto) {
+        return new StageRequestDto(
+                responseDto.getStageId(),
+                responseDto.getConcertId(),
+                new Date()
+        );
     }
 
     public StageResponseDto setData() {
-        StageRequestDto param = setParam();
+        StageRequestDto param = setParam("test");
         return stageController.createStage(param);
     }
 
     public StageResponseDto setDataforDelete() {
-        StageRequestDto param = setParam();
-        param.setConcertId("test2");
+        StageRequestDto param = setParam("test2");
         return stageController.createStage(param);
     }
 
@@ -80,7 +88,7 @@ public class StageE2ETests {
     @DisplayName("[post] : /stage : 성공")
     @Test
     void createStageSuccessTest() {
-        StageRequestDto testParam = setParam();
+        StageRequestDto testParam = setParam("test");
         RestAssured.given().contentType(ContentType.JSON).body(testParam).when().post("/stage").then().statusCode(201);
     }
 
@@ -95,10 +103,7 @@ public class StageE2ETests {
     @Test
     void updateStageSuccessTest() {
         StageResponseDto responseData = setData();
-        StageRequestDto testParam = setParam();
-        testParam.setStageId(responseData.getStageId());
-        testParam.setStageTime(new Date());
-
+        StageRequestDto testParam = setParam(responseData);
         RestAssured.given().contentType(ContentType.JSON).body(testParam).when().put("/stage").then().statusCode(200);
     }
 
@@ -115,9 +120,7 @@ public class StageE2ETests {
     void deleteStageSuccessTest() {
         setData();
         StageResponseDto responseData = setData();
-        StageRequestDto testParam = setParam();
-        testParam.setStageId(responseData.getStageId());
-
+        StageRequestDto testParam = setParam(responseData);
         RestAssured.given().contentType(ContentType.JSON).body(testParam).when().delete("/stage").then()
                         .statusCode(200);
     }
@@ -126,9 +129,7 @@ public class StageE2ETests {
     @Test
     void deleteStageFailTest1() {
         StageResponseDto responseData = setData();
-
-        StageRequestDto testParam = setParam();
-        testParam.setStageId(responseData.getStageId());
+        StageRequestDto testParam = setParam(responseData);
         stageController.deleteStage(testParam);
 
         RestAssured.given().contentType(ContentType.JSON).body(testParam).when().delete("/stage").then().statusCode(404)
@@ -139,10 +140,7 @@ public class StageE2ETests {
     @Test
     void deleteStageFailTest2() {
         StageResponseDto responseDto = setDataforDelete();
-
-        StageRequestDto testParam = new StageRequestDto();
-        testParam.setConcertId("test2");
-        testParam.setStageId(responseDto.getStageId());
+        StageRequestDto testParam = setParam(responseDto);
 
         RestAssured.given().contentType(ContentType.JSON).body(testParam).when().delete("/stage").then().statusCode(422)
                         .and().body("message", is(ExceptionCode.EMPTY_STAGE.getMessage()));
