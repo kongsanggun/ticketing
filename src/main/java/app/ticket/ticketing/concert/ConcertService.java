@@ -44,9 +44,7 @@ public class ConcertService {
      */
     public ConcertResponseDto updateConcert(ConcertRequestDto request) {
         Concert concert = checkExist(request);
-        concert.setName(request.getName());
-        concert.setDetail(request.getDetail());
-        concert.setBookStartTime(request.getBookStartTime());
+        concert.putData(request);
         concertRepository.saveAndFlush(concert);
         return new ConcertResponseDto(concert);
     }

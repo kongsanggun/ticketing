@@ -32,16 +32,29 @@ public class ConcertUnitTests {
     private Concert concert;
 
     ConcertRequestDto setRequestData() {
-        ConcertRequestDto request = new ConcertRequestDto();
+        return new ConcertRequestDto(
+                "test",
+                "test",
+                "테스트입니다.",
+                new Date(),
+                new Date(),
+                "U석",
+                39800,
+                20
+        );
+    }
 
-        request.setName("test");
-        request.setDetail("테스트 공연");
-        request.setBookStartTime(new Date());
-        request.setStageTime(new Date());
-        request.setPriceName("S석");
-        request.setInitialPrice(39800);
-
-        return request;
+    ConcertRequestDto setRequestData(Concert concert) {
+        return new ConcertRequestDto(
+                concert.getConcertId(),
+                "testUpdated",
+                concert.getDetail(),
+                concert.getBookStartTime(),
+                new Date(),
+                "U석",
+                39800,
+                20
+        );
     }
 
     @BeforeEach()
@@ -133,7 +146,7 @@ public class ConcertUnitTests {
         Concert testData = this.concert;
 
         // when
-        testData.setName("testUpdated");
+        testData.putData(setRequestData(testData));
         Concert result = concertRepository.saveAndFlush(concert);
 
         // then

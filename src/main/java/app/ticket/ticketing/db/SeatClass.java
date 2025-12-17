@@ -7,11 +7,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "seat_class")
@@ -42,11 +40,16 @@ public class SeatClass extends Basedb {
         this.capacity = request.getCapacity();
     }
 
-    public SeatClass(ConcertRequestDto request) {
+    public SeatClass(String concertid, ConcertRequestDto request) {
         this.seatClassId = TSID.fast().toString();
-        this.concertId = request.getConcertId();
+        this.concertId = concertid;
         this.name = request.getPriceName();
         this.price = request.getInitialPrice();
         this.capacity = request.getInitialCapacity();
+    }
+
+    public void putData(SeatClassRequestDto request) {
+        this.name = request.getName();
+        this.price = request.getPrice();
     }
 }

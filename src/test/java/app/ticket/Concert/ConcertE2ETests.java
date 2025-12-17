@@ -44,16 +44,29 @@ public class ConcertE2ETests {
     private ConcertRepository concertRepository;
 
     public ConcertRequestDto setParam() {
-        ConcertRequestDto result = new ConcertRequestDto();
-        result.setConcertId("test");
-        result.setName("test");
-        result.setDetail("테스트입니다.");
-        result.setBookStartTime(new Date());
-        result.setStageTime(new Date());
-        result.setPriceName("U석");
-        result.setInitialPrice(39800);
-        result.setInitialCapacity(20);
-        return result;
+        return new ConcertRequestDto(
+                "test",
+                "test",
+                "테스트입니다.",
+                new Date(),
+                new Date(),
+                "U석",
+                39800,
+                20
+        );
+    }
+
+    public ConcertRequestDto setParam(String concertId, String name) {
+        return new ConcertRequestDto(
+                concertId,
+                name,
+                "테스트입니다.",
+                new Date(),
+                new Date(),
+                "U석",
+                39800,
+                20
+        );
     }
 
     public ConcertResponseDto setData() {
@@ -102,8 +115,10 @@ public class ConcertE2ETests {
     @Test
     void createConcertFailTest2() {
         ConcertResponseDto responseData = setData();
-        ConcertRequestDto duplicateParam = setParam();
-        duplicateParam.setConcertId(responseData.getConcertId());
+        ConcertRequestDto duplicateParam = setParam(
+                responseData.getConcertId(),
+                "test"
+        );
 
         RestAssured.given().contentType(ContentType.JSON).body(duplicateParam).when().post("/concert").then()
                         .statusCode(409).and().body("message", is("이미 추가된 공연입니다."));
@@ -113,9 +128,10 @@ public class ConcertE2ETests {
     @Test
     void updateConcertSuccessTest() {
         ConcertResponseDto responseData = setData();
-        ConcertRequestDto testParam = setParam();
-        testParam.setConcertId(responseData.getConcertId());
-        testParam.setName("test update");
+        ConcertRequestDto testParam = setParam(
+                responseData.getConcertId(),
+                "test update"
+        );
 
         RestAssured.given().contentType(ContentType.JSON).body(testParam).when().put("/concert").then().statusCode(200)
                         .and().body("name", is("test update"));
@@ -133,8 +149,10 @@ public class ConcertE2ETests {
     @Test
     void deleteConcertSuccessTest() {
         ConcertResponseDto responseData = setData();
-        ConcertRequestDto testParam = setParam();
-        testParam.setConcertId(responseData.getConcertId());
+        ConcertRequestDto testParam = setParam(
+                responseData.getConcertId(),
+                "test"
+        );
 
         RestAssured.given().contentType(ContentType.JSON).body(testParam).when().delete("/concert").then()
                         .statusCode(200);

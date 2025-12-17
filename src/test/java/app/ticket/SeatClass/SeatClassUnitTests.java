@@ -34,12 +34,13 @@ public class SeatClassUnitTests {
 
     SeatClassRequestDto setRequestData() {
         char seatChar = (char) (Math.round((Math.random() * 14) + 65));
-        SeatClassRequestDto request = new SeatClassRequestDto();
-        request.setConcertId("test");
-        request.setName(seatChar + "석");
-        request.setPrice((int) (Math.random() * 30000));
-        request.setCapacity(100);
-        return request;
+        return new SeatClassRequestDto(
+                "test",
+                "test",
+                seatChar + "석",
+                (int) (Math.random() * 30000),
+                100
+        );
     }
 
     @BeforeEach()
@@ -143,9 +144,13 @@ public class SeatClassUnitTests {
         SeatClass testData = testDatas.get(0);
 
         // when
-        testData.setName("testUpdated");
-        testData.setPrice(10000);
-
+        testData.putData(new SeatClassRequestDto(
+                "test",
+                "test",
+                "testUpdated",
+                10000,
+                100
+        ));
         SeatClass result = seatClassRepository.saveAndFlush(testData);
 
         // then

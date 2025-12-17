@@ -9,7 +9,6 @@ import lombok.*;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "stage")
@@ -32,9 +31,13 @@ public class Stage extends Basedb {
         this.stageTime = request.getStageTime();
     }
 
-    public Stage(ConcertRequestDto request) {
+    public Stage(String concertId, ConcertRequestDto request) {
         this.stageId = TSID.fast().toString();
-        this.concertId = request.getConcertId();
+        this.concertId = concertId;
+        this.stageTime = request.getStageTime();
+    }
+
+    public void putData(StageRequestDto request) {
         this.stageTime = request.getStageTime();
     }
 }

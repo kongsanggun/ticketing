@@ -43,22 +43,23 @@ public class SeatClassServiceTests {
 
     SeatClassRequestDto setRequestData() {
         char seatChar = (char) (Math.round((Math.random() * 14) + 65));
-        SeatClassRequestDto request = new SeatClassRequestDto();
-        request.setConcertId(this.concertId);
-        request.setName(seatChar + "석");
-        request.setPrice((int) (Math.random() * 30000));
-        request.setCapacity(100);
-        return request;
+        return new SeatClassRequestDto(
+                "test",
+                this.concertId,
+                seatChar + "석",
+                (int) (Math.random() * 30000),
+                100
+        );
     }
 
     SeatClassRequestDto setRequestData(SeatClass seatClass) {
-        SeatClassRequestDto request = new SeatClassRequestDto();
-        request.setSeatClassId(seatClass.getSeatClassId());
-        request.setConcertId(seatClass.getConcertId());
-        request.setName(seatClass.getName());
-        request.setPrice(seatClass.getPrice());
-        request.setCapacity(seatClass.getCapacity());
-        return request;
+        return new SeatClassRequestDto(
+                seatClass.getSeatClassId(),
+                seatClass.getConcertId(),
+                "testUpdated",
+                10000,
+                seatClass.getCapacity()
+        );
     }
 
     @BeforeEach()
@@ -98,8 +99,6 @@ public class SeatClassServiceTests {
 
         // when
         SeatClassRequestDto data = setRequestData(testData);
-        data.setName("testUpdated");
-        data.setPrice(10000);
         SeatClassResponseDto result = seatClassService.updateSeatClass(data);
 
         // then

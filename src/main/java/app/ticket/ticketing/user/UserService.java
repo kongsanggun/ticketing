@@ -35,7 +35,7 @@ public class UserService {
      */
     public UserResponseDto updateUser(String userId, UserPutRequestDto request) {
         User user = findUser(userId);
-        user.setName(request.getName());
+        user.putName(request);
         userRepository.saveAndFlush(user);
         return new UserResponseDto(user);
     }
@@ -54,7 +54,7 @@ public class UserService {
      */
     public UserResponseDto chargePoint(UserPointRequestDto request) {
         User user = findUser(request.getUserId());
-        user.setPoint(request.getPoint() + user.getPoint());
+        user.chargePoint(request.getPoint());
         userRepository.saveAndFlush(user);
         return new UserResponseDto(user);
     }
@@ -65,10 +65,7 @@ public class UserService {
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public UserResponseDto usePoint(UserPointRequestDto request) {
         User user = findUser(request.getUserId());
-        if (request.getPoint() > user.getPoint()) {
-            throw new NotEnoughPointsException(request.getUserId());
-        }
-        user.setPoint(user.getPoint() - request.getPoint());
+        user.usePoint(request.getPoint());
         userRepository.saveAndFlush(user);
         return new UserResponseDto(user);
     }

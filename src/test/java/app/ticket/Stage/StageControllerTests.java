@@ -33,22 +33,19 @@ public class StageControllerTests {
     private List<Stage> stages;
 
     StageRequestDto setRequestData() {
-        StageRequestDto request = new StageRequestDto();
-
-        request.setConcertId("test");
-        request.setStageTime(new Date());
-
-        return request;
+        return new StageRequestDto(
+                "test",
+                "test",
+                new Date()
+        );
     }
 
     StageRequestDto setRequestData(Stage stage) {
-        StageRequestDto request = new StageRequestDto();
-
-        request.setStageId(stage.getStageId());
-        request.setStageTime(stage.getStageTime());
-        request.setConcertId(stage.getConcertId());
-
-        return request;
+        return new StageRequestDto(
+                stage.getStageId(),
+                stage.getConcertId(),
+                new Date()
+        );
     }
 
     @BeforeEach()
@@ -97,7 +94,6 @@ public class StageControllerTests {
 
         // when
         StageRequestDto data = setRequestData(testData);
-        data.setStageTime(new Date());
         StageResponseDto result = stageController.updateStage(data);
 
         // then

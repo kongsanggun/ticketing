@@ -5,7 +5,6 @@ import app.ticket.ticketing.common.exception.custom.stage.StageNotRemainExceptio
 import app.ticket.ticketing.concert.ConcertRequestDto;
 import app.ticket.ticketing.db.Stage;
 import jakarta.transaction.Transactional;
-import java.util.Date;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -39,8 +38,8 @@ public class StageService {
     /*
      * 공연 생성으로 인하여 공연 내 시간표를 추가한다.
      */
-    public void createPriceByConcert(ConcertRequestDto request) {
-        Stage stage = new Stage(request);
+    public void createPriceByConcert(String concertId, ConcertRequestDto request) {
+        Stage stage = new Stage(concertId, request);
         stageRepository.saveAndFlush(stage);
     }
 
@@ -49,7 +48,7 @@ public class StageService {
      */
     public StageResponseDto updateStage(StageRequestDto request) {
         Stage stage = checkExist(request);
-        stage.setStageTime(request.getStageTime());
+        stage.putData(request);
         stageRepository.saveAndFlush(stage);
         return new StageResponseDto(stage);
     }

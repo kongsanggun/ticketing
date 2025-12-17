@@ -35,23 +35,33 @@ public class SeatClassE2ETests {
     @Autowired
     private SeatClassRepository seatClassRepository;
 
-    public SeatClassRequestDto setParam() {
-        SeatClassRequestDto result = new SeatClassRequestDto();
-        result.setConcertId("test");
-        result.setName("test석");
-        result.setPrice(10000);
-        result.setCapacity(100);
-        return result;
+    public SeatClassRequestDto setParam(String concertId) {
+        return new SeatClassRequestDto(
+                "test",
+                concertId,
+                "test석",
+                10000,
+                100
+        );
+    }
+
+    public SeatClassRequestDto setParam(SeatClassResponseDto responseData) {
+        return new SeatClassRequestDto(
+                responseData.getSeatClassId(),
+                responseData.getConcertId(),
+                "update석",
+                10000,
+                100
+        );
     }
 
     public SeatClassResponseDto setData() {
-        SeatClassRequestDto param = setParam();
+        SeatClassRequestDto param = setParam("test");
         return seatClassController.createSeatClass(param);
     }
 
     public SeatClassResponseDto setDataforDelete() {
-        SeatClassRequestDto param = setParam();
-        param.setConcertId("test2");
+        SeatClassRequestDto param = setParam("test2");
         return seatClassController.createSeatClass(param);
     }
 
@@ -78,7 +88,7 @@ public class SeatClassE2ETests {
     @DisplayName("[post] : /seat-class : 성공")
     @Test
     void createSeatClassSuccessTest() {
-        SeatClassRequestDto testParam = setParam();
+        SeatClassRequestDto testParam = setParam("test");
         RestAssured.given().contentType(ContentType.JSON).body(testParam).when().post("/seat-class").then()
                         .statusCode(201);
     }
@@ -95,9 +105,7 @@ public class SeatClassE2ETests {
     @Test
     void updateSeatClassSuccessTest() {
         SeatClassResponseDto responseData = setData();
-        SeatClassRequestDto testParam = setParam();
-        testParam.setSeatClassId(responseData.getSeatClassId());
-        testParam.setName("update석");
+        SeatClassRequestDto testParam = setParam(responseData);
 
         RestAssured.given().contentType(ContentType.JSON).body(testParam).when().put("/seat-class").then()
                         .statusCode(200);
@@ -116,8 +124,7 @@ public class SeatClassE2ETests {
     void deleteSeatClassSuccessTest() {
         setData();
         SeatClassResponseDto responseData = setData();
-        SeatClassRequestDto testParam = setParam();
-        testParam.setSeatClassId(responseData.getSeatClassId());
+        SeatClassRequestDto testParam = setParam(responseData);
 
         RestAssured.given().contentType(ContentType.JSON).body(testParam).when().delete("/seat-class").then()
                         .statusCode(200);
@@ -128,8 +135,7 @@ public class SeatClassE2ETests {
     void deleteSeatClassFailTest1() {
         SeatClassResponseDto responseData = setData();
 
-        SeatClassRequestDto testParam = setParam();
-        testParam.setSeatClassId(responseData.getSeatClassId());
+        SeatClassRequestDto testParam = setParam(responseData);
         seatClassController.deleteSeatClass(testParam);
 
         RestAssured.given().contentType(ContentType.JSON).body(testParam).when().delete("/seat-class").then()
@@ -141,10 +147,7 @@ public class SeatClassE2ETests {
     void deleteSeatClassFailTest2() {
         SeatClassResponseDto responseData = setDataforDelete();
 
-        SeatClassRequestDto testParam = new SeatClassRequestDto();
-        testParam.setConcertId("test2");
-        testParam.setSeatClassId(responseData.getSeatClassId());
-
+        SeatClassRequestDto testParam = setParam(responseData);
         RestAssured.given().contentType(ContentType.JSON).body(testParam).when().delete("/seat-class").then()
                         .statusCode(422).and().body("message", is(ExceptionCode.EMPTY_PRICE.getMessage()));
     }
