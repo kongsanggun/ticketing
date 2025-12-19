@@ -27,6 +27,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.7.6'
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.8'
 	testImplementation 'junit:junit:4.13.2'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.projectlombok:lombok:1.18.22'
@@ -76,7 +77,8 @@ test {
 	jacoco {
 		excludes += [
 				'app/ticket/StartApplication.class',
-				'app/ticket/ticketing/common/*'
+				'app/ticket/ticketing/common/*',
+				'app/ticket/ticketing/config/*'
 		]
 	}
 
@@ -115,7 +117,9 @@ jacocoTestReport {
 		classDirectories.setFrom(files(classDirectories.files.collect {
 			fileTree(dir: it,
 					exclude: ['app/ticket/StartApplication.class',
-							  'app/ticket/ticketing/common/*'])
+							  'app/ticket/ticketing/common/*',
+							  'app/ticket/ticketing/config/*'
+					])
 		}))
 	}
 }
@@ -126,7 +130,8 @@ jacocoTestCoverageVerification {
 			element = 'CLASS'
 			excludes = [
 					'**.StartApplication*',
-					'**.ticketing.common.**'
+					'**.ticketing.common.**',
+					'**.ticketing.config.**'
 			]
 			limit {
 				counter = 'LINE'

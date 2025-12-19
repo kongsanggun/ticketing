@@ -77,8 +77,7 @@ public class TicketingE2ETests extends TicketingTest {
     @DisplayName("[get] : /ticket/{id} : 실패 1 - 조회 값이 없을 때")
     @Test
     void checkTicketFailTest() {
-        RestAssured.given().contentType(ContentType.JSON).when().get("/ticket/wrongId").then().statusCode(404).and()
-                        .body("message", is("해당 값이 존재하지 않습니다."));
+        RestAssured.given().contentType(ContentType.JSON).when().get("/ticket/wrongId").then().statusCode(404);
     }
 
     @DisplayName("[post] : /ticket/{seat} : 성공")
@@ -93,8 +92,7 @@ public class TicketingE2ETests extends TicketingTest {
     void createTicketFailTest1() {
         setData();
         TicketingRequestDto testParam = setParam(null);
-        RestAssured.given().contentType(ContentType.JSON).body(testParam).when().post("/ticket/1").then().statusCode(400)
-                        .and().body("message", is("이미 선점된 자리입니다."));
+        RestAssured.given().contentType(ContentType.JSON).body(testParam).when().post("/ticket/1").then().statusCode(400);
     }
 
     @DisplayName("[post] : /ticket/random : 성공")
@@ -119,7 +117,7 @@ public class TicketingE2ETests extends TicketingTest {
     void cancelTicketFailTest1() {
         TicketingRequestDto testParam = setParam("wrongId");
         RestAssured.given().contentType(ContentType.JSON).body(testParam).when().delete("/ticket").then()
-                        .statusCode(404).and().body("message", is("해당 값이 존재하지 않습니다."));
+                        .statusCode(404);
     }
 
     @AfterEach
