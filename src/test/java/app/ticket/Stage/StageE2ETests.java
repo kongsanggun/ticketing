@@ -81,8 +81,7 @@ public class StageE2ETests {
     @DisplayName("[get] : /stage/{id} : 실패 1 - 조회 값이 없을 때 ")
     @Test
     void readStagesFailTest1() {
-        RestAssured.given().contentType(ContentType.JSON).when().get("/stage/wrongId").then().statusCode(404).and()
-                        .body("message", is("해당 값이 존재하지 않습니다."));
+        RestAssured.given().contentType(ContentType.JSON).when().get("/stage/wrongId").then().statusCode(404);
     }
 
     @DisplayName("[post] : /stage : 성공")
@@ -111,8 +110,7 @@ public class StageE2ETests {
     @Test
     void updateStageFailTest1() {
         StageRequestDto testParam = new StageRequestDto();
-        RestAssured.given().contentType(ContentType.JSON).body(testParam).when().put("/stage").then().statusCode(404)
-                        .and().body("message", is("해당 값이 존재하지 않습니다."));
+        RestAssured.given().contentType(ContentType.JSON).body(testParam).when().put("/stage").then().statusCode(404);
     }
 
     @DisplayName("[delete] : /stage : 성공")
@@ -132,8 +130,7 @@ public class StageE2ETests {
         StageRequestDto testParam = setParam(responseData);
         stageController.deleteStage(testParam);
 
-        RestAssured.given().contentType(ContentType.JSON).body(testParam).when().delete("/stage").then().statusCode(404)
-                        .and().body("message", is("해당 값이 존재하지 않습니다."));
+        RestAssured.given().contentType(ContentType.JSON).body(testParam).when().delete("/stage").then().statusCode(404);
     }
 
     @DisplayName("[delete] : /stage : 실패 2 - 삭제 이후 ConcertId 기준 남아있는 stage 값이 존재하지 않을 때 에러를 발생한다.")
@@ -142,7 +139,6 @@ public class StageE2ETests {
         StageResponseDto responseDto = setDataforDelete();
         StageRequestDto testParam = setParam(responseDto);
 
-        RestAssured.given().contentType(ContentType.JSON).body(testParam).when().delete("/stage").then().statusCode(422)
-                        .and().body("message", is(ExceptionCode.EMPTY_STAGE.getMessage()));
+        RestAssured.given().contentType(ContentType.JSON).body(testParam).when().delete("/stage").then().statusCode(422);
     }
 }

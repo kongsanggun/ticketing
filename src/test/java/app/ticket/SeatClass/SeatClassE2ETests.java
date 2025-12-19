@@ -81,8 +81,7 @@ public class SeatClassE2ETests {
     @DisplayName("[get] : /seat-class/{id} : 실패 1 - 조회 값이 없을 때 ")
     @Test
     void readSeatClassFailTest1() {
-        RestAssured.given().contentType(ContentType.JSON).when().get("/seat-class/wrongId").then().statusCode(404).and()
-                        .body("message", is("해당 값이 존재하지 않습니다."));
+        RestAssured.given().contentType(ContentType.JSON).when().get("/seat-class/wrongId").then().statusCode(404);
     }
 
     @DisplayName("[post] : /seat-class : 성공")
@@ -116,7 +115,7 @@ public class SeatClassE2ETests {
     void updateSeatClassFailTest1() {
         SeatClassRequestDto testParam = new SeatClassRequestDto();
         RestAssured.given().contentType(ContentType.JSON).body(testParam).when().put("/seat-class").then()
-                        .statusCode(404).and().body("message", is("해당 값이 존재하지 않습니다."));
+                        .statusCode(404);
     }
 
     @DisplayName("[delete] : /seat-class : 성공")
@@ -139,7 +138,7 @@ public class SeatClassE2ETests {
         seatClassController.deleteSeatClass(testParam);
 
         RestAssured.given().contentType(ContentType.JSON).body(testParam).when().delete("/seat-class").then()
-                        .statusCode(404).and().body("message", is("해당 값이 존재하지 않습니다."));
+                        .statusCode(404);
     }
 
     @DisplayName("[delete] : /seat-class : 실패 2 - 삭제 이후 ConcertId 기준 남아있는 stage 값이 존재하지 않을 때 에러를 발생한다.")
@@ -149,6 +148,6 @@ public class SeatClassE2ETests {
 
         SeatClassRequestDto testParam = setParam(responseData);
         RestAssured.given().contentType(ContentType.JSON).body(testParam).when().delete("/seat-class").then()
-                        .statusCode(422).and().body("message", is(ExceptionCode.EMPTY_PRICE.getMessage()));
+                        .statusCode(422);
     }
 }

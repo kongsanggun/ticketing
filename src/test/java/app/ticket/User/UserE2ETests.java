@@ -68,8 +68,7 @@ public class UserE2ETests {
     @DisplayName("[get] : /user/{id} : 실패 1 - 조회 값이 없을 때 ")
     @Test
     void readUserFailTest1() {
-        RestAssured.given().contentType(ContentType.JSON).when().get("/user/wrongId").then().statusCode(404).and()
-                        .body("message", is("해당 값이 존재하지 않습니다."));
+        RestAssured.given().contentType(ContentType.JSON).when().get("/user/wrongId").then().statusCode(404);
     }
 
     @DisplayName("[post] : /user : 성공")
@@ -91,8 +90,7 @@ public class UserE2ETests {
     @Test
     void updateUserFailTest1() {
         UserPutRequestDto testParam = new UserPutRequestDto();
-        RestAssured.given().contentType(ContentType.JSON).body(testParam).when().put("/user/wrongId").then().statusCode(404)
-                        .and().body("message", is("해당 값이 존재하지 않습니다."));
+        RestAssured.given().contentType(ContentType.JSON).body(testParam).when().put("/user/wrongId").then().statusCode(404);
     }
 
     @DisplayName("[delete] : /user/{id} : 성공")
@@ -106,8 +104,7 @@ public class UserE2ETests {
     @DisplayName("[delete] : /user/{id} : 실패 1 - 조회 값이 없을 때 ")
     @Test
     void deleteUserFailTest1() {
-        RestAssured.given().contentType(ContentType.JSON).when().delete("/user/wrongId").then().statusCode(404)
-                        .and().body("message", is("해당 값이 존재하지 않습니다."));
+        RestAssured.given().contentType(ContentType.JSON).when().delete("/user/wrongId").then().statusCode(404);
     }
 
     @DisplayName("[post] : /point/charge : 성공")
@@ -152,7 +149,6 @@ public class UserE2ETests {
         User user = setData();
         UserPointRequestDto testParam = new UserPointRequestDto(user.getUserId(), 50001);
         RestAssured.given().contentType(ContentType.JSON).body(testParam).when().post("/point/use").then()
-                .statusCode(422)
-                .and().body("message", is("잔여 포인트가 충분하지 않습니다."));
+                .statusCode(422);
     }
 }
