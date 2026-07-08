@@ -8,7 +8,7 @@ services:
     environment:
       TZ : "Asia/Seoul"
       MARIADB_USER: ${MARIADB_USER}
-      MARIA_DB_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      MARIADB_PASSWORD: ${MARIADB_ROOT_PASSWORD}
       MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
       MARIADB_DATABASE: ${MARIADB_DATABASE}
     ports:
@@ -66,6 +66,19 @@ services:
       - '--config.file=/etc/prometheus/prometheus.yml'
     ports:
       - "9090:9090"
+
+  influxdb:
+    image: influxdb:1.8
+    container_name: influxdb
+    env_file: # 환경변수 파일
+      - ./.env
+    ports:
+      - "8086:8086"
+    environment:
+      - INFLUXDB_DB=${INFLUXDB_DB}
+      - INFLUXDB_ADMIN_ENABLED=true
+      - INFLUXDB_ADMIN_USER=${INFLUXDB_ADMIN_USER}
+      - INFLUXDB_ADMIN_PASSWORD=${INFLUXDB_ADMIN_PASSWORD}
 
   grafana:
     image: grafana/grafana:latest
