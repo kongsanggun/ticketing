@@ -52,11 +52,11 @@ export let options = {
 
 export default function () {
   const request = JSON.stringify({
-                        ticketId: Math.floor(Math.random() * 1000),
+                        ticketId: Math.floor(Math.random() * 999) + 1,
                         concertId: 1,
-                        stageId: Math.floor(Math.random() * 50),
-                        seatClassId: Math.floor(Math.random() * 30),
-                        userId: Math.floor(Math.random() * 1000),
+                        stageId: Math.floor(Math.random() * 49) + 1,
+                        seatClassId: Math.floor(Math.random() * 29) + 1,
+                        userId: Math.floor(Math.random() * 999) + 1,
                       });
   const response = http.post("http://localhost:8000/ticket/random",
           request,
